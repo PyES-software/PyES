@@ -90,7 +90,7 @@ class indCompEdit(QUndoCommand):
         for label in self.affected_labels:
             label.setText(
                 re.sub(
-                    f"\[\w+\]",
+                    "\[\w+\]",
                     f"[{self.field.itemText(self.previous_index)}]",
                     label.text(),
                 )
@@ -109,7 +109,7 @@ class indCompEdit(QUndoCommand):
         for label in self.affected_labels:
             label.setText(
                 re.sub(
-                    f"\[\w+\]",
+                    "\[\w+\]",
                     f"[{self.field.itemText(self.index)}]",
                     label.text(),
                 )
