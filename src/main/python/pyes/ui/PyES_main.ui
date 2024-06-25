@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1283</width>
-    <height>778</height>
+    <width>1289</width>
+    <height>809</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>1204</width>
-    <height>778</height>
+    <width>1289</width>
+    <height>809</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -48,7 +48,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <property name="usesScrollButtons">
        <bool>false</bool>
@@ -997,7 +997,7 @@
                <number>2</number>
               </property>
               <item>
-               <widget class="QToolButton" name="select_all_button">
+               <widget class="QToolButton" name="checkAllSpeciesButton">
                 <property name="toolTip">
                  <string>Ignore all species</string>
                 </property>
@@ -1020,7 +1020,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QToolButton" name="deselect_all_button">
+               <widget class="QToolButton" name="uncheckAllSpeciesButton">
                 <property name="toolTip">
                  <string>Consider all species</string>
                 </property>
@@ -1451,7 +1451,7 @@
         <item>
          <widget class="QStackedWidget" name="mode_views">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="pyes_modes">
            <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -1479,6 +1479,9 @@
                </sizepolicy>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <property name="spacing">
+                <number>10</number>
+               </property>
                <property name="leftMargin">
                 <number>0</number>
                </property>
@@ -1486,7 +1489,7 @@
                 <number>0</number>
                </property>
                <property name="rightMargin">
-                <number>100</number>
+                <number>500</number>
                </property>
                <property name="bottomMargin">
                 <number>0</number>
@@ -1500,7 +1503,7 @@
                   </sizepolicy>
                  </property>
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>1</number>
                  </property>
                  <widget class="QWidget" name="page">
                   <property name="sizePolicy">
@@ -1552,7 +1555,7 @@
                       <item>
                        <widget class="QFrame" name="frame">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
@@ -2144,13 +2147,6 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton">
-                 <property name="text">
-                  <string>TEST</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <spacer name="horizontalSpacer_4">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -2168,92 +2164,225 @@
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,1">
+              <property name="spacing">
+               <number>10</number>
+              </property>
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_13" stretch="0,0,2,0,1,0,1">
+                <property name="spacing">
+                 <number>2</number>
+                </property>
                 <property name="topMargin">
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QLabel" name="label_7">
+                 <widget class="QLabel" name="paramstoRefineLabel">
                   <property name="text">
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Parameters to refine&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLabel" name="label">
-                  <property name="text">
-                   <string>Constants</string>
+                 <layout class="QGridLayout" name="gridLayout_3" columnstretch="1,0,0">
+                  <property name="bottomMargin">
+                   <number>0</number>
                   </property>
-                 </widget>
+                  <item row="0" column="1">
+                   <widget class="QToolButton" name="betaCheckAll">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../../../resources/base/resources.qrc">
+                      <normaloff>:/icons/ui-check-box.png</normaloff>:/icons/ui-check-box.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="betaToRefineLabel">
+                    <property name="text">
+                     <string>Constants</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QToolButton" name="betaUncheckAll">
+                    <property name="icon">
+                     <iconset resource="../../../resources/base/resources.qrc">
+                      <normaloff>:/icons/ui-check-box-uncheck.png</normaloff>:/icons/ui-check-box-uncheck.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                 <item>
-                 <widget class="QListWidget" name="listWidget">
+                 <widget class="QListWidget" name="betaToRefine">
                   <item>
                    <property name="text">
-                    <string>test1</string>
+                    <string/>
                    </property>
                    <property name="checkState">
                     <enum>Unchecked</enum>
                    </property>
                    <property name="flags">
-                    <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>test2</string>
-                   </property>
-                   <property name="checkState">
-                    <enum>Unchecked</enum>
-                   </property>
-                   <property name="flags">
-                    <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>test3</string>
-                   </property>
-                   <property name="checkState">
-                    <enum>Unchecked</enum>
-                   </property>
-                   <property name="flags">
-                    <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>test4</string>
-                   </property>
-                   <property name="checkState">
-                    <enum>Unchecked</enum>
-                   </property>
-                   <property name="flags">
-                    <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                    <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
                    </property>
                   </item>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLabel" name="label_5">
-                  <property name="text">
-                   <string>Parameters 2</string>
+                 <layout class="QGridLayout" name="gridLayout_4" columnstretch="1,0,0">
+                  <property name="bottomMargin">
+                   <number>0</number>
                   </property>
+                  <item row="0" column="2">
+                   <widget class="QToolButton" name="concUncheckAll">
+                    <property name="icon">
+                     <iconset resource="../../../resources/base/resources.qrc">
+                      <normaloff>:/icons/ui-check-box-uncheck.png</normaloff>:/icons/ui-check-box-uncheck.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QToolButton" name="concCheckAll">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../../../resources/base/resources.qrc">
+                      <normaloff>:/icons/ui-check-box.png</normaloff>:/icons/ui-check-box.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="conToRefineLabel">
+                    <property name="text">
+                     <string>Concentrations</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QTableWidget" name="concToRefine">
+                  <attribute name="horizontalHeaderCascadingSectionResizes">
+                   <bool>false</bool>
+                  </attribute>
+                  <attribute name="horizontalHeaderDefaultSectionSize">
+                   <number>25</number>
+                  </attribute>
+                  <row>
+                   <property name="text">
+                    <string>A</string>
+                   </property>
+                  </row>
+                  <column/>
+                  <item row="0" column="0">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checkState">
+                    <enum>Unchecked</enum>
+                   </property>
+                  </item>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QListWidget" name="listWidget_2"/>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_6">
-                  <property name="text">
-                   <string>Parameters 3</string>
+                 <layout class="QGridLayout" name="gridLayout_5" columnstretch="1,0,0">
+                  <property name="bottomMargin">
+                   <number>0</number>
                   </property>
-                 </widget>
+                  <item row="0" column="2">
+                   <widget class="QToolButton" name="electrodeUncheckAll">
+                    <property name="icon">
+                     <iconset resource="../../../resources/base/resources.qrc">
+                      <normaloff>:/icons/ui-check-box-uncheck.png</normaloff>:/icons/ui-check-box-uncheck.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QToolButton" name="electrodeCheckAll">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../../../resources/base/resources.qrc">
+                      <normaloff>:/icons/ui-check-box.png</normaloff>:/icons/ui-check-box.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="electrodeToRefineLabel">
+                    <property name="text">
+                     <string>Electrode</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                 <item>
-                 <widget class="QListWidget" name="listWidget_3"/>
+                 <widget class="QTableWidget" name="electrodeToRefine">
+                  <property name="rowCount">
+                   <number>5</number>
+                  </property>
+                  <attribute name="horizontalHeaderDefaultSectionSize">
+                   <number>25</number>
+                  </attribute>
+                  <row>
+                   <property name="text">
+                    <string>E0</string>
+                   </property>
+                  </row>
+                  <row>
+                   <property name="text">
+                    <string>Ja</string>
+                   </property>
+                  </row>
+                  <row>
+                   <property name="text">
+                    <string>Jb</string>
+                   </property>
+                  </row>
+                  <row>
+                   <property name="text">
+                    <string>Slope</string>
+                   </property>
+                  </row>
+                  <row/>
+                  <column/>
+                  <item row="0" column="0">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checkState">
+                    <enum>Unchecked</enum>
+                   </property>
+                  </item>
+                  <item row="1" column="0">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checkState">
+                    <enum>Unchecked</enum>
+                   </property>
+                  </item>
+                  <item row="2" column="0">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checkState">
+                    <enum>Unchecked</enum>
+                   </property>
+                  </item>
+                  <item row="3" column="0">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checkState">
+                    <enum>Unchecked</enum>
+                   </property>
+                  </item>
+                 </widget>
                 </item>
                </layout>
               </item>
@@ -2272,11 +2401,7 @@
                  <attribute name="title">
                   <string>1</string>
                  </attribute>
-                 <layout class="QHBoxLayout" name="horizontalLayout_12">
-                  <item>
-                   <widget class="inputTitrationOpt" name="widget_5" native="true"/>
-                  </item>
-                 </layout>
+                 <layout class="QHBoxLayout" name="horizontalLayout_12"/>
                 </widget>
                </widget>
               </item>
@@ -2485,7 +2610,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1283</width>
+     <width>1289</width>
      <height>24</height>
     </rect>
    </property>
@@ -2706,18 +2831,12 @@
   <customwidget>
    <class>CustomSpinBox</class>
    <extends>QDoubleSpinBox</extends>
-   <header>ui.widgets</header>
+   <header location="global">ui.widgets.spinbox</header>
   </customwidget>
   <customwidget>
    <class>CustomComboBox</class>
    <extends>QComboBox</extends>
    <header>ui.widgets</header>
-  </customwidget>
-  <customwidget>
-   <class>inputTitrationOpt</class>
-   <extends>QWidget</extends>
-   <header>ui.widgets</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
@@ -2747,8 +2866,8 @@
    <slot>exportDist()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
-     <y>743</y>
+     <x>117</x>
+     <y>740</y>
     </hint>
     <hint type="destinationlabel">
      <x>90</x>
@@ -2763,8 +2882,8 @@
    <slot>plotDist()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1273</x>
-     <y>743</y>
+     <x>1268</x>
+     <y>740</y>
     </hint>
     <hint type="destinationlabel">
      <x>683</x>
@@ -2779,8 +2898,8 @@
    <slot>v0Updater()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>287</x>
-     <y>212</y>
+     <x>276</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
      <x>804</x>
@@ -2795,8 +2914,8 @@
    <slot>updateComp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>235</x>
-     <y>151</y>
+     <x>240</x>
+     <y>135</y>
     </hint>
     <hint type="destinationlabel">
      <x>382</x>
@@ -2811,8 +2930,8 @@
    <slot>updateSpecies()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>235</x>
-     <y>184</y>
+     <x>240</x>
+     <y>166</y>
     </hint>
     <hint type="destinationlabel">
      <x>548</x>
@@ -2831,8 +2950,8 @@
      <y>687</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1265</x>
-     <y>735</y>
+     <x>1263</x>
+     <y>731</y>
     </hint>
    </hints>
   </connection>
@@ -2843,8 +2962,8 @@
    <slot>updateSolid()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>235</x>
-     <y>217</y>
+     <x>240</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
      <x>411</x>
@@ -2859,8 +2978,8 @@
    <slot>insertSpeciesAbove()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>566</x>
-     <y>154</y>
+     <x>601</x>
+     <y>143</y>
     </hint>
     <hint type="destinationlabel">
      <x>715</x>
@@ -2875,8 +2994,8 @@
    <slot>insertSpeciesBelow()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>598</x>
-     <y>154</y>
+     <x>639</x>
+     <y>143</y>
     </hint>
     <hint type="destinationlabel">
      <x>888</x>
@@ -2891,8 +3010,8 @@
    <slot>removeSpecies()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>630</x>
-     <y>154</y>
+     <x>677</x>
+     <y>143</y>
     </hint>
     <hint type="destinationlabel">
      <x>1026</x>
@@ -2907,8 +3026,8 @@
    <slot>moveSpeciesUp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>671</x>
-     <y>154</y>
+     <x>730</x>
+     <y>143</y>
     </hint>
     <hint type="destinationlabel">
      <x>855</x>
@@ -2923,8 +3042,8 @@
    <slot>moveSpeciesDown()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>703</x>
-     <y>154</y>
+     <x>766</x>
+     <y>143</y>
     </hint>
     <hint type="destinationlabel">
      <x>673</x>
@@ -2939,8 +3058,8 @@
    <slot>insertCompAbove()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>301</x>
-     <y>147</y>
+     <x>294</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>367</x>
@@ -2955,8 +3074,8 @@
    <slot>insertCompBelow()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>334</x>
-     <y>147</y>
+     <x>332</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>335</x>
@@ -2971,8 +3090,8 @@
    <slot>removeComp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>367</x>
-     <y>147</y>
+     <x>370</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>301</x>
@@ -2987,8 +3106,8 @@
    <slot>moveCompUp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>410</x>
-     <y>147</y>
+     <x>423</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>505</x>
@@ -3003,8 +3122,8 @@
    <slot>moveCompDown()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>443</x>
-     <y>147</y>
+     <x>459</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>663</x>
@@ -3019,8 +3138,8 @@
    <slot>displayUncertaintyInfo()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>254</x>
-     <y>275</y>
+     <x>239</x>
+     <y>279</y>
     </hint>
     <hint type="destinationlabel">
      <x>159</x>
@@ -3035,44 +3154,12 @@
    <slot>displayIonicStrengthInfo()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>260</x>
-     <y>344</y>
+     <x>239</x>
+     <y>343</y>
     </hint>
     <hint type="destinationlabel">
      <x>283</x>
      <y>754</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>select_all_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>checkAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>483</x>
-     <y>146</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>511</x>
-     <y>752</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>deselect_all_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>uncheckAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>513</x>
-     <y>145</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>610</x>
-     <y>751</y>
     </hint>
    </hints>
   </connection>
@@ -3115,8 +3202,8 @@
    <slot>removeTitration()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>58</x>
-     <y>146</y>
+     <x>86</x>
+     <y>167</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -3125,18 +3212,34 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>checkAllSpeciesButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>test()</slot>
+   <slot>checkAllSpecies()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>163</y>
+     <x>501</x>
+     <y>135</y>
     </hint>
     <hint type="destinationlabel">
-     <x>0</x>
-     <y>107</y>
+     <x>502</x>
+     <y>749</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>uncheckAllSpeciesButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>uncheckAllSpecies()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>530</x>
+     <y>129</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>627</x>
+     <y>749</y>
     </hint>
    </hints>
   </connection>
@@ -3169,8 +3272,8 @@
   <slot>moveCompDown()</slot>
   <slot>displayUncertaintyInfo()</slot>
   <slot>displayIonicStrengthInfo()</slot>
-  <slot>checkAll()</slot>
-  <slot>uncheckAll()</slot>
+  <slot>checkAllSpecies()</slot>
+  <slot>uncheckAllSpecies()</slot>
   <slot>massEditColumn()</slot>
   <slot>addTitration()</slot>
   <slot>removeTitration()</slot>

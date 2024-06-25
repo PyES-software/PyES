@@ -6,15 +6,22 @@ from .fields import (
     uncertaintyEdit,
 )
 from .models import (
+    BetaRefineEdit,
+    BetaRefineCheckAll,
+    BetaRefineUncheckAll,
     ComponentsAddRows,
     ComponentsCellEdit,
     ComponentsRemoveRows,
     ComponentsSwapRows,
+    ListWidgetEditAll,
     SpeciesAddRows,
     SpeciesCellEdit,
     SpeciesEditColumn,
     SpeciesRemoveRows,
     SpeciesSwapRows,
+    TitrationRefineEdit,
+    TableCheckAll,
+    TableUncheckAll,
 )
 from .widgets import AddTab, RemoveTab
 
@@ -30,6 +37,14 @@ __all__ = [
     ComponentsCellEdit,
     SpeciesAddRows,
     SpeciesCellEdit,
+    SpeciesEditColumn,
     SpeciesRemoveRows,
     SpeciesSwapRows,
+    ListWidgetEditAll,
+    BetaRefineCheckAll,
+    BetaRefineUncheckAll,
+    BetaRefineEdit,
+    TitrationRefineEdit,
+    TableCheckAll,
+    TableUncheckAll,
 ]

@@ -9,8 +9,72 @@ from typing import Any
 import pandas as pd
 from commands import ComponentsCellEdit, SpeciesCellEdit
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
-from PySide6.QtGui import QColorConstants, QPalette, QUndoStack
+from PySide6.QtGui import QColorConstants, QPalette, QUndoStack, QColor, QBrush
 from utils_func import getName
+
+
+class TitrationModel(QAbstractTableModel):
+    def __init__(self):
+        super().__init__()
+        self._data = pd.DataFrame([[0, 0]])
+
+    def data(self, index, role):
+        if role == Qt.ItemDataRole.DisplayRole:
+            value = self._data.iloc[index.row(), index.column()]
+            return str(value)
+
+    def headerData(self, section, orientation, role):
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                if section == 0:
+                    return "Volume (mL)"
+                else:
+                    return "Potential (V)"
+
+            if orientation == Qt.Vertical:
+                return str(self._data.index[section])
+
+    def rowCount(self, index=QModelIndex()):
+        return self._data.shape[0]
+
+    def columnCount(self, index=QModelIndex()):
+        return self._data.shape[1]
+
+
+# TODO: Think if this can be integrated in the generic model as well
+class PreviewModel(QAbstractTableModel):
+    def __init__(self):
+        super().__init__()
+        self._data = pd.DataFrame([[0, 0]])
+        self.blue_colored = 0
+        self.red_colored = 0
+
+    def data(self, index, role):
+        if role == Qt.ItemDataRole.DisplayRole:
+            value = self._data.iloc[index.row(), index.column()]
+            return str(value)
+
+        if role == Qt.ItemDataRole.BackgroundRole:
+            if index.column() == self.red_colored:
+                return QBrush(QColor("red"))
+            elif index.column() == self.blue_colored:
+                return QBrush(QColor("blue"))
+            else:
+                return False
+
+    def headerData(self, section, orientation, role):
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return str(self._data.columns[section])
+
+            if orientation == Qt.Vertical:
+                return str(self._data.index[section])
+
+    def rowCount(self, index=QModelIndex()):
+        return self._data.shape[0]
+
+    def columnCount(self, index=QModelIndex()):
+        return self._data.shape[1]
 
 
 class _GenericModel(QAbstractTableModel):
@@ -23,6 +87,9 @@ class _GenericModel(QAbstractTableModel):
 
         self.readonly_columns = set()
         self.readonly_rows = set()
+
+    def getColumn(self, column: int) -> list:
+        return self._data.iloc[:,column].to_list()
 
     def insertRows(
         self, empty_rows: pd.DataFrame, position: int, rows: int, index=QModelIndex()
@@ -135,7 +202,7 @@ class _GenericModel(QAbstractTableModel):
 
 
 class ConcentrationsModel(_GenericModel):
-    def __init__(self, data: pd.DataFrame, undo_stack: QUndoStack):
+    def __init__(self, data: pd.DataFrame, undo_stack: QUndoStack = None):
         super().__init__(data, undo_stack)
         self.previous_ind_comp = 0
 

@@ -22,18 +22,19 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QListWidget, QListWidgetItem, QMainWindow, QMenu,
     QMenuBar, QPushButton, QSizePolicy, QSpacerItem,
     QSpinBox, QStackedWidget, QStatusBar, QTabWidget,
-    QTableView, QTextEdit, QToolBar, QToolButton,
-    QVBoxLayout, QWidget)
+    QTableView, QTableWidget, QTableWidgetItem, QTextEdit,
+    QToolBar, QToolButton, QVBoxLayout, QWidget)
 
-from ui.widgets import (CustomComboBox, CustomSpinBox, inputTitrationOpt)
+from ui.widgets import CustomComboBox
+from ui.widgets.spinbox import CustomSpinBox
 import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1283, 778)
-        MainWindow.setMinimumSize(QSize(1204, 778))
+        MainWindow.resize(1289, 809)
+        MainWindow.setMinimumSize(QSize(1289, 809))
         MainWindow.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         MainWindow.setUnifiedTitleAndToolBarOnMac(True)
         self.actionNew = QAction(MainWindow)
@@ -596,25 +597,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4 = QHBoxLayout(self.horizontalFrame)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.horizontalLayout_4.setContentsMargins(0, 2, 0, 2)
-        self.select_all_button = QToolButton(self.horizontalFrame)
-        self.select_all_button.setObjectName(u"select_all_button")
+        self.checkAllSpeciesButton = QToolButton(self.horizontalFrame)
+        self.checkAllSpeciesButton.setObjectName(u"checkAllSpeciesButton")
         icon16 = QIcon()
         icon16.addFile(u":/icons/ui-check-box.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.select_all_button.setIcon(icon16)
-        self.select_all_button.setIconSize(QSize(18, 18))
-        self.select_all_button.setAutoRaise(True)
+        self.checkAllSpeciesButton.setIcon(icon16)
+        self.checkAllSpeciesButton.setIconSize(QSize(18, 18))
+        self.checkAllSpeciesButton.setAutoRaise(True)
 
-        self.horizontalLayout_4.addWidget(self.select_all_button)
+        self.horizontalLayout_4.addWidget(self.checkAllSpeciesButton)
 
-        self.deselect_all_button = QToolButton(self.horizontalFrame)
-        self.deselect_all_button.setObjectName(u"deselect_all_button")
+        self.uncheckAllSpeciesButton = QToolButton(self.horizontalFrame)
+        self.uncheckAllSpeciesButton.setObjectName(u"uncheckAllSpeciesButton")
         icon17 = QIcon()
         icon17.addFile(u":/icons/ui-check-box-uncheck.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.deselect_all_button.setIcon(icon17)
-        self.deselect_all_button.setIconSize(QSize(18, 18))
-        self.deselect_all_button.setAutoRaise(True)
+        self.uncheckAllSpeciesButton.setIcon(icon17)
+        self.uncheckAllSpeciesButton.setIconSize(QSize(18, 18))
+        self.uncheckAllSpeciesButton.setAutoRaise(True)
 
-        self.horizontalLayout_4.addWidget(self.deselect_all_button)
+        self.horizontalLayout_4.addWidget(self.uncheckAllSpeciesButton)
 
         self.line_6 = QFrame(self.horizontalFrame)
         self.line_6.setObjectName(u"line_6")
@@ -791,8 +792,9 @@ class Ui_MainWindow(object):
         sizePolicy9.setHeightForWidth(self.dmode0Input.sizePolicy().hasHeightForWidth())
         self.dmode0Input.setSizePolicy(sizePolicy9)
         self.horizontalLayout_3 = QHBoxLayout(self.dmode0Input)
+        self.horizontalLayout_3.setSpacing(10)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.horizontalLayout_3.setContentsMargins(0, 0, 100, 0)
+        self.horizontalLayout_3.setContentsMargins(0, 0, 500, 0)
         self.dmode_inputs = QStackedWidget(self.dmode0Input)
         self.dmode_inputs.setObjectName(u"dmode_inputs")
         sizePolicy4.setHeightForWidth(self.dmode_inputs.sizePolicy().hasHeightForWidth())
@@ -817,8 +819,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_9.setContentsMargins(0, 25, 0, 0)
         self.frame = QFrame(self.widget_3)
         self.frame.setObjectName(u"frame")
-        sizePolicy6.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
-        self.frame.setSizePolicy(sizePolicy6)
+        sizePolicy2.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
+        self.frame.setSizePolicy(sizePolicy2)
         self.frame.setMinimumSize(QSize(280, 0))
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
@@ -1115,11 +1117,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_11.addWidget(self.remove_titration)
 
-        self.pushButton = QPushButton(self.frame_3)
-        self.pushButton.setObjectName(u"pushButton")
-
-        self.horizontalLayout_11.addWidget(self.pushButton)
-
         self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_11.addItem(self.horizontalSpacer_4)
@@ -1128,56 +1125,140 @@ class Ui_MainWindow(object):
         self.verticalLayout_10.addWidget(self.frame_3)
 
         self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setSpacing(10)
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
         self.verticalLayout_13 = QVBoxLayout()
+        self.verticalLayout_13.setSpacing(2)
         self.verticalLayout_13.setObjectName(u"verticalLayout_13")
         self.verticalLayout_13.setContentsMargins(-1, 0, -1, -1)
-        self.label_7 = QLabel(self.bstac_modes)
-        self.label_7.setObjectName(u"label_7")
+        self.paramstoRefineLabel = QLabel(self.bstac_modes)
+        self.paramstoRefineLabel.setObjectName(u"paramstoRefineLabel")
 
-        self.verticalLayout_13.addWidget(self.label_7)
+        self.verticalLayout_13.addWidget(self.paramstoRefineLabel)
 
-        self.label = QLabel(self.bstac_modes)
-        self.label.setObjectName(u"label")
+        self.gridLayout_3 = QGridLayout()
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.gridLayout_3.setContentsMargins(-1, -1, -1, 0)
+        self.betaCheckAll = QToolButton(self.bstac_modes)
+        self.betaCheckAll.setObjectName(u"betaCheckAll")
+        self.betaCheckAll.setIcon(icon16)
 
-        self.verticalLayout_13.addWidget(self.label)
+        self.gridLayout_3.addWidget(self.betaCheckAll, 0, 1, 1, 1)
 
-        self.listWidget = QListWidget(self.bstac_modes)
-        __qlistwidgetitem = QListWidgetItem(self.listWidget)
+        self.betaToRefineLabel = QLabel(self.bstac_modes)
+        self.betaToRefineLabel.setObjectName(u"betaToRefineLabel")
+
+        self.gridLayout_3.addWidget(self.betaToRefineLabel, 0, 0, 1, 1)
+
+        self.betaUncheckAll = QToolButton(self.bstac_modes)
+        self.betaUncheckAll.setObjectName(u"betaUncheckAll")
+        self.betaUncheckAll.setIcon(icon17)
+
+        self.gridLayout_3.addWidget(self.betaUncheckAll, 0, 2, 1, 1)
+
+        self.gridLayout_3.setColumnStretch(0, 1)
+
+        self.verticalLayout_13.addLayout(self.gridLayout_3)
+
+        self.betaToRefine = QListWidget(self.bstac_modes)
+        __qlistwidgetitem = QListWidgetItem(self.betaToRefine)
         __qlistwidgetitem.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem.setFlags(Qt.ItemIsSelectable|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled);
-        __qlistwidgetitem1 = QListWidgetItem(self.listWidget)
-        __qlistwidgetitem1.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem1.setFlags(Qt.ItemIsSelectable|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled);
-        __qlistwidgetitem2 = QListWidgetItem(self.listWidget)
-        __qlistwidgetitem2.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem2.setFlags(Qt.ItemIsSelectable|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled);
-        __qlistwidgetitem3 = QListWidgetItem(self.listWidget)
-        __qlistwidgetitem3.setCheckState(Qt.Unchecked);
-        __qlistwidgetitem3.setFlags(Qt.ItemIsSelectable|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled);
-        self.listWidget.setObjectName(u"listWidget")
+        __qlistwidgetitem.setFlags(Qt.ItemIsDragEnabled|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled);
+        self.betaToRefine.setObjectName(u"betaToRefine")
 
-        self.verticalLayout_13.addWidget(self.listWidget)
+        self.verticalLayout_13.addWidget(self.betaToRefine)
 
-        self.label_5 = QLabel(self.bstac_modes)
-        self.label_5.setObjectName(u"label_5")
+        self.gridLayout_4 = QGridLayout()
+        self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.gridLayout_4.setContentsMargins(-1, -1, -1, 0)
+        self.concUncheckAll = QToolButton(self.bstac_modes)
+        self.concUncheckAll.setObjectName(u"concUncheckAll")
+        self.concUncheckAll.setIcon(icon17)
 
-        self.verticalLayout_13.addWidget(self.label_5)
+        self.gridLayout_4.addWidget(self.concUncheckAll, 0, 2, 1, 1)
 
-        self.listWidget_2 = QListWidget(self.bstac_modes)
-        self.listWidget_2.setObjectName(u"listWidget_2")
+        self.concCheckAll = QToolButton(self.bstac_modes)
+        self.concCheckAll.setObjectName(u"concCheckAll")
+        self.concCheckAll.setIcon(icon16)
 
-        self.verticalLayout_13.addWidget(self.listWidget_2)
+        self.gridLayout_4.addWidget(self.concCheckAll, 0, 1, 1, 1)
 
-        self.label_6 = QLabel(self.bstac_modes)
-        self.label_6.setObjectName(u"label_6")
+        self.conToRefineLabel = QLabel(self.bstac_modes)
+        self.conToRefineLabel.setObjectName(u"conToRefineLabel")
 
-        self.verticalLayout_13.addWidget(self.label_6)
+        self.gridLayout_4.addWidget(self.conToRefineLabel, 0, 0, 1, 1)
 
-        self.listWidget_3 = QListWidget(self.bstac_modes)
-        self.listWidget_3.setObjectName(u"listWidget_3")
+        self.gridLayout_4.setColumnStretch(0, 1)
 
-        self.verticalLayout_13.addWidget(self.listWidget_3)
+        self.verticalLayout_13.addLayout(self.gridLayout_4)
+
+        self.concToRefine = QTableWidget(self.bstac_modes)
+        if (self.concToRefine.columnCount() < 1):
+            self.concToRefine.setColumnCount(1)
+        if (self.concToRefine.rowCount() < 1):
+            self.concToRefine.setRowCount(1)
+        __qtablewidgetitem = QTableWidgetItem()
+        self.concToRefine.setVerticalHeaderItem(0, __qtablewidgetitem)
+        __qtablewidgetitem1 = QTableWidgetItem()
+        __qtablewidgetitem1.setCheckState(Qt.Unchecked);
+        self.concToRefine.setItem(0, 0, __qtablewidgetitem1)
+        self.concToRefine.setObjectName(u"concToRefine")
+        self.concToRefine.horizontalHeader().setCascadingSectionResizes(False)
+        self.concToRefine.horizontalHeader().setDefaultSectionSize(25)
+
+        self.verticalLayout_13.addWidget(self.concToRefine)
+
+        self.gridLayout_5 = QGridLayout()
+        self.gridLayout_5.setObjectName(u"gridLayout_5")
+        self.gridLayout_5.setContentsMargins(-1, -1, -1, 0)
+        self.electrodeUncheckAll = QToolButton(self.bstac_modes)
+        self.electrodeUncheckAll.setObjectName(u"electrodeUncheckAll")
+        self.electrodeUncheckAll.setIcon(icon17)
+
+        self.gridLayout_5.addWidget(self.electrodeUncheckAll, 0, 2, 1, 1)
+
+        self.electrodeCheckAll = QToolButton(self.bstac_modes)
+        self.electrodeCheckAll.setObjectName(u"electrodeCheckAll")
+        self.electrodeCheckAll.setIcon(icon16)
+
+        self.gridLayout_5.addWidget(self.electrodeCheckAll, 0, 1, 1, 1)
+
+        self.electrodeToRefineLabel = QLabel(self.bstac_modes)
+        self.electrodeToRefineLabel.setObjectName(u"electrodeToRefineLabel")
+
+        self.gridLayout_5.addWidget(self.electrodeToRefineLabel, 0, 0, 1, 1)
+
+        self.gridLayout_5.setColumnStretch(0, 1)
+
+        self.verticalLayout_13.addLayout(self.gridLayout_5)
+
+        self.electrodeToRefine = QTableWidget(self.bstac_modes)
+        if (self.electrodeToRefine.columnCount() < 1):
+            self.electrodeToRefine.setColumnCount(1)
+        if (self.electrodeToRefine.rowCount() < 5):
+            self.electrodeToRefine.setRowCount(5)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.electrodeToRefine.setVerticalHeaderItem(0, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.electrodeToRefine.setVerticalHeaderItem(1, __qtablewidgetitem3)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        self.electrodeToRefine.setVerticalHeaderItem(2, __qtablewidgetitem4)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.electrodeToRefine.setVerticalHeaderItem(3, __qtablewidgetitem5)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        __qtablewidgetitem6.setCheckState(Qt.Unchecked);
+        self.electrodeToRefine.setItem(0, 0, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        __qtablewidgetitem7.setCheckState(Qt.Unchecked);
+        self.electrodeToRefine.setItem(1, 0, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        __qtablewidgetitem8.setCheckState(Qt.Unchecked);
+        self.electrodeToRefine.setItem(3, 0, __qtablewidgetitem8)
+        self.electrodeToRefine.setObjectName(u"electrodeToRefine")
+        self.electrodeToRefine.setRowCount(5)
+        self.electrodeToRefine.horizontalHeader().setDefaultSectionSize(25)
+
+        self.verticalLayout_13.addWidget(self.electrodeToRefine)
 
         self.verticalLayout_13.setStretch(2, 2)
         self.verticalLayout_13.setStretch(4, 1)
@@ -1196,11 +1277,6 @@ class Ui_MainWindow(object):
         self.tab.setSizePolicy(sizePolicy11)
         self.horizontalLayout_12 = QHBoxLayout(self.tab)
         self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
-        self.widget_5 = inputTitrationOpt(self.tab)
-        self.widget_5.setObjectName(u"widget_5")
-
-        self.horizontalLayout_12.addWidget(self.widget_5)
-
         self.titration_tabs.addTab(self.tab, "")
 
         self.horizontalLayout_13.addWidget(self.titration_tabs)
@@ -1310,7 +1386,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1283, 24))
+        self.menubar.setGeometry(QRect(0, 0, 1289, 24))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menubar)
@@ -1375,18 +1451,17 @@ class Ui_MainWindow(object):
         self.move_down_comp_button.clicked.connect(MainWindow.moveCompDown)
         self.uncertainty_info.clicked.connect(MainWindow.displayUncertaintyInfo)
         self.ionic_strength_info.clicked.connect(MainWindow.displayIonicStrengthInfo)
-        self.select_all_button.clicked.connect(MainWindow.checkAll)
-        self.deselect_all_button.clicked.connect(MainWindow.uncheckAll)
         self.edit_column_button.clicked.connect(MainWindow.massEditColumn)
         self.add_titration.clicked.connect(MainWindow.addTitration)
         self.remove_titration.clicked.connect(MainWindow.removeTitration)
-        self.pushButton.clicked.connect(MainWindow.test)
+        self.checkAllSpeciesButton.clicked.connect(MainWindow.checkAllSpecies)
+        self.uncheckAllSpeciesButton.clicked.connect(MainWindow.uncheckAllSpecies)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(1)
         self.tablesTab.setCurrentIndex(0)
         self.dmode.setCurrentIndex(0)
-        self.mode_views.setCurrentIndex(0)
-        self.dmode_inputs.setCurrentIndex(0)
+        self.mode_views.setCurrentIndex(1)
+        self.dmode_inputs.setCurrentIndex(1)
         self.titration_tabs.setCurrentIndex(0)
 
 
@@ -1544,18 +1619,18 @@ class Ui_MainWindow(object):
         self.move_down_comp_button.setText("")
         self.tab_comp_label_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Species</span></p></body></html>", None))
 #if QT_CONFIG(tooltip)
-        self.select_all_button.setToolTip(QCoreApplication.translate("MainWindow", u"Ignore all species", None))
+        self.checkAllSpeciesButton.setToolTip(QCoreApplication.translate("MainWindow", u"Ignore all species", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(statustip)
-        self.select_all_button.setStatusTip(QCoreApplication.translate("MainWindow", u"Ignore all species", None))
+        self.checkAllSpeciesButton.setStatusTip(QCoreApplication.translate("MainWindow", u"Ignore all species", None))
 #endif // QT_CONFIG(statustip)
 #if QT_CONFIG(tooltip)
-        self.deselect_all_button.setToolTip(QCoreApplication.translate("MainWindow", u"Consider all species", None))
+        self.uncheckAllSpeciesButton.setToolTip(QCoreApplication.translate("MainWindow", u"Consider all species", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(statustip)
-        self.deselect_all_button.setStatusTip(QCoreApplication.translate("MainWindow", u"Consider all species", None))
+        self.uncheckAllSpeciesButton.setStatusTip(QCoreApplication.translate("MainWindow", u"Consider all species", None))
 #endif // QT_CONFIG(statustip)
-        self.deselect_all_button.setText("")
+        self.uncheckAllSpeciesButton.setText("")
 #if QT_CONFIG(tooltip)
         self.insert_above_species_button.setToolTip(QCoreApplication.translate("MainWindow", u"Add Species Above", None))
 #endif // QT_CONFIG(tooltip)
@@ -1670,24 +1745,38 @@ class Ui_MainWindow(object):
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Analytical Concentrations:</span></p></body></html>", None))
         self.add_titration.setText("")
         self.remove_titration.setText("")
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"TEST", None))
-        self.label_7.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:700;\">Parameters to refine</span></p></body></html>", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"Constants", None))
+        self.paramstoRefineLabel.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:700;\">Parameters to refine</span></p></body></html>", None))
+        self.betaCheckAll.setText("")
+        self.betaToRefineLabel.setText(QCoreApplication.translate("MainWindow", u"Constants", None))
 
-        __sortingEnabled = self.listWidget.isSortingEnabled()
-        self.listWidget.setSortingEnabled(False)
-        ___qlistwidgetitem = self.listWidget.item(0)
-        ___qlistwidgetitem.setText(QCoreApplication.translate("MainWindow", u"test1", None));
-        ___qlistwidgetitem1 = self.listWidget.item(1)
-        ___qlistwidgetitem1.setText(QCoreApplication.translate("MainWindow", u"test2", None));
-        ___qlistwidgetitem2 = self.listWidget.item(2)
-        ___qlistwidgetitem2.setText(QCoreApplication.translate("MainWindow", u"test3", None));
-        ___qlistwidgetitem3 = self.listWidget.item(3)
-        ___qlistwidgetitem3.setText(QCoreApplication.translate("MainWindow", u"test4", None));
-        self.listWidget.setSortingEnabled(__sortingEnabled)
+        __sortingEnabled = self.betaToRefine.isSortingEnabled()
+        self.betaToRefine.setSortingEnabled(False)
+        self.betaToRefine.setSortingEnabled(__sortingEnabled)
 
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Parameters 2", None))
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"Parameters 3", None))
+        self.concCheckAll.setText("")
+        self.conToRefineLabel.setText(QCoreApplication.translate("MainWindow", u"Concentrations", None))
+        ___qtablewidgetitem = self.concToRefine.verticalHeaderItem(0)
+        ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"A", None));
+
+        __sortingEnabled1 = self.concToRefine.isSortingEnabled()
+        self.concToRefine.setSortingEnabled(False)
+        self.concToRefine.setSortingEnabled(__sortingEnabled1)
+
+        self.electrodeCheckAll.setText("")
+        self.electrodeToRefineLabel.setText(QCoreApplication.translate("MainWindow", u"Electrode", None))
+        ___qtablewidgetitem1 = self.electrodeToRefine.verticalHeaderItem(0)
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("MainWindow", u"E0", None));
+        ___qtablewidgetitem2 = self.electrodeToRefine.verticalHeaderItem(1)
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Ja", None));
+        ___qtablewidgetitem3 = self.electrodeToRefine.verticalHeaderItem(2)
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Jb", None));
+        ___qtablewidgetitem4 = self.electrodeToRefine.verticalHeaderItem(3)
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"Slope", None));
+
+        __sortingEnabled2 = self.electrodeToRefine.isSortingEnabled()
+        self.electrodeToRefine.setSortingEnabled(False)
+        self.electrodeToRefine.setSortingEnabled(__sortingEnabled2)
+
         self.titration_tabs.setTabText(self.titration_tabs.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"1", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Settings), QCoreApplication.translate("MainWindow", u"Settings", None))
 #if QT_CONFIG(statustip)

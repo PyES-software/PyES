@@ -7,9 +7,7 @@ from numpy.typing import NDArray
 
 
 class Distribution:
-    """
-    Newton-Raphson method to solve iteratively mass balance equations.
-    """
+    """Newton-Raphson method to solve iteratively mass balance equations."""
 
     def __init__(
         self,
@@ -72,6 +70,7 @@ class Distribution:
         # Data relative to comp concentrations
         conc_data = pd.DataFrame(data["concModel"])
 
+        ## _load_mode_params
         if self.distribution:
             # Independent comp
             self.ind_comp = data["ind_comp"]
@@ -147,6 +146,7 @@ class Distribution:
             else (self.c_tot == 0)
         )
 
+        ## _get_ignored_comps
         # Remove the concentration and charge data relative to those
         if not self.distribution:
             self.c_added = np.delete(self.c_added, ignored_comps, 0)
@@ -268,15 +268,6 @@ class Distribution:
         if self.errors:
             self.c0_sigma = conc_data.iloc[:, 2].copy().to_numpy(dtype="float")
             self.c0_sigma = np.delete(self.c0_sigma, ignored_comps)
-            if self.distribution:
-                self.c0_sigma[self.ind_comp] = 0
-                self.conc_sigma = np.tile(self.c0_sigma, [self.nop, 1])
-            else:
-                self.ct_sigma = conc_data.iloc[:, 3].copy().to_numpy(dtype="float")
-                self.ct_sigma = np.delete(self.ct_sigma, ignored_comps)
-                self.conc_sigma = np.tile(self.c0_sigma, [self.nop, 1]) + (
-                    np.tile(self.v_added, [self.nc, 1]).T * self.ct_sigma
-                )
 
             self.log_beta_sigma = species_not_ignored.iloc[:, 3].to_numpy(dtype="float")
             self.log_ks_sigma = solid_not_ignored.iloc[:, 3].to_numpy(dtype="float")
@@ -291,6 +282,16 @@ class Distribution:
             )
 
             self.ks_sigma = self.log_ks_sigma * np.log(10) * (10**self.log_ks_ris)
+
+            if self.distribution:
+                self.c0_sigma[self.ind_comp] = 0
+                self.conc_sigma = np.tile(self.c0_sigma, [self.nop, 1])
+            else:
+                self.ct_sigma = conc_data.iloc[:, 3].copy().to_numpy(dtype="float")
+                self.ct_sigma = np.delete(self.ct_sigma, ignored_comps)
+                self.conc_sigma = np.tile(self.c0_sigma, [self.nop, 1]) + (
+                    np.tile(self.v_added, [self.nc, 1]).T * self.ct_sigma
+                )
 
         # Check the ionic strength mode
         # Load the required data if so
@@ -318,16 +319,6 @@ class Distribution:
             self.species_radqris = np.sqrt(self.species_ris)
             self.solid_radqris = np.sqrt(self.solid_ris)
 
-            # Load background ions concentration
-            if self.distribution:
-                self.background_c = np.tile(data["cback"], self.nop)
-            else:
-                background_c0 = data["c0back"]
-                background_ct = data["ctback"]
-                self.background_c = np.array(
-                    ((background_c0 * v0) + (background_ct * self.v_added)) / v_tot
-                )
-
             a = data["a"]
             self.b = data["b"]
             c = [data["c0"], data["c1"]]
@@ -346,11 +337,11 @@ class Distribution:
             # Reshape charges into a column vector
             comp_charge_column = np.reshape(self.comp_charge, (self.nc, 1))
 
-            if self.distribution:
-                # Same vector except missing the charge of the indipendent component, used later in the computation
-                self.comp_charge_no_indipendent = np.delete(
-                    self.comp_charge, self.ind_comp
-                )
+            # if self.distribution:
+            #     # Same vector except missing the charge of the indipendent component, used later in the computation
+            #     self.comp_charge_no_indipendent = np.delete(
+            #         self.comp_charge, self.ind_comp
+            #     )
 
             # Compute species charges
             self.species_charges = (self.model * comp_charge_column).sum(axis=0)
@@ -393,6 +384,16 @@ class Distribution:
                 solids=True,
             )
 
+            # Load background ions concentration
+            if self.distribution:
+                self.background_c = np.tile(data["cback"], self.nop)
+            else:
+                background_c0 = data["c0back"]
+                background_ct = data["ctback"]
+                self.background_c = np.array(
+                    ((background_c0 * v0) + (background_ct * self.v_added)) / v_tot
+                )
+
         # Compose species names from the model
         self.species_names = (
             list(self.comp_names)
@@ -431,14 +432,14 @@ class Distribution:
         self.species_distribution = self._setDataframeIndex(self.species_distribution)
 
         if self.distribution:
-            cans = np.insert(self.c_tot, self.ind_comp, 0, axis=1)
+            self.perc_cans = np.insert(self.c_tot, self.ind_comp, 0, axis=1)
         else:
-            cans = self.c_tot
+            self.perc_cans = self.c_tot
 
         # Compute and create table with percentages of species with respect to component
         # As defined with the input
         species_perc_table = self._computePercTable(
-            cans, species, self.model, self.species_perc_int
+            self.perc_cans, species, self.model, self.species_perc_int
         )
 
         # Percentages are rounded two the second decimal and stored in a dataframe
@@ -457,51 +458,46 @@ class Distribution:
             self.solid_distribution = pd.DataFrame(
                 solid, columns=self.solid_names
             ).rename_axis(columns="Solid Conc. [mol/L]")
-            check = self.solid_distribution.apply(
-                lambda x: pd.Series(
-                    ["*" if i > 0 else "" for i in x],
-                    index=["Prec." + name for name in self.solid_distribution.columns],
-                    dtype=str,
-                ),
-                axis=1,
+            check = pd.DataFrame(
+                [
+                    ["*" if i > 0 else "" for i in row]
+                    for row in self.solid_distribution.values
+                ],
+                columns=["Prec." + name for name in self.solid_distribution.columns],
+                index=self.solid_distribution.index,
+                dtype=str,
             )
             saturation_index = pd.DataFrame(
                 si, columns=["SI" + name for name in self.solid_names]
             )
 
-            self.solid_distribution = pd.merge(
-                self.solid_distribution,
-                check,
-                left_index=True,
-                right_index=True,
+            self.solid_distribution = pd.concat(
+                [self.solid_distribution, check, saturation_index],
+                axis=1,
                 sort=True,
             )
-
-            self.solid_distribution = pd.merge(
-                self.solid_distribution,
-                saturation_index,
-                left_index=True,
-                right_index=True,
-                sort=True,
-            )
-
             self.solid_distribution = self.solid_distribution[
-                list(
-                    sum(
-                        zip(
+                sum(
+                    [
+                        [check_col, si_col, solid_col]
+                        for check_col, si_col, solid_col in zip(
                             check.columns,
-                            saturation_index,
+                            saturation_index.columns,
                             self.solid_distribution.columns,
-                        ),
-                        (),
-                    )
+                        )
+                    ],
+                    [],
                 )
             ]
             self.solid_distribution = self._setDataframeIndex(self.solid_distribution)
 
             # Compute solid percentages as for species percentages
             solid_perc_table = self._computePercTable(
-                cans, solid, self.solid_model, self.solid_perc_int, solids=True
+                self.perc_cans,
+                solid,
+                self.solid_model,
+                self.solid_perc_int,
+                solids=True,
             )
 
             self.solid_percentages = (
@@ -564,156 +560,146 @@ class Distribution:
         """
         Returns the species concentration table.
         """
-        if self.done_flag:
-            return self.species_distribution
-        else:
+        if not self.done_flag:
             return False
+        return self.species_distribution
 
     def solidDistribution(self):
         """
         Returns the solid species concentration table.
         """
-        if self.done_flag:
-            try:
-                return self.solid_distribution
-            except AttributeError:
-                return pd.DataFrame()
-        else:
+        if not self.done_flag:
             return False
+        try:
+            return self.solid_distribution
+        except AttributeError:
+            return pd.DataFrame()
 
     def formationConstants(self):
         """
         Returns the table containing formation constants and the ionic strength.
         """
-        if self.done_flag:
-            try:
-                return self.log_beta
-            except AttributeError:
-                return pd.DataFrame()
-        else:
+        if not self.done_flag:
             return False
+        try:
+            return self.log_beta
+        except AttributeError:
+            return pd.DataFrame()
 
     def solubilityProducts(self):
         """
         Returns the table containing the LogKps for the solid species present in the model.
         """
-        if self.done_flag:
-            try:
-                return self.log_ks
-            except AttributeError:
-                return pd.DataFrame()
-        else:
+        if not self.done_flag:
             return False
+        try:
+            return self.log_ks
+        except AttributeError:
+            return pd.DataFrame()
 
     def speciesPercentages(self):
         """
         Return percentages of species with respect to the desired component.
         """
-        if self.done_flag:
-            return self.species_percentages
-        else:
+        if not self.done_flag:
             return False
+        return self.species_percentages
 
     def solidPercentages(self):
         """
         Return percentages of solids with respect to the desired component.
         """
-        if self.done_flag:
-            try:
-                return self.solid_percentages
-            except AttributeError:
-                return pd.DataFrame()
-
-        else:
+        if not self.done_flag:
             return False
+        try:
+            return self.solid_percentages
+        except AttributeError:
+            return pd.DataFrame()
 
     def speciesSigmas(self):
         """
         Return percentages of species with respect to the desired component.
         """
-        if self.done_flag:
-            try:
-                return self.species_sigma
-            except AttributeError:
-                return pd.DataFrame()
-        else:
+        if not self.done_flag:
             return False
+        try:
+            return self.species_sigma
+        except AttributeError:
+            return pd.DataFrame()
 
     def solidSigmas(self):
         """
         Return percentages of solids with respect to the desired component.
         """
-        if self.done_flag:
-            try:
-                return self.solid_sigma
-            except AttributeError:
-                return pd.DataFrame()
-        else:
+        if not self.done_flag:
             return False
+        try:
+            return self.solid_sigma
+        except AttributeError:
+            return pd.DataFrame()
 
     def parameters(self):
         """
         Returns relevant data that was used for the computation
         """
-        if self.done_flag:
-            species_info = pd.DataFrame(
+        if not self.done_flag:
+            return False
+        species_info = pd.DataFrame(
+            {
+                "logB": self.log_beta_ris[self.nc :],
+            },
+            index=self.species_names[self.nc :],
+        ).rename_axis(index="Species Names")
+
+        if self.nf > 0:
+            solid_info = pd.DataFrame(
                 {
-                    "logB": self.log_beta_ris[self.nc :],
+                    "logKs": self.log_ks_ris,
                 },
-                index=self.species_names[self.nc :],
-            ).rename_axis(index="Species Names")
+                index=self.solid_names,
+            ).rename_axis(index="Solid Names")
+        else:
+            solid_info = pd.DataFrame()
+
+        if self.imode == 1:
+            species_info.insert(1, "Ref. I", self.species_ris[self.nc :])
+            species_info.insert(2, "Charge", self.species_charges[self.nc :])
+            species_info.insert(3, "C", self.species_cg[self.nc :])
+            species_info.insert(4, "D", self.species_dg[self.nc :])
+            species_info.insert(5, "E", self.species_eg[self.nc :])
 
             if self.nf > 0:
-                solid_info = pd.DataFrame(
-                    {
-                        "logKs": self.log_ks_ris,
-                    },
-                    index=self.solid_names,
-                ).rename_axis(index="Solid Names")
-            else:
-                solid_info = pd.DataFrame()
+                solid_info.insert(1, "Ref. I", self.solid_ris)
+                solid_info.insert(2, "Charge", self.solid_charges)
+                solid_info.insert(3, "C", self.solid_cg)
+                solid_info.insert(4, "D", self.solid_dg)
+                solid_info.insert(5, "E", self.solid_eg)
 
-            if self.imode == 1:
-                species_info.insert(1, "Ref. I", self.species_ris[self.nc :])
-                species_info.insert(2, "Charge", self.species_charges[self.nc :])
-                species_info.insert(3, "C", self.species_cg[self.nc :])
-                species_info.insert(4, "D", self.species_dg[self.nc :])
-                species_info.insert(5, "E", self.species_eg[self.nc :])
+        if self.errors:
+            species_info.insert(1, "Sigma logB", self.log_beta_sigma)
 
-                if self.nf > 0:
-                    solid_info.insert(1, "Ref. I", self.solid_ris)
-                    solid_info.insert(2, "Charge", self.solid_charges)
-                    solid_info.insert(3, "C", self.solid_cg)
-                    solid_info.insert(4, "D", self.solid_dg)
-                    solid_info.insert(5, "E", self.solid_eg)
+            if self.nf > 0:
+                solid_info.insert(1, "Sigma logKs", self.log_ks_sigma)
 
+        comp_info = pd.DataFrame(
+            {
+                "Charge": self.comp_charge,
+            },
+            index=self.species_names[: self.nc],
+        ).rename_axis(index="Components Names")
+
+        if self.distribution:
+            comp_info["Tot. C."] = np.insert(self.c_tot[0], self.ind_comp, None)
             if self.errors:
-                species_info.insert(1, "Sigma logB", self.log_beta_sigma)
-
-                if self.nf > 0:
-                    solid_info.insert(1, "Sigma logKs", self.log_ks_sigma)
-
-            comp_info = pd.DataFrame(
-                {
-                    "Charge": self.comp_charge,
-                },
-                index=self.species_names[: self.nc],
-            ).rename_axis(index="Components Names")
-
-            if self.distribution:
-                comp_info["Tot. C."] = np.insert(self.c_tot[0], self.ind_comp, None)
-                if self.errors:
-                    comp_info.insert(2, "Sigma Tot C", self.c0_sigma)
-            else:
-                comp_info["Vessel Conc."] = self.initial_c
-                comp_info["Titrant Conc."] = self.c_added
-                if self.errors:
-                    comp_info.insert(2, "Sigma C0", self.c0_sigma)
-                    comp_info.insert(4, "Sigma cT", self.ct_sigma)
-
-            return species_info, solid_info, comp_info
+                comp_info.insert(2, "Sigma Tot C", self.c0_sigma)
         else:
-            return False
+            comp_info["Vessel Conc."] = self.initial_c
+            comp_info["Titrant Conc."] = self.c_added
+            if self.errors:
+                comp_info.insert(2, "Sigma C0", self.c0_sigma)
+                comp_info.insert(4, "Sigma cT", self.ct_sigma)
+
+        return species_info, solid_info, comp_info
 
     def _compute(self):
         """
@@ -839,16 +825,6 @@ class Distribution:
             results_log_b[point, :] = log_b
             results_log_ks[point, :] = log_ks
 
-        # Stack calculated species concentration/logB/ionic strength in tabular fashion
-        # results_species_conc = np.stack(results_species_conc)
-        # results_solid_conc = np.stack(results_solid_conc)
-        # results_solid_si = np.stack(results_solid_si)
-        # results_species_sigma = np.stack(results_species_sigma)
-        # results_solid_sigma = np.stack(results_solid_sigma)
-        # results_log_b = np.stack(results_log_b)
-        # results_log_ks = np.stack(results_log_ks)
-        # results_ionic_strength = np.stack(results_ionic_strength)
-
         # Return distribution/logb/ionic strength
         return (
             results_species_conc,
@@ -969,7 +945,6 @@ class Distribution:
             # J, delta = self._scaleMatrix(J, delta)
 
             # Solve the equations to obtain newton step
-            # print(delta)
             shifts = np.linalg.solve(J, -delta)
 
             actual_shifts = np.zeros(self.nc + self.nf)
@@ -1157,8 +1132,7 @@ class Distribution:
 
         if with_solids:
             solid_delta = (
-                np.sum(np.tile(np.log10(c), [self.nf, 1]).T * self.solid_model, axis=0)
-                - log_ks
+                np.sum(np.log10(c)[:, np.newaxis] * self.solid_model, axis=0) - log_ks
             )
             solid_delta = solid_delta[cp_to_calculate]
         else:
@@ -1259,28 +1233,26 @@ class Distribution:
         return J[: nt - sum(to_skip), : nt - sum(to_skip)][~np.array(to_skip)]
 
     def _computeMixedJacobian(self, c_spec, saturation_index, with_solids, to_skip):
+        nc = self.model.shape[0]
         if with_solids:
-            nt = self.nc + self.nf
+            nf = self.solid_model.shape[0]
+            nt = nc + nf
             to_skip_with_species = np.concatenate((
-                [False for _ in range(self.nc)],
+                [False for _ in range(nc)],
                 to_skip,
             ))
         else:
-            nt = self.nc
-            to_skip_with_species = np.array([False for _ in range(self.nc)])
+            nt = nc
+            to_skip_with_species = np.array([False for _ in range(nc)])
 
         J = np.zeros(shape=(nt, nt))
-
         # Compute Jacobian for binary components only
-        J[: self.nc, : self.nc] = self.model @ np.diag(c_spec) @ self.model.T
-        J[np.diag_indices(self.nc)] += c_spec[: self.nc]
+        J[:nc, :nc] = self.model[:, nc:] @ np.diag(c_spec[nc:]) @ self.model[:, nc:].T
+        J[np.diag_indices(nc)] += c_spec[:nc]
         # Add solid contribution to diagonal if necessary
         if with_solids:
-            J[self.nc : self.nc + self.nf, : self.nc] = self.solid_model.T
-            J[: self.nc, self.nc : self.nc + self.nf] = self.solid_model
-            # for i in range(self.nc, self.nc+self.nf):
-            #     for j in range(self.nc):
-            #         J[i, j] = self.solid_model[i - self.nc, j]
+            J[nc : nc + nf, :nc] = self.solid_model.T
+            J[:nc, nc : nc + nf] = self.solid_model
         # Remove rows and columns referring to under-saturated solids if necessary
         return J[np.ix_(~to_skip_with_species, ~to_skip_with_species)]
 
@@ -1291,20 +1263,17 @@ class Distribution:
         - c_spec[nc+1->nc+ns] = species concentrations.
         - c_tot_calc = estimated anaytical concentration.
         """
-        log_c_spec = self._checkOverUnderFlow(
-            np.sum(np.tile(np.log10(c), (self.ns + self.nc, 1)).T * self.model, axis=0)
-            + log_beta
-        )
+        log_c_spec = np.log10(c) @ self.model + log_beta
+        log_c_spec = self._checkOverUnderFlow(log_c_spec)
 
         c_spec = 10**log_c_spec
         logging.debug("Species Concentrations: %s", c_spec)
 
         # Estimate total concentration given the species concentration
-        c_tot_calc = np.sum(self.model * np.tile(c_spec, (self.nc, 1)), axis=1)
+        c_tot_calc = np.dot(self.model, c_spec)
 
         if self.nf > 0:
-            c_tot_calc += np.sum(self.solid_model * np.tile(cp, (self.nc, 1)), axis=1)
-
+            c_tot_calc += np.dot(self.solid_model, cp)
         if self.distribution:
             # Take out the analytical concentration relative to the independent component
             c_tot_calc = np.delete(c_tot_calc, self.ind_comp, 0)
@@ -1402,8 +1371,7 @@ class Distribution:
         """
         Given c check if any of the given log of concentrations would give overflow or underflow errors, adjust accordingly
         """
-        c = np.where(c > (self.epsl / d), (self.epsl / d), c)
-        c = np.where(c < (-self.epsl / d), (-self.epsl / d), c)
+        c = np.clip(c, -self.epsl / d, self.epsl / d)
         return c
 
     def _setDBHParams(self, species, to_remove, past, zast, c, d, e, solids=False):
@@ -1458,16 +1426,22 @@ class Distribution:
 
             c_times_model = np.tile(c_spec, [nc, 1]) * model
 
-            sum_reac = np.where(model > 0, c_times_model, 0).sum(axis=1) + np.where(
-                c_tot < 0, np.abs(c_tot), 0
+            sum_reac = np.clip(
+                np.where(model > 0, c_times_model, 0).sum(axis=1)
+                + np.abs(np.where(c_tot < 0, c_tot, 0)),
+                0,
+                None,
             )
-            sum_prod = np.where(c_tot >= 0, c_tot, 0) - np.where(
-                model < 0, c_times_model, 0
-            ).sum(axis=1)
+            sum_prod = np.clip(
+                np.where(c_tot >= 0, c_tot, 0)
+                - np.where(model < 0, c_times_model, 0).sum(axis=1),
+                0,
+                None,
+            )
 
             conv_criteria = (sum_reac - sum_prod) / (sum_reac + sum_prod)
 
-            if all(i < epsilon for i in conv_criteria) or iteration >= 10000:
+            if np.all(conv_criteria < epsilon) or iteration >= 10000:
                 logging.debug("EXITING DAMP ROUTINE")
                 if self.distribution:
                     c_spec = np.insert(c_spec, self.ind_comp, fixed_c)
@@ -1476,7 +1450,7 @@ class Distribution:
             new_coeff = (
                 0.9
                 - np.where(
-                    (sum_reac > sum_prod), (sum_prod / sum_reac), (sum_reac / sum_prod)
+                    sum_reac > sum_prod, sum_prod / sum_reac, sum_reac / sum_prod
                 )
                 * 0.8
             )
@@ -1487,7 +1461,7 @@ class Distribution:
 
             if self.distribution:
                 c = np.delete(c, self.ind_comp)
-            c = coeff * c * (sum_prod / sum_reac) ** (1 / a0) + (1 - coeff) * c
+            c *= coeff * (sum_prod / sum_reac) ** (1 / a0) + (1 - coeff)
             if self.distribution:
                 c = np.insert(c, self.ind_comp, fixed_c)
 
@@ -1821,11 +1795,11 @@ class Distribution:
 
         return dataframe
 
-    def _scaleMatrix(self, J: NDArray, delta: NDArray):
-        d1 = np.diag(np.sqrt(J.max(axis=1)))
-        d2 = np.diag(np.sqrt(J.max(axis=0)))
-        # d1 = np.diag(np.sqrt(np.diag(J)))
-        # d2 = np.diag(np.sqrt(np.diag(J)))
-        J = d1 @ J @ d2
-        delta = d1 @ delta
-        return J, delta
+    # def _scaleMatrix(self, J: NDArray, delta: NDArray):
+    #     d1 = np.diag(np.sqrt(J.max(axis=1)))
+    #     d2 = np.diag(np.sqrt(J.max(axis=0)))
+    #     # d1 = np.diag(np.sqrt(np.diag(J)))
+    #     # d2 = np.diag(np.sqrt(np.diag(J)))
+    #     J = d1 @ J @ d2
+    #     delta = d1 @ delta
+    #     return J, delta

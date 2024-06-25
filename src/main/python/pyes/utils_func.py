@@ -1,9 +1,23 @@
 import numpy as np
 import pandas as pd
 from openpyxl.utils import get_column_letter
-from PySide6.QtCore import QAbstractItemModel
-from PySide6.QtWidgets import QComboBox, QTableView
+from PySide6.QtCore import QAbstractItemModel, Qt
+from PySide6.QtWidgets import (
+    QComboBox,
+    QListWidget,
+    QTableView,
+    QTableWidget,
+    QTableWidgetItem,
+)
 from viewmodels.delegate import ComboBoxDelegate
+
+
+def value_or_problem(d: dict, field: str, default, message: str, problems: list[str]):
+    value = d.get(field)
+    if value is None:
+        value = default
+        problems.append(message + f" ({field})")
+    return value
 
 
 def addSpeciesComp(position: int, added_rows: int, view: QTableView, comp_names):
@@ -23,12 +37,17 @@ def removeSpeciesComp(position: int, removed_rows: int, view: QTableView, comp_n
         ComboBoxDelegate(view, comp_names),
     )
 
+
 def updateCompNames(
     comp_model: QAbstractItemModel,
     species_table: QTableView,
     solids_table: QTableView,
     conc_model: QAbstractItemModel,
+    params_list: QListWidget,
+    titrations_models: list[QAbstractItemModel],
     ind_comp: QComboBox,
+    electro_active_comp: list[QComboBox],
+    conc_to_refine: QTableWidget,
 ):
     """
     Handles the displayed names in the species table when edited in the components one
@@ -46,12 +65,24 @@ def updateCompNames(
         model.updateHeader(updated_comps)
         model.updateCompName(updated_comps)
 
+    updated_species_names = species_models[0].getColumn(1)
+    for row, name in enumerate(updated_species_names):
+        params_list.item(row).setText(name)
+
     conc_model.updateIndex(updated_comps)
+    for m in titrations_models:
+        m.updateIndex(updated_comps)
 
-    updateIndComponent(comp_model, ind_comp)
+    conc_to_refine.setVerticalHeaderLabels(updated_comps)
+
+    updateIndComponent(comp_model, ind_comp, electro_active_comp)
 
 
-def updateIndComponent(comp_model: QAbstractItemModel, components_combobox: QComboBox):
+def updateIndComponent(
+    comp_model: QAbstractItemModel,
+    components_combobox: QComboBox,
+    electro_active_combobox: list[QComboBox],
+):
     """
     Update the selected indipendent component, tries to preserve the last one picked.
     """
@@ -69,6 +100,20 @@ def updateIndComponent(comp_model: QAbstractItemModel, components_combobox: QCom
         components_combobox.setCurrentIndex(old_selected)
     else:
         components_combobox.setCurrentIndex(num_elements - 1)
+
+    for c in electro_active_combobox:
+        old_selected = c.currentIndex()
+        if old_selected < 0:
+            old_selected = 0
+        c.blockSignals(True)
+        c.clear()
+        c.addItems(comp_model._data["Name"])
+        c.blockSignals(False)
+
+        if num_elements > old_selected:
+            c.setCurrentIndex(old_selected)
+        else:
+            c.setCurrentIndex(num_elements - 1)
 
 
 def cleanData():
@@ -161,3 +206,40 @@ def adjustColumnWidths(wb, ws_name, data):
 
     for i, column_width in enumerate(widths):
         ws.column_dimensions[get_column_letter(i + 1)].width = column_width
+
+
+def get_list_map(table: QListWidget):
+    values = []
+    for i in range(table.count()):
+        values.append(table.item(i).checkState() == Qt.CheckState.Checked)
+
+    return values
+
+
+def apply_list_map(table: QListWidget, values: list[bool]):
+    for i, value in enumerate(values):
+        table.item(i).setCheckState(
+            Qt.CheckState.Checked if value else Qt.CheckState.Unchecked
+        )
+
+
+def get_table_map(table: QTableWidget):
+    values = []
+    for r in range(table.rowCount()):
+        row_values = []
+        for c in range(table.columnCount()):
+            row_values.append(table.item(r, c).checkState() == Qt.CheckState.Checked)
+        values.append(row_values)
+
+    return values
+
+
+def apply_table_map(table: QTableWidget, values: list[list[bool]]):
+    for r, row_value in enumerate(values):
+        for c, value in enumerate(row_value):
+            item = QTableWidgetItem()
+            item.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+            item.setCheckState(
+                Qt.CheckState.Checked if value else Qt.CheckState.Unchecked
+            )
+            table.setItem(r, c, item)

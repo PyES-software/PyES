@@ -16,7 +16,7 @@ class ExportWindow(QWidget, Ui_ExportWindow):
         self.result = parent.result
         self.path = parent.project_path
 
-        if self.path == None:
+        if self.path is None:
             self.project_name = "unknown"
         else:
             self.project_name = os.path.splitext(os.path.basename(self.path))[0]

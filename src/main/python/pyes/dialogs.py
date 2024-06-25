@@ -1,20 +1,24 @@
 # This file handles the creation of all the custom dialogs
 # used by the software
 
-from typing import Literal
+from typing import Literal, Optional
 
+import pandas as pd
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
     QDoubleSpinBox,
+    QFileDialog,
     QLineEdit,
     QMessageBox,
     QSpinBox,
+    QWidget,
 )
 from ui.PyES_about import Ui_dialogAbout
 from ui.PyES_editDialog import Ui_EditColumnDialog
 from ui.PyES_ionicStrengthInfo import Ui_IonicStrengthInfoDialog
+from ui.PyES_load import Ui_loadCSVDialog
 from ui.PyES_newDialog import Ui_dialogNew
 from ui.PyES_uncertaintyInfo import Ui_UncertaintyInfoDialog
 
@@ -162,3 +166,89 @@ class UncertaintyInfoDialog(QDialog):
 
         self.ui.widget_3.load(":/equations/error_precipitate.svg")
         self.ui.widget_3.renderer().setAspectRatioMode(Qt.KeepAspectRatio)
+
+
+class loadCSVDialog(QDialog, Ui_loadCSVDialog):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        from viewmodels.models import PreviewModel
+
+        self.setupUi(self)
+        self.setModal(True)
+
+        # Generate a preview view/model
+        self.previewModel = PreviewModel()
+        self.preview.setModel(self.previewModel)
+
+        # No file is being opened yet
+        self.fileName = None
+
+        # Get initial settings
+        self.updateSettings()
+
+        self.eCol.valueChanged.connect(self.updateEColumnColor)
+        self.vCol.valueChanged.connect(self.updateVColumnColor)
+        self.vCol.setValue(0)
+        self.eCol.setValue(1)
+
+    def updateEColumnColor(self, v):
+        self.previewModel.red_colored = v
+        self.previewModel.layoutChanged.emit()
+
+    def updateVColumnColor(self, v):
+        self.previewModel.blue_colored = v
+        self.previewModel.layoutChanged.emit()
+
+
+    def updateSettings(self):
+        self.settings = {
+            "sep": self.separator.currentText(),
+            "dec": self.decimal.currentText(),
+            "head": self.head.value(),
+            "footer": self.footer.value(),
+            "vcol": self.vCol.value(),
+            "ecol": self.eCol.value(),
+        }
+
+        if not self.separator.isEnabled():
+            self.settings["sep"] = None
+
+        if not self.decimal.isEnabled():
+            self.settings["dec"] = None
+
+        self._updateModel()
+
+    def autodetectSep(self, s):
+        # TODO: find why Qt.CheckState.Checked does not work
+        if s == 2:
+            self.separator.setEnabled(False)
+        else:
+            self.separator.setEnabled(True)
+        self.updateSettings()
+
+    def autodetectDec(self, s):
+        # TODO: find why Qt.CheckState.Checked does not work
+        if s == 2:
+            self.decimal.setEnabled(False)
+        else:
+            self.decimal.setEnabled(True)
+        self.updateSettings()
+
+    def loadFile(self):
+        self.fileName, _ = QFileDialog.getOpenFileName(
+            self, "Open CSV", "~", "CSV (*.csv)"
+        )
+        self._updateModel()
+
+    def _updateModel(self):
+        if self.fileName:
+            self.filePath.setText(self.fileName)
+            self.previewModel._data = pd.read_csv(
+                self.fileName,
+                sep=self.settings["sep"],
+                decimal=self.settings["dec"],
+                skiprows=self.settings["head"],
+                skipfooter=self.settings["footer"],
+                header=None,
+            )
+            self.previewModel.layoutChanged.emit()

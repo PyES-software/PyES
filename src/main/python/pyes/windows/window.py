@@ -1,12 +1,15 @@
 import json
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from commands import (
     AddTab,
+    BetaRefineCheckAll,
+    BetaRefineEdit,
+    BetaRefineUncheckAll,
     ComponentsAddRows,
     ComponentsRemoveRows,
     ComponentsSwapRows,
@@ -16,6 +19,9 @@ from commands import (
     SpeciesEditColumn,
     SpeciesRemoveRows,
     SpeciesSwapRows,
+    TableCheckAll,
+    TableUncheckAll,
+    TitrationRefineEdit,
     dmodeEdit,
     imodeEdit,
     indCompEdit,
@@ -32,7 +38,7 @@ from dialogs import (
     UncertaintyInfoDialog,
     WrongFileDialog,
 )
-from PySide6.QtCore import QByteArray, QSettings, Qt, QThreadPool, QUrl
+from PySide6.QtCore import QByteArray, QModelIndex, QSettings, Qt, QThreadPool, QUrl
 from PySide6.QtGui import QDesktopServices, QKeySequence, QUndoStack
 from PySide6.QtWidgets import (
     QComboBox,
@@ -40,17 +46,26 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
     QHeaderView,
-    QLineEdit,
     QMainWindow,
     QMessageBox,
-    QSpinBox,
-    QStackedWidget,
     QTabBar,
+    QTableView,
+    QTableWidgetItem,
+    QTabWidget,
     QWidget,
 )
 from ui.PyES_main import Ui_MainWindow
-from ui.widgets import inputTitrationOpt
-from utils_func import cleanData, updateCompNames, updateIndComponent
+from ui.widgets import CustomComboBox, inputTitrationOpt
+from utils_func import (
+    apply_list_map,
+    apply_table_map,
+    cleanData,
+    get_list_map,
+    get_table_map,
+    updateCompNames,
+    updateIndComponent,
+    value_or_problem,
+)
 from viewmodels.delegate import (
     CheckBoxDelegate,
     ComboBoxDelegate,
@@ -63,9 +78,10 @@ from viewmodels.models import (
     SolidSpeciesModel,
     SolubleSpeciesModel,
 )
+from workers import optimizeWorker
+
 from windows.export import ExportWindow
 from windows.plot import PlotWindow
-from workers import optimizeWorker
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -252,7 +268,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.speciesView,
                 self.solidSpeciesView,
                 self.concModel,
+                self.betaToRefine,
+                [
+                    table.model()
+                    for table in get_widgets_from_tab(
+                        self.titration_tabs, QTableView, "concView"
+                    )
+                ],
                 self.indComp,
+                get_widgets_from_tab(
+                    self.titration_tabs, CustomComboBox, "electroActiveComponent"
+                ),
+                self.concToRefine,
             )
         )
 
@@ -290,10 +317,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         solidSpeciesHeader = self.solidSpeciesView.horizontalHeader()
         solidSpeciesHeader.setSectionResizeMode(QHeaderView.ResizeToContents)
 
+        self.speciesModel.dataChanged.connect(self.rename_beta_to_refine)
+
         # Interface is populated with empty basic data
         self.resetFields()
 
         self.solidSpeciesModel.layoutChanged.connect(self.check_solid_presence)
+
+        self.betaCheckAll.clicked.connect(self.checkAllBeta)
+        self.betaUncheckAll.clicked.connect(self.uncheckAllBeta)
+
+        self.concCheckAll.clicked.connect(self.checkAllConc)
+        self.concUncheckAll.clicked.connect(self.uncheckAllConc)
+
+        self.electrodeCheckAll.clicked.connect(self.checkAllElectrode)
+        self.electrodeUncheckAll.clicked.connect(self.uncheckAllElectrode)
+
+        self.betaToRefine.itemClicked.connect(
+            lambda item: self.undostack.push(BetaRefineEdit(item))
+        )
+        self.concToRefine.itemClicked.connect(
+            lambda item: self.undostack.push(TitrationRefineEdit(item))
+        )
+        self.electrodeToRefine.itemClicked.connect(
+            lambda item: self.undostack.push(TitrationRefineEdit(item))
+        )
 
         # declare the checkline used to validate project files
         self.check_line = {"check": "PyES project file --- DO NOT MODIFY THIS LINE!"}
@@ -383,7 +431,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             file_name = file_name.with_suffix(".json")
 
             # dictionary that holds all the relevant data locations
-            data_list = self.returnDataDict()
+            data_list = self.returnDataToDict()
             data = {**self.check_line, **data_list}
 
             with open(
@@ -594,6 +642,69 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 jsdata, "cback", 0, "Concentration of background ions", problems
             )
         )
+        poentiometric_data = value_or_problem(
+            jsdata, "titration_data", {}, "Potentiometric titration data", problems
+        )
+
+        titrations = value_or_problem(
+            poentiometric_data, "titrations", [], "Titrations parameters", problems
+        )
+
+        for ix, titration_data in enumerate(titrations):
+            if ix == 0:
+                tab = self.titration_tabs.widget(ix)
+                tab.findChild(inputTitrationOpt).set_data(titration_data)
+            else:
+                new_widget = QWidget()
+                layout = QHBoxLayout()
+                input_widget = inputTitrationOpt(
+                    None,
+                    undo_stack=self.undostack,
+                    components=self.compModel._data["Name"].tolist(),
+                )
+                input_widget.set_data(titration_data)
+                layout.addWidget(input_widget)
+                new_widget.setLayout(layout)
+
+                self.titration_tabs.addTab(
+                    new_widget, str(self.titration_tabs.findChild(QTabBar).count() + 1)
+                )
+
+        self.concToRefine.setColumnCount(len(titrations))
+        self.concToRefine.setRowCount(self.numComp.value())
+        self.electrodeToRefine.setColumnCount(len(titrations))
+
+        apply_list_map(
+            self.betaToRefine,
+            value_or_problem(
+                poentiometric_data,
+                "beta_refine_flags",
+                [False for _ in range(self.numSpecies.value())],
+                "Constants to refine flags",
+                problems,
+            ),
+        )
+
+        apply_table_map(
+            self.concToRefine,
+            value_or_problem(
+                poentiometric_data,
+                "conc_refine_flags",
+                [[False for _ in titrations] for _ in range(self.numComp.value())],
+                "Concentrations to refine flags",
+                problems,
+            ),
+        )
+        apply_table_map(
+            self.electrodeToRefine,
+            value_or_problem(
+                poentiometric_data,
+                "electrode_refine_flags",
+                [[False for _ in titrations] for _ in range(3)],
+                "Electrode parameters to refine flags",
+                problems,
+            ),
+        )
 
         # Calculate tab
 
@@ -636,6 +747,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         self.speciesModel._data.index = range(self.numSpecies.value())
 
+        for row in range(self.numSpecies.value()):
+            self.betaToRefine.item(row).setText(self.speciesModel._data.iloc[row, 1])
+            if self.speciesModel._data.iloc[row, 0]:
+                self.betaToRefine.item(row).setFlags(
+                    self.betaToRefine.item(row).flags() & ~Qt.ItemFlag.ItemIsEnabled
+                )
+            else:
+                self.betaToRefine.item(row).setFlags(
+                    self.betaToRefine.item(row).flags() | Qt.ItemFlag.ItemIsEnabled
+                )
+
         self.solidSpeciesModel._data = pd.DataFrame.from_dict(
             value_or_problem(
                 jsdata,
@@ -658,7 +780,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
         )
 
-        updateIndComponent(self.compModel, self.indComp)
+        updateIndComponent(
+            self.compModel,
+            self.indComp,
+            get_widgets_from_tab(
+                self.titration_tabs, CustomComboBox, "electroActiveComponent"
+            ),
+        )
         updated_comps = self.compModel._data["Name"].tolist()
         self.speciesModel.updateHeader(updated_comps)
         self.speciesModel.updateCompName(updated_comps)
@@ -743,17 +871,52 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # and display the correct associated widget
         self.dmode.currentIndexChanged.emit(0)
 
-        # Resets fields for both dmodes
+        # Resets fields for all dmodes
+        # Titration
         self.v0.setValue(0)
         self.initv.setValue(0)
         self.vinc.setValue(0)
         self.nop.setValue(1)
         self.c0back.setValue(0)
         self.ctback.setValue(0)
+        # Distribution
         self.initialLog.setValue(0)
         self.finalLog.setValue(0)
         self.logInc.setValue(0)
         self.cback.setValue(0)
+        # Potentiometry
+        self.betaToRefine.item(0).setText("")
+
+        self.concToRefine.setColumnCount(1)
+        self.concToRefine.setRowCount(1)
+        self.concToRefine.setVerticalHeaderLabels(["A"])
+        item = QTableWidgetItem()
+        item.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+        item.setCheckState(Qt.CheckState.Unchecked)
+        self.concToRefine.setItem(0, 0, item)
+
+        self.electrodeToRefine.setColumnCount(1)
+        self.electrodeToRefine.setRowCount(4)
+        for row in range(4):
+            item = QTableWidgetItem()
+            item.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+            item.setCheckState(Qt.CheckState.Unchecked)
+            self.electrodeToRefine.setItem(row, 0, item)
+
+        for i in sorted(range(self.titration_tabs.count()), reverse=True):
+            removed_widget = self.titration_tabs.widget(i)
+            self.titration_tabs.removeTab(i)
+            if removed_widget is not None:
+                removed_widget.setParent(None)
+
+        new_widget = QWidget()
+        layout = QHBoxLayout()
+        layout.addWidget(inputTitrationOpt(None, undo_stack=self.undostack))
+        new_widget.setLayout(layout)
+
+        self.titration_tabs.addTab(
+            new_widget, str(self.titration_tabs.findChild(QTabBar).count() + 1)
+        )
 
         # No results should be aviable so
         # grayout export and plot buttons
@@ -779,10 +942,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.compModel.layoutChanged.emit()
             self.speciesModel.layoutChanged.emit()
             self.solidSpeciesModel.layoutChanged.emit()
-            updateIndComponent(self.compModel, self.indComp)
+            updateIndComponent(
+                self.compModel,
+                self.indComp,
+                get_widgets_from_tab(
+                    self.titration_tabs, CustomComboBox, "electroActiveComponent"
+                ),
+            )
         except:
             pass
         finally:
+            self.tabWidget.setCurrentIndex(0)
             self.undostack.clear()
 
     def updateComp(self, rows):
@@ -799,6 +969,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.speciesView,
                     self.solidSpeciesView,
                     self.concModel,
+                    self.betaToRefine,
+                    get_widgets_from_tab(self.titration_tabs, QTableView, "concView"),
+                    get_widgets_from_tab(
+                        self.titration_tabs, CustomComboBox, "electroActiveComponent"
+                    ),
+                    self.concToRefine,
                     self.indComp,
                     self.numComp,
                     self.compModel.rowCount(),
@@ -815,6 +991,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.speciesView,
                     self.solidSpeciesView,
                     self.concModel,
+                    self.betaToRefine,
+                    get_widgets_from_tab(self.titration_tabs, QTableView, "concView"),
+                    get_widgets_from_tab(
+                        self.titration_tabs, CustomComboBox, "electroActiveComponent"
+                    ),
+                    self.concToRefine,
                     self.indComp,
                     self.numComp,
                     self.compModel.rowCount(),
@@ -835,6 +1017,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.numSpecies,
                     self.speciesModel.rowCount(),
                     added_rows,
+                    True,
+                    self.betaToRefine,
                 )
             )
         elif self.speciesModel.rowCount() > new_value:
@@ -845,6 +1029,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.numSpecies,
                     self.speciesModel.rowCount(),
                     removed_rows,
+                    True,
+                    self.betaToRefine,
                 )
             )
         else:
@@ -862,6 +1048,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.numPhases,
                     self.solidSpeciesModel.rowCount(),
                     added_rows,
+                    False,
                 )
             )
         elif self.solidSpeciesModel.rowCount() > s:
@@ -872,6 +1059,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.numPhases,
                     self.solidSpeciesModel.rowCount(),
                     removed_rows,
+                    False,
                 )
             )
         else:
@@ -888,6 +1076,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.speciesView,
                 self.solidSpeciesView,
                 self.concModel,
+                self.betaToRefine,
+                get_widgets_from_tab(self.titration_tabs, QTableView, "concView"),
+                get_widgets_from_tab(
+                    self.titration_tabs, CustomComboBox, "electroActiveComponent"
+                ),
+                self.concToRefine,
                 self.indComp,
                 self.numComp,
                 row,
@@ -906,6 +1100,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.speciesView,
                 self.solidSpeciesView,
                 self.concModel,
+                self.betaToRefine,
+                get_widgets_from_tab(self.titration_tabs, QTableView, "concView"),
+                get_widgets_from_tab(
+                    self.titration_tabs, CustomComboBox, "electroActiveComponent"
+                ),
+                self.concToRefine,
                 self.indComp,
                 self.numComp,
                 row,
@@ -930,6 +1130,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         self.speciesView,
                         self.solidSpeciesView,
                         self.concModel,
+                        self.betaToRefine,
+                        get_widgets_from_tab(
+                            self.titration_tabs, QTableView, "concView"
+                        ),
+                        get_widgets_from_tab(
+                            self.titration_tabs,
+                            CustomComboBox,
+                            "electroActiveComponent",
+                        ),
+                        self.concToRefine,
                         self.indComp,
                         self.numComp,
                         row,
@@ -948,6 +1158,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         self.speciesView,
                         self.solidSpeciesView,
                         self.concModel,
+                        self.betaToRefine,
+                        get_widgets_from_tab(
+                            self.titration_tabs, QTableView, "concView"
+                        ),
+                        get_widgets_from_tab(
+                            self.titration_tabs,
+                            CustomComboBox,
+                            "electroActiveComponent",
+                        ),
+                        self.concToRefine,
                         self.indComp,
                         selected_ind_comp,
                         row,
@@ -966,6 +1186,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         self.speciesView,
                         self.solidSpeciesView,
                         self.concModel,
+                        self.betaToRefine,
+                        get_widgets_from_tab(
+                            self.titration_tabs, QTableView, "concView"
+                        ),
+                        get_widgets_from_tab(
+                            self.titration_tabs,
+                            CustomComboBox,
+                            "electroActiveComponent",
+                        ),
+                        self.concToRefine,
                         self.indComp,
                         selected_ind_comp,
                         row,
@@ -977,6 +1207,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         table = self.get_shown_tab()
         if not table:
             return
+        add_soluble = True if table == self.speciesView else False
 
         counter = self.get_shown_tab_counter()
         selected_indexes = table.selectedIndexes()
@@ -985,12 +1216,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             row = 0
 
-        self.undostack.push(SpeciesAddRows(table, counter, row, 1))
+        self.undostack.push(
+            SpeciesAddRows(table, counter, row, 1, add_soluble, self.betaToRefine)
+        )
 
     def insertSpeciesBelow(self):
         table = self.get_shown_tab()
         if not table:
             return
+        add_soluble = True if table == self.speciesView else False
 
         counter = self.get_shown_tab_counter()
         selected_indexes = table.selectedIndexes()
@@ -999,12 +1233,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             row = table.model().rowCount()
 
-        self.undostack.push(SpeciesAddRows(table, counter, row, 1))
+        self.undostack.push(
+            SpeciesAddRows(table, counter, row, 1, add_soluble, self.betaToRefine)
+        )
 
     def removeSpecies(self):
         table = self.get_shown_tab()
         if not table or (table == self.speciesView and self.numSpecies.value() == 1):
             return
+        add_soluble = True if table == self.speciesView else False
 
         counter = self.get_shown_tab_counter()
         selected_indexes = table.selectedIndexes()
@@ -1023,6 +1260,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         counter,
                         selected_indexes[0].row() + 1,
                         1,
+                        add_soluble,
+                        self.betaToRefine,
                     )
                 )
 
@@ -1030,31 +1269,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         table = self.get_shown_tab()
         if not table:
             return
+        swap_soluble = True if table == self.speciesView else False
 
         selected_indexes = table.selectedIndexes()
         if selected_indexes:
             row = selected_indexes[0].row()
             if row != 0:
-                self.undostack.push(SpeciesSwapRows(table, row, row - 1))
+                self.undostack.push(
+                    SpeciesSwapRows(
+                        table, row, row - 1, swap_soluble, self.betaToRefine
+                    )
+                )
 
     def moveSpeciesDown(self):
         table = self.get_shown_tab()
         if not table:
             return
+        swap_soluble = True if table == self.speciesView else False
 
         selected_indexes = table.selectedIndexes()
         if selected_indexes:
             row = selected_indexes[0].row()
             if row != (table.model().rowCount() - 1):
-                self.undostack.push(SpeciesSwapRows(table, row, row + 1))
+                self.undostack.push(
+                    SpeciesSwapRows(
+                        table, row, row + 1, swap_soluble, self.betaToRefine
+                    )
+                )
 
-    def checkAll(self):
+    def checkAllSpecies(self):
         table = self.get_shown_tab()
         if not table:
             return
         self.undostack.push(SpeciesEditColumn(table, 0, True))
 
-    def uncheckAll(self):
+    def uncheckAllSpecies(self):
         table = self.get_shown_tab()
         if not table:
             return
@@ -1114,7 +1363,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Clear Logger
         self.consoleOutput.setText("")
-        data_list = self.returnDataDict(saving=False)
+        data_list = self.returnDataToDict()
         debug = self.debug.isChecked()
         worker = optimizeWorker(data_list, debug)
 
@@ -1218,7 +1467,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         IonicStrengthInfoDialog(parent=self).exec()
 
     def addTitration(self):
-        self.undostack.push(AddTab(self.titration_tabs))
+        self.undostack.push(
+            AddTab(
+                self.titration_tabs,
+                self.undostack,
+                self.compModel._data["Name"].tolist(),
+                self.concToRefine,
+                self.electrodeToRefine,
+            )
+        )
 
     def removeTitration(self):
         if (
@@ -1229,10 +1486,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
             == QMessageBox.Yes
         ):
-            self.undostack.push(RemoveTab(self.titration_tabs))
+            self.undostack.push(
+                RemoveTab(
+                    self.titration_tabs, self.concToRefine, self.electrodeToRefine
+                )
+            )
 
-    # TODO: has to be updated from legacy code
-    def returnDataDict(self, saving=True):
+    def returnDataToDict(self):
         """
         Returns a dict containing the relevant data extracted from the form.
 
@@ -1270,40 +1530,91 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "max_nr_iters": self.maxNewtonRaphsonIterationsSpinBox.value(),
         }
 
-        if saving:
-            data_models = {
-                "compModel": self.compModel._data.to_dict(),
-                "concModel": self.concModel._data.to_dict(),
-            }
-            data_models["speciesModel"] = self.speciesModel._data.to_dict()
-            data_models["solidSpeciesModel"] = self.solidSpeciesModel._data.to_dict()
-        else:
-            data_models = {
-                "compModel": self.compModel._data,
-                "speciesModel": self.speciesModel._data,
-                "solidSpeciesModel": self.solidSpeciesModel._data,
-                "concModel": self.concModel._data,
-            }
+        titrations = []
+
+        for i in range(self.titration_tabs.count()):
+            tab = self.titration_tabs.widget(i)
+            titrations.append(tab.findChild(inputTitrationOpt).retrive_data())
+
+        beta_refine = get_list_map(self.betaToRefine)
+        conc_refine = get_table_map(self.concToRefine)
+        electrode_refine = get_table_map(self.electrodeToRefine)
+
+        data_list["titration_data"] = {
+            "beta_refine_flags": beta_refine,
+            "conc_refine_flags": conc_refine,
+            "electrode_refine_flags": electrode_refine,
+            "titrations": titrations,
+        }
+
+        # if saving:
+        data_models = {
+            "compModel": self.compModel._data.to_dict(),
+            "concModel": self.concModel._data.to_dict(),
+        }
+        data_models["speciesModel"] = self.speciesModel._data.to_dict()
+        data_models["solidSpeciesModel"] = self.solidSpeciesModel._data.to_dict()
+        # else:
+        #     data_models = {
+        #         "compModel": self.compModel._data,
+        #         "speciesModel": self.speciesModel._data,
+        #         "solidSpeciesModel": self.solidSpeciesModel._data,
+        #         "concModel": self.concModel._data,
+        #     }
 
         data_list = {**data_list, **data_models}
 
         return data_list
 
-    def test(self):
-        inputs = []
-        for i in range(self.titration_tabs.count()):
-            inputs.append(
-                self.titration_tabs.widget(i)
-                .findChild(inputTitrationOpt)
-                .retrive_data()
-            )
+    def rename_beta_to_refine(self, index: QModelIndex):
+        row = index.row()
+        column = index.column()
+        if column >= 8 and column < self.speciesModel.columnCount() - 1:
+            self.betaToRefine.item(row).setText(self.speciesModel.getColumn(1)[row])
+        elif column == 0:
+            if self.speciesModel._data.iloc[row, 0]:
+                self.betaToRefine.item(row).setFlags(
+                    self.betaToRefine.item(row).flags() & ~Qt.ItemFlag.ItemIsEnabled
+                )
+            else:
+                self.betaToRefine.item(row).setFlags(
+                    self.betaToRefine.item(row).flags() | Qt.ItemFlag.ItemIsEnabled
+                )
 
-        print(inputs)
+    def checkAllBeta(self):
+        self.undostack.push(BetaRefineCheckAll(self.betaToRefine))
+
+    def uncheckAllBeta(self):
+        self.undostack.push(BetaRefineUncheckAll(self.betaToRefine))
+
+    def checkAllConc(self):
+        self.undostack.push(TableCheckAll(self.concToRefine))
+
+    def uncheckAllConc(self):
+        self.undostack.push(TableUncheckAll(self.concToRefine))
+
+    def checkAllElectrode(self):
+        self.undostack.push(TableCheckAll(self.electrodeToRefine))
+
+    def uncheckAllElectrode(self):
+        self.undostack.push(TableUncheckAll(self.electrodeToRefine))
+
+    def editBeta(self, item):
+        print(not item.checkState())
 
 
-def value_or_problem(d: dict, field: str, default, message: str, problems: list[str]):
-    value = d.get(field)
-    if value is None:
-        value = default
-        problems.append(message + f" ({field})")
-    return value
+def get_widgets_from_tab(tab_widget: QTabWidget, widget_type, widget_name=None):
+    """
+    Get all the widgets of a certain type from a tab widget
+    """
+    widgets = []
+    for i in range(tab_widget.count()):
+        tab = tab_widget.widget(i)
+        if tab is not None:
+            if widget_name is not None:
+                widget = tab.findChildren(widget_type, widget_name)
+            else:
+                widget = tab.findChildren(widget_type)
+            if widget is not None:
+                widgets.extend(widget)
+    return widgets
