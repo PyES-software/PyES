@@ -1377,6 +1377,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.threadpool.start(worker)
 
     def workerComplete(self):
+        self.consoleOutput.moveCursor(QTextCursor.Start)
         self.calcButton.setEnabled(True)
         self.plotDistButton.setEnabled(True)
         self.exportButton.setEnabled(True)
