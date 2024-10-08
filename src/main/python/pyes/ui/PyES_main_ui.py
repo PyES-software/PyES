@@ -1253,7 +1253,10 @@ class Ui_MainWindow(object):
         self.electrodeToRefine.setItem(1, 0, __qtablewidgetitem7)
         __qtablewidgetitem8 = QTableWidgetItem()
         __qtablewidgetitem8.setCheckState(Qt.Unchecked);
-        self.electrodeToRefine.setItem(3, 0, __qtablewidgetitem8)
+        self.electrodeToRefine.setItem(2, 0, __qtablewidgetitem8)
+        __qtablewidgetitem9 = QTableWidgetItem()
+        __qtablewidgetitem9.setCheckState(Qt.Unchecked);
+        self.electrodeToRefine.setItem(3, 0, __qtablewidgetitem9)
         self.electrodeToRefine.setObjectName(u"electrodeToRefine")
         self.electrodeToRefine.setRowCount(5)
         self.electrodeToRefine.horizontalHeader().setDefaultSectionSize(25)
