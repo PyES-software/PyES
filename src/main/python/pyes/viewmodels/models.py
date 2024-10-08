@@ -358,10 +358,6 @@ class GenericSpeciesModel(_GenericModel):
             return False
 
     def updateHeader(self, new_header: list[str]):
-        print(self.template_header)
-        print(new_header)
-        print(self._data.columns)   
-
         self._data.columns = self.template_header + new_header + ["Ref. Comp."]
 
         for row in self._data.index:

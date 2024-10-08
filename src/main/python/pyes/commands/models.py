@@ -78,7 +78,6 @@ class SpeciesEditColumn(QUndoCommand):
         self.old_values = self.model._data.iloc[:, column].copy()
 
     def undo(self) -> None:
-        print(self.old_values)
         self.model._data.iloc[:, self.column] = self.old_values
         self.cleanup()
 
