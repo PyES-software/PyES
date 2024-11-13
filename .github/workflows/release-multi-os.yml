@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - "v*[!beta]*" # Push events to matching v* but not containing 'beta', i.e. v1.0, v20.15.10
+      - "v*"
 
 name: Release Multi Platform
 
@@ -12,15 +12,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Create Release # Creates the release, assets will be added after building
+
+      - name: Determine Release Type
+        id: release_type
+        run: |
+          if [[ "${GITHUB_REF##*/}" == *beta* ]]; then
+            echo "is_beta=true" >> $GITHUB_ENV
+          else
+            echo "is_beta=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1.14.0
         with:
           tag: ${{ github.ref }}
           name: Release ${{ github.ref }}
           bodyFile: release_text.md
-          draft: false
-          prerelease: false
+          draft: ${{ steps.release_type.outputs.is_beta }}
+          prerelease: ${{ steps.release_type.outputs.is_beta }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
