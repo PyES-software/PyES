@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - "v*[!beta]*" # Push events to matching v* but not containing 'beta', i.e. v1.0, v20.15.10
+      - "v*beta*" # Push events to matching v*beta*, i.e. v1.0beta, v20.15.10beta
 
 name: Release Multi Platform
 
@@ -19,8 +19,8 @@ jobs:
           tag: ${{ github.ref }}
           name: Release ${{ github.ref }}
           bodyFile: release_text.md
-          draft: false
-          prerelease: false
+          draft: true
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
