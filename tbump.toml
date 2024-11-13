@@ -13,6 +13,7 @@ regex = '''
   (?P<minor>\d+)
   \.
   (?P<patch>\d+)
+  (?:beta)?
   '''
 
 [git]
@@ -40,3 +41,7 @@ src = "src/build/settings/base.json"
 [[before_commit]]
 name = "Update Changelog"
 cmd = "poetry run python scripts/changelog_generator.py v{current_version} v{new_version}"
+
+[[before_commit]]
+name = "Update Beta Status"
+cmd = 'grep -q "beta" <<< "{new_version}" && sed -i "" "s/PyES Beta/PyES Beta/g; s/PyES/PyES Beta/g" file.txt || sed -i "" "s/PyES Beta/PyES/g; s/PyES/PyES/g" file.txt'
