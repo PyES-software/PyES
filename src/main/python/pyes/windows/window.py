@@ -467,7 +467,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 file_name,
                 "w",
             ) as out_file:
-                json.dump(data, out_file)
+                json.dump(data, out_file, indent=4)
 
             self.undostack.setClean()
             return output_path
