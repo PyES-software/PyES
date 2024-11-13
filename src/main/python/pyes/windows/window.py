@@ -2,8 +2,10 @@ import json
 import os
 import sys
 from pathlib import Path
+import traceback
 
 import pandas as pd
+from libeq import SolverData
 from commands import (
     AddTab,
     BetaRefineCheckAll,
@@ -253,6 +255,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionSave.triggered.connect(self.file_save)
         self.actionSaveAs.triggered.connect(self.file_save_as)
         self.actionOpen.triggered.connect(self.file_open)
+        self.actionBSTAC.triggered.connect(self.import_bstac)
 
         self.actionCalculate.triggered.connect(self.calculate)
 
@@ -363,8 +366,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # declare the checkline used to validate project files
         self.check_line = {"check": "PyES project file --- DO NOT MODIFY THIS LINE!"}
-
-        self.load_project_file("/Users/lorenzo/Coding/libeq/libeq_h6l.json")
 
     def save_or_discard(self):
         """
@@ -481,50 +482,90 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.save_or_discard():
             return False
 
-        if self.project_path:
-            input_path, _ = QFileDialog.getOpenFileName(
-                self,
-                "Open Project",
-                os.path.dirname(self.project_path),
-                "JSON (*.json)",
-            )
-        else:
-            input_path, _ = QFileDialog.getOpenFileName(
-                self,
-                "Open Project",
-                self.settings.value("path/default"),
-                "JSON (*.json)",
-            )
+        default_path = (
+            self.settings.value("path/default")
+            if self.project_path is None
+            else os.path.dirname(self.project_path)
+        )
+        input_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Project",
+            default_path,
+            "JSON (*.json)",
+        )
 
         if input_path:
-            return self.load_project_file(input_path)
+            with open(
+                input_path,
+                "r",
+            ) as input_file:
+                try:
+                    jsdata: dict = json.load(input_file)
 
-    def load_project_file(self, input_path):
-        with open(
-            input_path,
-            "r",
-        ) as input_file:
+                    # TODO: better and more robust validation of project files
+                    # The loaded file has to be a valid project file, discard it if not
+                    checksum = jsdata["check"]
+                    assert checksum == self.check_line["check"]
+                except (
+                    json.JSONDecodeError,
+                    UnicodeDecodeError,
+                    KeyError,
+                    AssertionError,
+                ):
+                    if not self.isVisible():
+                        self.show()
+                    dialog = WrongFileDialog(self)
+                    dialog.exec()
+                    return False
+
+            return self.load_project_file(jsdata, input_path)
+
+    def import_bstac(self):
+        """
+        Import a BSTAC file
+        """
+        if not self.save_or_discard():
+            return False
+
+        default_path = (
+            self.settings.value("path/default")
+            if self.project_path is None
+            else os.path.dirname(self.project_path)
+        )
+        input_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Import BSTAC file",
+            default_path,
+        )
+
+        if input_path:
             try:
-                jsdata: dict = json.load(input_file)
-
-                # TODO: better and more robust validation of project files
-                # The loaded file has to be a valid project file, discard it if not
-                checksum = jsdata["check"]
-                assert checksum == self.check_line["check"]
-            except (json.JSONDecodeError, UnicodeDecodeError, KeyError, AssertionError):
-                if not self.isVisible():
-                    self.show()
+                parsed_data = SolverData.load_from_bstac(input_path)
+                parsed_data = parsed_data.to_pyes()
+            except Exception as e:
                 dialog = WrongFileDialog(self)
+                dialog.setText(
+                    "Error in parsing provided file as a valid BSTAC file:\n"
+                    + "".join(traceback.TracebackException.from_exception(e).format())
+                )
                 dialog.exec()
                 return False
 
+            self.load_project_file(parsed_data)
+
+            self.dmode.setCurrentIndex(-1)
+
+    def load_project_file(self, jsdata, input_path=None):
         self.resetFields()
         # Resets results
         self.result = {}
         # Get file path from the open project file
         self.project_path = input_path
+
         # Set window title accordingly
-        self.setWindowTitle("PyES - " + self.project_path)
+        self.setWindowTitle(
+            "PyES - " + (self.project_path if input_path else "New Project")
+        )
 
         # Disable results windows
         if self.PlotWindow:
