@@ -124,11 +124,13 @@ class Ui_inputTitrationOpt(object):
 
         self.jaLabel = QLabel(inputTitrationOpt)
         self.jaLabel.setObjectName(u"jaLabel")
+        self.jaLabel.setEnabled(False)
 
         self.formLayout.setWidget(9, QFormLayout.LabelRole, self.jaLabel)
 
         self.ja = CustomSpinBox(inputTitrationOpt)
         self.ja.setObjectName(u"ja")
+        self.ja.setEnabled(False)
         self.ja.setMinimum(-10000.000000000000000)
         self.ja.setMaximum(10000.000000000000000)
 
@@ -136,11 +138,13 @@ class Ui_inputTitrationOpt(object):
 
         self.jbLabel = QLabel(inputTitrationOpt)
         self.jbLabel.setObjectName(u"jbLabel")
+        self.jbLabel.setEnabled(False)
 
         self.formLayout.setWidget(10, QFormLayout.LabelRole, self.jbLabel)
 
         self.jb = CustomSpinBox(inputTitrationOpt)
         self.jb.setObjectName(u"jb")
+        self.jb.setEnabled(False)
         self.jb.setMinimum(-10000.000000000000000)
         self.jb.setMaximum(10000.000000000000000)
 

@@ -169,6 +169,9 @@
      </item>
      <item row="9" column="0">
       <widget class="QLabel" name="jaLabel">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Ja</string>
        </property>
@@ -176,6 +179,9 @@
      </item>
      <item row="9" column="1">
       <widget class="CustomSpinBox" name="ja">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="minimum">
         <double>-10000.000000000000000</double>
        </property>
@@ -186,6 +192,9 @@
      </item>
      <item row="10" column="0">
       <widget class="QLabel" name="jbLabel">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Jb</string>
        </property>
@@ -193,6 +202,9 @@
      </item>
      <item row="10" column="1">
       <widget class="CustomSpinBox" name="jb">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="minimum">
         <double>-10000.000000000000000</double>
        </property>
