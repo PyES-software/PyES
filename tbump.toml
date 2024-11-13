@@ -36,6 +36,7 @@ src = "src/main/python/pyes/ui/PyES_about.ui"
 search = "PyES Version {current_version}"
 
 [[file]]
+version_template = "{major}.{minor}.{patch}"
 src = "src/build/settings/base.json"
 
 [[before_commit]]
