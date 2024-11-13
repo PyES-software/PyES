@@ -40,7 +40,7 @@ src = "src/build/settings/base.json"
 
 [[before_commit]]
 name = "Update Changelog"
-cmd = "poetry run python scripts/changelog_generator.py v{current_version} v{new_version}"
+cmd = 'grep -q "beta" <<< "{new_version}" && poetry run python scripts/changelog_generator.py v{current_version} v{new_version}'
 
 [[before_commit]]
 name = "Update Beta Status"
