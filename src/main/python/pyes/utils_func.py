@@ -3,11 +3,13 @@ import pandas as pd
 from openpyxl.utils import get_column_letter
 from PySide6.QtCore import QAbstractItemModel, Qt
 from PySide6.QtWidgets import (
+    QWidget,
     QComboBox,
     QListWidget,
     QTableView,
     QTableWidget,
     QTableWidgetItem,
+    QTabWidget,
 )
 from viewmodels.delegate import ComboBoxDelegate
 
@@ -185,6 +187,35 @@ def getName(vector):
     return "".join(comps)
 
 
+def resultToExcel(
+    writer, data: pd.DataFrame | list[pd.DataFrame], sheet_name, **kwargs
+):
+    if isinstance(data, list):
+        for i, d in enumerate(data):
+            name = sheet_name + " Titr. " + str(i)
+            d.to_excel(writer, sheet_name=name, **kwargs)
+            adjustColumnWidths(writer.book, name, d)
+    else:
+        data.to_excel(writer, sheet_name=sheet_name, **kwargs)
+        adjustColumnWidths(writer.book, sheet_name, data)
+
+
+def resultToCSV(data: pd.DataFrame | list[pd.DataFrame], path: str):
+    if isinstance(data, list):
+        for i, d in enumerate(data):
+            name = path + " Titration " + str(i) + ".csv"
+            d.to_csv(name)
+    else:
+        data.to_csv(path + ".csv")
+
+
+def resultToDataList(data: pd.DataFrame | list[pd.DataFrame]):
+    if isinstance(data, list):
+        return data
+    else:
+        return [data]
+
+
 def getColWidths(dataframe):
     """
     Function to be used in conjuction with openpyxl to adjust width to tontent of a dataframe.
@@ -243,3 +274,31 @@ def apply_table_map(table: QTableWidget, values: list[list[bool]]):
                 Qt.CheckState.Checked if value else Qt.CheckState.Unchecked
             )
             table.setItem(r, c, item)
+
+
+def get_widgets_from_tab(
+    tab_widget: QTabWidget, widget_type, widget_name=None
+) -> list[QWidget]:
+    """
+    Get all the widgets of a certain type from a tab widget
+    """
+    widgets = []
+    for i in range(tab_widget.count()):
+        tab = tab_widget.widget(i)
+        if tab is not None:
+            if widget_name is not None:
+                widget = tab.findChildren(widget_type, widget_name)
+            else:
+                widget = tab.findChildren(widget_type)
+            if widget is not None:
+                widgets.extend(widget)
+    return widgets
+
+
+def encode_weights_mode(index):
+    if index == 0:
+        return "constant"
+    elif index == 1:
+        return "calculated"
+    elif index == 2:
+        return "given"

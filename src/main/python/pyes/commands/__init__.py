@@ -6,8 +6,8 @@ from .fields import (
     uncertaintyEdit,
 )
 from .models import (
-    BetaRefineEdit,
     BetaRefineCheckAll,
+    BetaRefineEdit,
     BetaRefineUncheckAll,
     ComponentsAddRows,
     ComponentsCellEdit,
@@ -19,11 +19,11 @@ from .models import (
     SpeciesEditColumn,
     SpeciesRemoveRows,
     SpeciesSwapRows,
-    TitrationRefineEdit,
     TableCheckAll,
     TableUncheckAll,
+    TitrationRefineEdit,
 )
-from .widgets import AddTab, RemoveTab
+from .widgets import AddTab, ChangeWeightsModeCommand, RemoveTab
 
 __all__ = [
     uncertaintyEdit,
@@ -47,4 +47,7 @@ __all__ = [
     TitrationRefineEdit,
     TableCheckAll,
     TableUncheckAll,
+    AddTab,
+    RemoveTab,
+    ChangeWeightsModeCommand,
 ]

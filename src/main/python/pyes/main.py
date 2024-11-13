@@ -37,4 +37,5 @@ class AppContext(ApplicationContext):
 
 if __name__ == "__main__":
     appctxt = AppContext()
-    appctxt.run()
+    exit_code = appctxt.run()
+    sys.exit(exit_code)

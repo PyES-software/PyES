@@ -10,26 +10,72 @@ import pandas as pd
 from commands import ComponentsCellEdit, SpeciesCellEdit
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from PySide6.QtGui import QColorConstants, QPalette, QUndoStack, QColor, QBrush
+from PySide6.QtWidgets import QMessageBox
 from utils_func import getName
 
 
 class TitrationModel(QAbstractTableModel):
     def __init__(self):
         super().__init__()
-        self._data = pd.DataFrame([[0, 0]])
+        self._data = pd.DataFrame(
+            [[False, 0, 0, 0, 0]], columns=[str(i) for i in range(5)]
+        )
+        self.readonly_columns = set()
+        self.readonly_rows = set()
 
-    def data(self, index, role):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
+        if not index.isValid():
+            return False
+
+        row, col = index.row(), index.column()
+
         if role == Qt.ItemDataRole.DisplayRole:
-            value = self._data.iloc[index.row(), index.column()]
-            return str(value)
+            value = self._data.iloc[row, col]
+
+            if col == 0:
+                return bool(value)
+            else:
+                return str(value)
+
+        if role == Qt.ItemDataRole.CheckStateRole and col == 0:
+            return Qt.Checked if self._data.iloc[row, col] else Qt.Unchecked
+
+    def setData(self, index, value, role):
+        if not index.isValid():
+            return False
+
+        row, col = index.row(), index.column()
+
+        if col == 0:
+            self._data.iloc[row, col] = value
+            self.dataChanged.emit(index, index)
+            return True
+
+        return False
+
+    def flags(self, index):
+        if not index.isValid():
+            return Qt.NoItemFlags
+
+        flags = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
+        if index.column() == 0:
+            flags = Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
+
+        return self.updateFlags(flags, index)
 
     def headerData(self, section, orientation, role):
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
                 if section == 0:
+                    return "Ignore"
+                elif section == 1:
                     return "Volume (mL)"
-                else:
+                elif section == 2:
                     return "Potential (V)"
+                elif section == 3:
+                    return "Weight"
+                elif section == 4:
+                    return "pX"
 
             if orientation == Qt.Vertical:
                 return str(self._data.index[section])
@@ -40,14 +86,60 @@ class TitrationModel(QAbstractTableModel):
     def columnCount(self, index=QModelIndex()):
         return self._data.shape[1]
 
+    def updateFlags(self, flags: Qt.ItemFlag, index: QModelIndex):
+        if self.columnReadOnly(index.column()):
+            flags &= ~Qt.ItemFlag.ItemIsEditable
+            flags &= ~Qt.ItemFlag.ItemIsEnabled
+
+        return flags
+
+    def columnReadOnly(self, column):
+        return column in self.readonly_columns
+
+    def setColumnReadOnly(self, columns, readonly=True):
+        for column in columns:
+            if readonly:
+                self.readonly_columns.add(column)
+                self.layoutChanged.emit()
+            else:
+                self.readonly_columns.discard(column)
+                self.layoutChanged.emit()
+
+    def use_all(self):
+        self._data.iloc[:, 0] = False
+        self.layoutChanged.emit()
+
+    def use_even(self):
+        self._data.iloc[::2, 0] = False
+        self._data.iloc[1::2, 0] = True
+        self.layoutChanged.emit()
+
+    def use_odd(self):
+        self._data.iloc[::2, 0] = True
+        self._data.iloc[1::2, 0] = False
+        self.layoutChanged.emit()
+
+    def update_pX(self, e0, slope):
+        # faraday_constant = 9.64853321233100184e4
+        potential = self._data.iloc[:, 2].astype(float).to_numpy()
+        # rtzf = (8.31446261815324 * 298.15) / (z * faraday_constant)
+        if slope == 0:
+            new_pX = 0
+        else:
+            new_pX = (potential - e0) / -slope
+        self._data.iloc[:, 4] = new_pX
+        self._data.iloc[:, 4] = self._data.iloc[:, 4].round(2)
+        self.layoutChanged.emit()
+
 
 # TODO: Think if this can be integrated in the generic model as well
 class PreviewModel(QAbstractTableModel):
     def __init__(self):
         super().__init__()
-        self._data = pd.DataFrame([[0, 0]])
+        self._data = pd.DataFrame([[0, 0, 0]])
         self.blue_colored = 0
         self.red_colored = 0
+        self.green_colored = 0
 
     def data(self, index, role):
         if role == Qt.ItemDataRole.DisplayRole:
@@ -59,6 +151,8 @@ class PreviewModel(QAbstractTableModel):
                 return QBrush(QColor("red"))
             elif index.column() == self.blue_colored:
                 return QBrush(QColor("blue"))
+            elif index.column() == self.green_colored:
+                return QBrush(QColor("green"))
             else:
                 return False
 
@@ -89,7 +183,7 @@ class _GenericModel(QAbstractTableModel):
         self.readonly_rows = set()
 
     def getColumn(self, column: int) -> list:
-        return self._data.iloc[:,column].to_list()
+        return self._data.iloc[:, column].to_list()
 
     def insertRows(
         self, empty_rows: pd.DataFrame, position: int, rows: int, index=QModelIndex()
@@ -282,8 +376,19 @@ class ComponentsModel(_GenericModel):
         if role == Qt.ItemDataRole.EditRole:
             # First column must contain non-empty strings
             if index.column() == 0:
-                if re.match(r"^\S+$", value):
-                    self.undostack.push(ComponentsCellEdit(self, index, value))
+                if (
+                    re.match(r"^\S+$", value)
+                    and value != self._data.iloc[index.row(), index.column()]
+                ):
+                    if value not in self._data["Name"].to_list():
+                        self.undostack.push(ComponentsCellEdit(self, index, value))
+                    else:
+                        QMessageBox.warning(
+                            None,
+                            "Duplicate Name",
+                            f"The name '{value}' already exists. Please choose a different name.",
+                        )
+                        return False
                 else:
                     return False
             # The other column can accept only int values

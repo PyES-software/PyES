@@ -60,6 +60,11 @@ class MultipleRangeSelector(QWidget, Ui_multipleRangeSelector):
             self.gridLayout.itemAtPosition(self.numRanges - 1, 1).widget().setValue(lb)
             self.gridLayout.itemAtPosition(self.numRanges - 1, 2).widget().setValue(ub)
 
+        if self.numRanges == 0:
+            self.addRange()
+            self.gridLayout.itemAtPosition(self.numRanges - 1, 1).widget().setValue(0.0)
+            self.gridLayout.itemAtPosition(self.numRanges - 1, 2).widget().setValue(0.0)
+
     def setUndoStack(self) -> None:
         for field in self.qspinbox_fields:
             field.valueChanged.connect(

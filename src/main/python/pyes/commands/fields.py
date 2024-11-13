@@ -9,8 +9,11 @@ from PySide6.QtWidgets import (
     QLabel,
     QStackedWidget,
     QTableView,
+    QTabWidget,
     QWidget,
 )
+
+from utils_func import get_widgets_from_tab
 
 
 class DoubleSpinBoxEdit(QUndoCommand):
@@ -185,34 +188,79 @@ class imodeEdit(QUndoCommand):
         field: QComboBox,
         affected_fields: list[QWidget],
         affected_models: list[QAbstractItemModel],
+        titration_tabs: QTabWidget,
         index: int,
     ):
+
         QUndoCommand.__init__(self)
         self.field = field
         self.affected_fields = affected_fields
         self.affected_models = affected_models
+        self.titration_tabs = titration_tabs
         self.index = index
         self.previous_index = field.previous_index
         self.state = bool(self.index)
         self.previous_state = bool(self.previous_index)
 
     def undo(self) -> None:
+        from ui.widgets import CustomSpinBox
         for field in self.affected_fields:
             field.setEnabled(self.previous_state)
 
         for model in self.affected_models:
             model.setColumnReadOnly(range(4, 8), not self.previous_state)
 
+        for c0back in get_widgets_from_tab(
+            self.titration_tabs, CustomSpinBox, "c0back"
+        ):
+            c0back.setEnabled(self.state)
+
+        for ctback in get_widgets_from_tab(
+            self.titration_tabs, CustomSpinBox, "ctback"
+        ):
+            ctback.setEnabled(self.state)
+
+        for c0back_label in get_widgets_from_tab(
+            self.titration_tabs, QLabel, "c0back_label"
+        ):
+            c0back_label.setEnabled(self.state)
+
+        for ctback_label in get_widgets_from_tab(
+            self.titration_tabs, QLabel, "ctback_label"
+        ):
+            ctback_label.setEnabled(self.state)
+
         self.field.blockSignals(True)
         self.field.setCurrentIndex(self.previous_index)
         self.field.blockSignals(False)
 
     def redo(self) -> None:
+        from ui.widgets import CustomSpinBox
         for field in self.affected_fields:
             field.setEnabled(self.state)
 
         for model in self.affected_models:
             model.setColumnReadOnly(range(4, 8), not self.state)
+
+        for c0back in get_widgets_from_tab(
+            self.titration_tabs, CustomSpinBox, "c0back"
+        ):
+            c0back.setEnabled(self.state)
+
+        for ctback in get_widgets_from_tab(
+            self.titration_tabs, CustomSpinBox, "ctback"
+        ):
+            ctback.setEnabled(self.state)
+
+        for c0back_label in get_widgets_from_tab(
+            self.titration_tabs, QLabel, "c0back_label"
+        ):
+            c0back_label.setEnabled(self.state)
+
+        for ctback_label in get_widgets_from_tab(
+            self.titration_tabs, QLabel, "ctback_label"
+        ):
+            ctback_label.setEnabled(self.state)
 
         self.field.blockSignals(True)
         self.field.setCurrentIndex(self.index)

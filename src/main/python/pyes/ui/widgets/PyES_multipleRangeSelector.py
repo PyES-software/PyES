@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'PyES_multipleRangeSelector.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.3
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -26,7 +26,7 @@ class Ui_multipleRangeSelector(object):
         if not multipleRangeSelector.objectName():
             multipleRangeSelector.setObjectName(u"multipleRangeSelector")
         multipleRangeSelector.resize(626, 478)
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(multipleRangeSelector.sizePolicy().hasHeightForWidth())

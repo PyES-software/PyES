@@ -3,7 +3,6 @@ import os
 import sys
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 from commands import (
     AddTab,
@@ -26,6 +25,7 @@ from commands import (
     imodeEdit,
     indCompEdit,
     uncertaintyEdit,
+    ChangeWeightsModeCommand,
 )
 from dialogs import (
     AboutDialog,
@@ -33,13 +33,12 @@ from dialogs import (
     EditColumnDialog,
     IonicStrengthInfoDialog,
     IssuesLoadingDialog,
-    NewDialog,
     NotSavedDialog,
     UncertaintyInfoDialog,
     WrongFileDialog,
 )
 from PySide6.QtCore import QByteArray, QModelIndex, QSettings, Qt, QThreadPool, QUrl
-from PySide6.QtGui import QDesktopServices, QKeySequence, QUndoStack
+from PySide6.QtGui import QDesktopServices, QKeySequence, QUndoStack, QTextCursor
 from PySide6.QtWidgets import (
     QComboBox,
     QDoubleSpinBox,
@@ -51,9 +50,9 @@ from PySide6.QtWidgets import (
     QTabBar,
     QTableView,
     QTableWidgetItem,
-    QTabWidget,
     QWidget,
 )
+
 from ui.PyES_main import Ui_MainWindow
 from ui.widgets import CustomComboBox, inputTitrationOpt
 from utils_func import (
@@ -65,6 +64,7 @@ from utils_func import (
     updateCompNames,
     updateIndComponent,
     value_or_problem,
+    get_widgets_from_tab,
 )
 from viewmodels.delegate import (
     CheckBoxDelegate,
@@ -82,6 +82,7 @@ from workers import optimizeWorker
 
 from windows.export import ExportWindow
 from windows.plot import PlotWindow
+from windows.monitor import MonitorWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -96,8 +97,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.threadpool.setStackSize(16 * 2**20)
 
         self.undostack = QUndoStack()
+        # Setup for secondary windows
+        self.PlotWindow = None
+        self.ExportWindow = None
+        self.MonitorWindow = MonitorWindow(self)
 
         self.undostack.cleanChanged.connect(self.check_clean_state)
+        self.undostack.indexChanged.connect(self.MonitorWindow.set_waiting)
 
         self.actionUndo.triggered.connect(self.undostack.undo)
         self.actionUndo.setShortcut(QKeySequence.StandardKey.Undo)
@@ -113,10 +119,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Set window title and project path as defaults
         self.setWindowTitle("PyES - New Project")
         self.project_path = None
-
-        # Setup for secondary windows
-        self.PlotWindow = None
-        self.ExportWindow = None
 
         self.qspinbox_fields: list[QDoubleSpinBox] = [
             self.refIonicStr,
@@ -140,7 +142,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.cback,
         ]
 
-        self.qcombobox_fields: list[QComboBox] = [self.imode, self.dmode, self.indComp]
+        self.qcombobox_fields: list[QComboBox] = [
+            self.imode,
+            self.dmode,
+            self.indComp,
+            self.weightsMode,
+        ]
 
         self.imode_fields: list[QWidget] = [
             self.refIonicStr,
@@ -182,6 +189,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.imode,
                     self.imode_fields,
                     [self.speciesView.model(), self.solidSpeciesView.model()],
+                    self.titration_tabs,
                     index,
                 )
             )
@@ -207,6 +215,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.concModel,
                     self.dmode,
                 )
+            )
+        )
+
+        self.weightsMode.currentIndexChanged.connect(
+            lambda index,
+            field=self.weightsMode,
+            titration_tabs=self.titration_tabs: self.undostack.push(
+                ChangeWeightsModeCommand(field, index, titration_tabs)
             )
         )
 
@@ -239,8 +255,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionOpen.triggered.connect(self.file_open)
 
         self.actionCalculate.triggered.connect(self.calculate)
+
         self.actionExport_Results.triggered.connect(self.exportDist)
         self.actionPlot_Results.triggered.connect(self.plotDist)
+        self.actionMonitor_Results.triggered.connect(self.monitorWindow)
 
         self.actionAbout.triggered.connect(self.help_about)
         self.actionAbout_Qt.triggered.connect(self.help_about_qt)
@@ -346,20 +364,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # declare the checkline used to validate project files
         self.check_line = {"check": "PyES project file --- DO NOT MODIFY THIS LINE!"}
 
-    def file_new(self):
+        self.load_project_file("/Users/lorenzo/Coding/libeq/libeq_h6l.json")
+
+    def save_or_discard(self):
         """
-        Display a prompt asking if you want to create a new project
+        Display a prompt asking if you want to save or discard the current project
         """
         if not self.undostack.isClean():
             choice = NotSavedDialog().exec()
 
-            if choice != QMessageBox.StandardButton.Discard:
+            if choice == QMessageBox.StandardButton.Cancel:
                 return False
-        else:
-            choice = NewDialog().exec()
+            elif choice == QMessageBox.StandardButton.Discard:
+                pass
+            elif choice == QMessageBox.StandardButton.Save:
+                if not self.file_save():
+                    return False
+        return True
 
-            if not choice:
-                return False
+    def file_new(self):
+        """
+        Display a prompt asking if you want to create a new project
+        """
+        if not self.save_or_discard():
+            return False
 
         self.resetFields()
         self.project_path = None
@@ -372,6 +400,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.PlotWindow.close()
         if self.ExportWindow:
             self.ExportWindow.close()
+        self.MonitorWindow.reset_data()
 
         # Disable buttons to show results
         self.exportButton.setEnabled(False)
@@ -449,16 +478,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Load a previously saved project
         """
-        if not self.undostack.isClean():
-            choice = NotSavedDialog().exec()
-
-            if choice == QMessageBox.StandardButton.Cancel:
-                return False
-            elif choice == QMessageBox.StandardButton.Discard:
-                pass
-            elif choice == QMessageBox.StandardButton.Save:
-                if not self.file_save():
-                    return False
+        if not self.save_or_discard():
+            return False
 
         if self.project_path:
             input_path, _ = QFileDialog.getOpenFileName(
@@ -643,7 +664,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
         )
         poentiometric_data = value_or_problem(
-            jsdata, "titration_data", {}, "Potentiometric titration data", problems
+            jsdata, "potentiometry_data", {}, "Potentiometric titration data", problems
         )
 
         titrations = value_or_problem(
@@ -674,6 +695,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.concToRefine.setRowCount(self.numComp.value())
         self.electrodeToRefine.setColumnCount(len(titrations))
 
+        self.weightsMode.setCurrentIndex(
+            value_or_problem(
+                poentiometric_data,
+                "weightsMode",
+                0,
+                "Weights used for calulation",
+                problems,
+            ),
+        )
+
         apply_list_map(
             self.betaToRefine,
             value_or_problem(
@@ -700,7 +731,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             value_or_problem(
                 poentiometric_data,
                 "electrode_refine_flags",
-                [[False for _ in titrations] for _ in range(3)],
+                [[False for _ in titrations] for _ in range(4)],
                 "Electrode parameters to refine flags",
                 problems,
             ),
@@ -708,30 +739,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Calculate tab
 
-        self.jacobianModeComboBox.setCurrentText(
-            value_or_problem(
-                jsdata,
-                "jacobian_mode",
-                "Normal mode",
-                "Computation mode for the jacobian matrix",
-                problems,
-            )
-        )
-
-        self.maxNewtonRaphsonIterationsSpinBox.setValue(
-            value_or_problem(
-                jsdata,
-                "max_nr_iters",
-                200,
-                "Maximum number of iterations of the Newton-Raphson procedure",
-                problems,
-            )
-        )
-
         # Models
         self.compModel._data = pd.DataFrame.from_dict(
             value_or_problem(
-                jsdata, "compModel", self.comp_data, "Components model", problems
+                jsdata,
+                "compModel",
+                pd.concat(
+                    [self.comp_data] * self.numComp.value(), ignore_index=True
+                ).assign(
+                    Name=sorted(
+                        self.compModel.default_names,
+                        key=lambda item: (len(item), item),
+                    )[: self.numComp.value()]
+                ),
+                "Components model",
+                problems,
             )
         )
         self.compModel._data.index = range(self.numComp.value())
@@ -740,7 +762,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             value_or_problem(
                 jsdata,
                 "speciesModel",
-                self.species_data,
+                pd.concat(
+                    [self.species_data] * self.numSpecies.value(), ignore_index=True
+                ),
                 "Species model",
                 problems,
             )
@@ -776,7 +800,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.concModel._data = pd.DataFrame.from_dict(
             value_or_problem(
-                jsdata, "concModel", self.conc_data, "Concentrations model", problems
+                jsdata,
+                "concModel",
+                pd.concat(
+                    [self.conc_data] * self.numComp.value(), ignore_index=True
+                ).set_index(pd.Index(self.compModel._data["Name"])),
+                "Concentrations model",
+                problems,
             )
         )
 
@@ -858,12 +888,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Reset Ionic strenght params
         self.imode.currentIndexChanged.emit(0)
         self.refIonicStr.setValue(0)
-        self.A.setValue(0)
-        self.B.setValue(0)
-        self.c0.setValue(0)
-        self.c1.setValue(0)
+        self.A.setValue(0.5)
+        self.B.setValue(1.5)
+        self.c0.setValue(0.1)
+        self.c1.setValue(0.230)
         self.d0.setValue(0)
-        self.d1.setValue(0)
+        self.d1.setValue(-0.1)
         self.e0.setValue(0)
         self.e1.setValue(0)
 
@@ -885,6 +915,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.logInc.setValue(0)
         self.cback.setValue(0)
         # Potentiometry
+        self.weightsMode.setCurrentIndex(0)
+
         self.betaToRefine.item(0).setText("")
 
         self.concToRefine.setColumnCount(1)
@@ -1383,6 +1415,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exportButton.setEnabled(True)
         self.actionExport_Results.setEnabled(True)
         self.actionPlot_Results.setEnabled(True)
+        self.MonitorWindow.recieve_data(self.result.get("optimized_constants", None))
         info_dialog = CompletedCalculation(succesful=True)
         info_dialog.exec()
 
@@ -1408,11 +1441,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.ExportWindow.result = self.result
         self.ExportWindow.show()
 
+    def monitorWindow(self):
+        """
+        Open the monitor window
+        """
+        if self.MonitorWindow.isHidden():
+            self.MonitorWindow.show()
+        else:
+            self.MonitorWindow.hide()
+
     def storeResults(self, data, name):
         """
         Store result for exporting.
         """
-        self.result[name] = data
+        if name in self.result:
+            if isinstance(self.result[name], list):
+                self.result[name].append(data)
+            else:
+                self.result[name] = [self.result[name], data]
+        else:
+            self.result[name] = data
 
     def plotDist(self, data):
         """
@@ -1429,16 +1477,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Cleanup before closing.
         """
-        if not self.undostack.isClean():
-            choice = NotSavedDialog().exec()
-
-            if choice == QMessageBox.StandardButton.Cancel:
-                event.ignore()
-            elif choice == QMessageBox.StandardButton.Discard:
-                pass
-            elif choice == QMessageBox.StandardButton.Save:
-                if not self.file_save():
-                    event.ignore()
+        if not self.save_or_discard():
+            event.ignore()
 
         self.settings.setValue("mainwindow/geometry", self.saveGeometry())
 
@@ -1447,6 +1487,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.ExportWindow.close()
         if self.PlotWindow:
             self.PlotWindow.close()
+        self.MonitorWindow.close()
 
     def check_clean_state(self, clean: bool) -> None:
         title = self.windowTitle()
@@ -1527,8 +1568,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "finalLog": self.finalLog.value(),
             "logInc": self.logInc.value(),
             "cback": self.cback.value(),
-            "jacobian_mode": self.jacobianModeComboBox.currentText(),
-            "max_nr_iters": self.maxNewtonRaphsonIterationsSpinBox.value(),
         }
 
         titrations = []
@@ -1541,30 +1580,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         conc_refine = get_table_map(self.concToRefine)
         electrode_refine = get_table_map(self.electrodeToRefine)
 
-        data_list["titration_data"] = {
+        data_list["potentiometry_data"] = {
+            "weightsMode": self.weightsMode.currentIndex(),
             "beta_refine_flags": beta_refine,
             "conc_refine_flags": conc_refine,
             "electrode_refine_flags": electrode_refine,
             "titrations": titrations,
         }
 
-        # if saving:
         data_models = {
             "compModel": self.compModel._data.to_dict(),
             "concModel": self.concModel._data.to_dict(),
         }
         data_models["speciesModel"] = self.speciesModel._data.to_dict()
         data_models["solidSpeciesModel"] = self.solidSpeciesModel._data.to_dict()
-        # else:
-        #     data_models = {
-        #         "compModel": self.compModel._data,
-        #         "speciesModel": self.speciesModel._data,
-        #         "solidSpeciesModel": self.solidSpeciesModel._data,
-        #         "concModel": self.concModel._data,
-        #     }
 
         data_list = {**data_list, **data_models}
-
         return data_list
 
     def rename_beta_to_refine(self, index: QModelIndex):
@@ -1602,20 +1633,3 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def editBeta(self, item):
         print(not item.checkState())
-
-
-def get_widgets_from_tab(tab_widget: QTabWidget, widget_type, widget_name=None):
-    """
-    Get all the widgets of a certain type from a tab widget
-    """
-    widgets = []
-    for i in range(tab_widget.count()):
-        tab = tab_widget.widget(i)
-        if tab is not None:
-            if widget_name is not None:
-                widget = tab.findChildren(widget_type, widget_name)
-            else:
-                widget = tab.findChildren(widget_type)
-            if widget is not None:
-                widgets.extend(widget)
-    return widgets

@@ -59,7 +59,7 @@
        </property>
        <item>
         <widget class="QWidget" name="widget_2" native="true">
-         <layout class="QGridLayout" name="gridLayout">
+         <layout class="QGridLayout" name="gridLayout" columnstretch="0,1">
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -72,39 +72,16 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <property name="spacing">
+          <property name="horizontalSpacing">
            <number>2</number>
           </property>
-          <item row="9" column="1">
-           <widget class="QComboBox" name="c_unit">
-            <item>
-             <property name="text">
-              <string>mol/l</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>mmol/l</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>μmol/l</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="4" column="0" colspan="2">
-           <widget class="Line" name="line">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0" colspan="2">
-           <widget class="QCheckBox" name="regions_check">
+          <property name="verticalSpacing">
+           <number>5</number>
+          </property>
+          <item row="3" column="0" colspan="2">
+           <widget class="QPushButton" name="filter">
             <property name="text">
-             <string>Solids as regions</string>
+             <string>Filter</string>
             </property>
            </widget>
           </item>
@@ -115,38 +92,13 @@
             </property>
            </widget>
           </item>
-          <item row="10" column="0">
-           <widget class="QLabel" name="v_unit_label">
-            <property name="text">
-             <string>Volume Units</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0" colspan="2">
-           <widget class="QLabel" name="plot_options_label">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Plot Options&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
           <item row="10" column="1">
-           <widget class="QComboBox" name="v_unit">
-            <item>
-             <property name="text">
-              <string>l</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>ml</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="deselect_all">
-            <property name="text">
-             <string>Deselect All</string>
+           <widget class="QSpinBox" name="textSize">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>10</number>
             </property>
            </widget>
           </item>
@@ -154,6 +106,16 @@
            <widget class="QPushButton" name="select_all">
             <property name="text">
              <string>Select All</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="1">
+           <widget class="QSpinBox" name="lineWidth">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>2</number>
             </property>
            </widget>
           </item>
@@ -179,6 +141,18 @@
               <string>Species</string>
              </attribute>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <property name="leftMargin">
+               <number>2</number>
+              </property>
+              <property name="topMargin">
+               <number>2</number>
+              </property>
+              <property name="rightMargin">
+               <number>2</number>
+              </property>
+              <property name="bottomMargin">
+               <number>2</number>
+              </property>
               <item>
                <widget class="QTableView" name="speciesView">
                 <property name="sizePolicy">
@@ -188,7 +162,7 @@
                  </sizepolicy>
                 </property>
                 <property name="editTriggers">
-                 <set>QAbstractItemView::AllEditTriggers</set>
+                 <set>QAbstractItemView::EditTrigger::AllEditTriggers</set>
                 </property>
                 <property name="alternatingRowColors">
                  <bool>true</bool>
@@ -205,6 +179,18 @@
               <string>Solids</string>
              </attribute>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <property name="leftMargin">
+               <number>2</number>
+              </property>
+              <property name="topMargin">
+               <number>2</number>
+              </property>
+              <property name="rightMargin">
+               <number>2</number>
+              </property>
+              <property name="bottomMargin">
+               <number>2</number>
+              </property>
               <item>
                <widget class="QTableView" name="solidsView">
                 <property name="sizePolicy">
@@ -214,7 +200,7 @@
                  </sizepolicy>
                 </property>
                 <property name="editTriggers">
-                 <set>QAbstractItemView::AllEditTriggers</set>
+                 <set>QAbstractItemView::EditTrigger::AllEditTriggers</set>
                 </property>
                 <property name="alternatingRowColors">
                  <bool>true</bool>
@@ -228,17 +214,99 @@
             </widget>
            </widget>
           </item>
-          <item row="3" column="0" colspan="2">
-           <widget class="QPushButton" name="filter">
+          <item row="1" column="0">
+           <widget class="QPushButton" name="deselect_all">
             <property name="text">
-             <string>Filter</string>
+             <string>Deselect All</string>
             </property>
            </widget>
           </item>
-          <item row="9" column="0">
+          <item row="11" column="0">
+           <widget class="QLabel" name="lineWidth_label">
+            <property name="text">
+             <string>Line width</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="QLabel" name="plot_options_label">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Plot Options&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0" colspan="2">
+           <widget class="QCheckBox" name="regions_check">
+            <property name="text">
+             <string>Solids as regions</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="ColorButton" name="monochrome_color">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="13" column="1">
+           <widget class="QComboBox" name="v_unit">
+            <item>
+             <property name="text">
+              <string>ml</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>l</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="12" column="0">
            <widget class="QLabel" name="c_unit_label">
             <property name="text">
              <string>Concentration Units</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="2">
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="1">
+           <widget class="QComboBox" name="c_unit">
+            <item>
+             <property name="text">
+              <string>mol/l</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>mmol/l</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>μmol/l</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="13" column="0">
+           <widget class="QLabel" name="v_unit_label">
+            <property name="text">
+             <string>Volume Units</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="0">
+           <widget class="QLabel" name="textSize_label">
+            <property name="text">
+             <string>Text size</string>
             </property>
            </widget>
           </item>
@@ -249,10 +317,10 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
-           <widget class="ColorButton" name="monochrome_color">
+          <item row="9" column="0" colspan="2">
+           <widget class="QCheckBox" name="hide_legend_check">
             <property name="text">
-             <string/>
+             <string>Hide legend</string>
             </property>
            </widget>
           </item>
@@ -265,11 +333,20 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <property name="spacing">
-       <number>2</number>
+       <number>7</number>
       </property>
       <property name="leftMargin">
        <number>0</number>
       </property>
+      <item>
+       <widget class="QComboBox" name="titrationSelector">
+        <property name="font">
+         <font>
+          <family>.AppleSystemUIFont</family>
+         </font>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
@@ -320,7 +397,7 @@
           <item>
            <layout class="QFormLayout" name="formLayout_2">
             <property name="sizeConstraint">
-             <enum>QLayout::SetDefaultConstraint</enum>
+             <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
             </property>
             <item row="0" column="1">
              <widget class="QComboBox" name="componentComboBox_perc"/>
@@ -366,7 +443,7 @@
           <item>
            <layout class="QFormLayout" name="formLayout">
             <property name="sizeConstraint">
-             <enum>QLayout::SetDefaultConstraint</enum>
+             <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
             </property>
             <item row="0" column="0">
              <widget class="QLabel" name="componentLabel">

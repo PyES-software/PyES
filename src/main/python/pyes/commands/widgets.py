@@ -5,10 +5,11 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QWidget,
     QTableWidget,
-    QTableWidgetItem,
+    QTableView,
 )
+from ui.widgets.combobox import CustomComboBox
 from ui.widgets import inputTitrationOpt
-from utils_func import apply_table_map, get_table_map
+from utils_func import apply_table_map, get_table_map, get_widgets_from_tab
 
 
 class AddTab(QUndoCommand):
@@ -115,3 +116,43 @@ class RemoveTab(QUndoCommand):
 
         apply_table_map(self.conc_to_refine, self.new_conc_state)
         apply_table_map(self.electrode_to_refine, self.new_electrode_state)
+
+
+class ChangeWeightsModeCommand(QUndoCommand):
+    def __init__(
+        self,
+        field: CustomComboBox,
+        index: int,
+        titration_tabs: QTabWidget,
+    ):
+        QUndoCommand.__init__(self)
+        self.titrations_tables = get_widgets_from_tab(
+            titration_tabs, QTableView, "titrationView"
+        )
+
+        self.field = field
+        self.index = index
+        self.previous_index = field.previous_index
+
+    def undo(self) -> None:
+        self.field.blockSignals(True)
+        self.field.setCurrentIndex(self.previous_index)
+        self.field.blockSignals(False)
+
+        self._update_row_editable(index=self.previous_index)
+
+    def redo(self) -> None:
+        self.field.blockSignals(True)
+        self.field.setCurrentIndex(self.index)
+        self.field.blockSignals(False)
+
+        self._update_row_editable(index=self.index)
+
+    def _update_row_editable(self, index) -> None:
+        # find model in each titration input widget
+        for titration_input in self.titrations_tables:
+            model = titration_input.model()
+            if index == 2:
+                model.setColumnReadOnly([3], False)
+            else:
+                model.setColumnReadOnly([3], True)

@@ -1,7 +1,7 @@
 # This file handles the creation of all the custom dialogs
 # used by the software
 
-from typing import Literal, Optional
+from typing import Literal
 
 import pandas as pd
 from PySide6.QtCore import Qt
@@ -19,18 +19,7 @@ from ui.PyES_about import Ui_dialogAbout
 from ui.PyES_editDialog import Ui_EditColumnDialog
 from ui.PyES_ionicStrengthInfo import Ui_IonicStrengthInfoDialog
 from ui.PyES_load import Ui_loadCSVDialog
-from ui.PyES_newDialog import Ui_dialogNew
 from ui.PyES_uncertaintyInfo import Ui_UncertaintyInfoDialog
-
-
-class NewDialog(QDialog):
-    def __init__(self, parent=None):
-        """
-        Dialog asking if you want to save before initializing new project.
-        """
-        super().__init__(parent)
-        self.ui = Ui_dialogNew()
-        self.ui.setupUi(self)
 
 
 class EditColumnDialog(QDialog, Ui_EditColumnDialog):
@@ -186,19 +175,29 @@ class loadCSVDialog(QDialog, Ui_loadCSVDialog):
         # Get initial settings
         self.updateSettings()
 
+        self.no_weights.stateChanged.connect(self.importWeights)
+
         self.eCol.valueChanged.connect(self.updateEColumnColor)
         self.vCol.valueChanged.connect(self.updateVColumnColor)
+        self.wCol.valueChanged.connect(self.updateWColumnColor)
         self.vCol.setValue(0)
         self.eCol.setValue(1)
+        self.wCol.setValue(2)
 
     def updateEColumnColor(self, v):
         self.previewModel.red_colored = v
         self.previewModel.layoutChanged.emit()
+        self.updateSettings()
 
     def updateVColumnColor(self, v):
         self.previewModel.blue_colored = v
         self.previewModel.layoutChanged.emit()
+        self.updateSettings()
 
+    def updateWColumnColor(self, v):
+        self.previewModel.green_colored = v
+        self.previewModel.layoutChanged.emit()
+        self.updateSettings()
 
     def updateSettings(self):
         self.settings = {
@@ -208,6 +207,7 @@ class loadCSVDialog(QDialog, Ui_loadCSVDialog):
             "footer": self.footer.value(),
             "vcol": self.vCol.value(),
             "ecol": self.eCol.value(),
+            "wcol": self.wCol.value(),
         }
 
         if not self.separator.isEnabled():
@@ -234,6 +234,15 @@ class loadCSVDialog(QDialog, Ui_loadCSVDialog):
             self.decimal.setEnabled(True)
         self.updateSettings()
 
+    def importWeights(self, s):
+        if s == 2:
+            self.wCol.setEnabled(False)
+            self.previewModel.green_colored = None
+        else:
+            self.wCol.setEnabled(True)
+            self.previewModel.green_colored = None
+        self.updateSettings()
+
     def loadFile(self):
         self.fileName, _ = QFileDialog.getOpenFileName(
             self, "Open CSV", "~", "CSV (*.csv)"
@@ -252,3 +261,14 @@ class loadCSVDialog(QDialog, Ui_loadCSVDialog):
                 header=None,
             )
             self.previewModel.layoutChanged.emit()
+
+    def get_final_model(self):
+        columns = [self.settings["vcol"], self.settings["ecol"], self.settings["wcol"]]
+        data = self.previewModel._data.iloc[:, columns]
+        if self.no_weights.isChecked():
+            data.iloc[:, 2] = 0
+
+        data.insert(0, "ignored", False)
+        data.insert(4, "pX", 0)
+        data = data.astype(float)
+        return data
