@@ -44,4 +44,5 @@ cmd = '(! grep -q "beta" <<< "2.0.0"  && poetry run python scripts/changelog_gen
 
 [[before_commit]]
 name = "Update Beta Status"
-cmd = 'grep -q "beta" <<< "{new_version}" && sed -i "" "s/"PyES Beta"/"PyES Beta"/g; s/"PyES"/"PyES Beta"/g" src/build/settings/base.json || sed -i "" "s/"PyES Beta"/"PyES"/g; s/"PyES"/"PyES"/g" src/build/settings/base.json'
+cmd = './scripts/beta_renamer.sh {new_version}'
+
