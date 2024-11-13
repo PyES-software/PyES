@@ -24,7 +24,7 @@ class LineSpinBox(QLineEdit):
         QLineEdit.__init__(self, parent)
         float_validator = DotDoubleValidator(bottom, top, decimals)
         float_validator.setLocale(QLocale("UnitedStates"))
-        float_validator.setNotation(DotDoubleValidator.StandardNotation)
+        float_validator.setNotation(DotDoubleValidator.ScientificNotation)
 
         self.setValidator(float_validator)
 
