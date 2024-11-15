@@ -263,12 +263,17 @@ class loadCSVDialog(QDialog, Ui_loadCSVDialog):
             self.previewModel.layoutChanged.emit()
 
     def get_final_model(self):
-        columns = [self.settings["vcol"], self.settings["ecol"], self.settings["wcol"]]
+        columns = [self.settings["vcol"], self.settings["ecol"]]
+        if not self.no_weights.isChecked():
+            columns.append(self.settings["wcol"])
+        else:
+            columns.append(0)
         data = self.previewModel._data.iloc[:, columns]
         if self.no_weights.isChecked():
             data.iloc[:, 2] = 0
 
         data.insert(0, "ignored", False)
+        data.columns = [str(i) for i in range(data.shape[1])]
         data.insert(4, "pX", 0)
-        data = data.astype(float)
+        # data = data.astype(float)
         return data
