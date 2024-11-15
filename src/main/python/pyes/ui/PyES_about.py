@@ -109,7 +109,7 @@ class Ui_dialogAbout(object):
             QCoreApplication.translate("dialogAbout", "About", None)
         )
         self.label.setText(
-            QCoreApplication.translate("dialogAbout", "PyES Version 2.0.0beta", None)
+            QCoreApplication.translate("dialogAbout", "PyES Version 2.0.1beta", None)
         )
         self.label_3.setText(
             QCoreApplication.translate(
