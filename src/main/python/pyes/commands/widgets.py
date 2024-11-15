@@ -2,13 +2,13 @@ from PySide6.QtGui import QUndoCommand, QUndoStack
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QTabBar,
+    QTableView,
+    QTableWidget,
     QTabWidget,
     QWidget,
-    QTableWidget,
-    QTableView,
 )
-from ui.widgets.combobox import CustomComboBox
 from ui.widgets import inputTitrationOpt
+from ui.widgets.combobox import CustomComboBox
 from utils_func import apply_table_map, get_table_map, get_widgets_from_tab
 
 

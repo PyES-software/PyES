@@ -2,10 +2,10 @@ import logging
 import os
 import time
 import traceback
+import warnings
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-import warnings
 
 import numpy as np
 import pandas as pd
@@ -16,10 +16,10 @@ from libeq import (
     species_concentration,
     uncertanties,
 )
-from libeq.solver.solver_utils import _titration_background_ions_c
+from libeq.excepts import DivergedIonicStrengthWarning
 from libeq.optimizers.potentiometry import ravel
 from libeq.solver.solids_solver import _compute_saturation_index
-from libeq.excepts import DivergedIonicStrengthWarning
+from libeq.solver.solver_utils import _titration_background_ions_c
 
 # from optimizers.distribution import Distribution
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
@@ -50,10 +50,12 @@ class optimizeWorker(QRunnable):
         # If run with debug enabled create the logging istance
 
         def log_reporter(*args):
-            report = pd.DataFrame({
-                "logB": args[1],
-                "logB shift": args[2],
-            })
+            report = pd.DataFrame(
+                {
+                    "logB": args[1],
+                    "logB shift": args[2],
+                }
+            )
 
             report.index = [
                 solver_data.species_names[solver_data.nc :][ix]
@@ -113,9 +115,9 @@ class optimizeWorker(QRunnable):
 
         ok, errors = solver_data.model_ready
         if not ok:
-            error_messages = "\n".join([
-                f"  {field}: {msg}" for field, msg in errors.items()
-            ])
+            error_messages = "\n".join(
+                [f"  {field}: {msg}" for field, msg in errors.items()]
+            )
             self.signals.aborted.emit(
                 "Model not ready, please check the errors and try again:\n"
                 + error_messages
@@ -127,9 +129,9 @@ class optimizeWorker(QRunnable):
             case 0:
                 ok, errors = solver_data.titration_ready
                 if not ok:
-                    error_messages = "\n".join([
-                        f"  {field}: {msg}" for field, msg in errors.items()
-                    ])
+                    error_messages = "\n".join(
+                        [f"  {field}: {msg}" for field, msg in errors.items()]
+                    )
                     self.signals.aborted.emit(
                         "Titration data not complete, please check the errors and try again:\n"
                         + error_messages
@@ -139,9 +141,9 @@ class optimizeWorker(QRunnable):
             case 1:
                 ok, errors = solver_data.distribution_ready
                 if not ok:
-                    error_messages = "\n".join([
-                        f"  {field}: {msg}" for field, msg in errors.items()
-                    ])
+                    error_messages = "\n".join(
+                        [f"  {field}: {msg}" for field, msg in errors.items()]
+                    )
                     self.signals.aborted.emit(
                         "Distribution data not complete, please check the errors and try again:\n"
                         + error_messages
@@ -151,9 +153,9 @@ class optimizeWorker(QRunnable):
             case 2:
                 ok, errors = solver_data.potentiometry_ready
                 if not ok:
-                    error_messages = "\n".join([
-                        f"  {field}: {msg}" for field, msg in errors.items()
-                    ])
+                    error_messages = "\n".join(
+                        [f"  {field}: {msg}" for field, msg in errors.items()]
+                    )
                     self.signals.aborted.emit(
                         "Potentiometry optimization data not complete, please check the errors and try again:\n"
                         + error_messages
@@ -288,10 +290,14 @@ class optimizeWorker(QRunnable):
                         return_extra["calculated_potential"]
                     )
 
-                    self.result_index = np.concatenate([
-                        t.v_add[idx_to_keep[i]]
-                        for i, t in enumerate(solver_data.potentiometry_opts.titrations)
-                    ])
+                    self.result_index = np.concatenate(
+                        [
+                            t.v_add[idx_to_keep[i]]
+                            for i, t in enumerate(
+                                solver_data.potentiometry_opts.titrations
+                            )
+                        ]
+                    )
 
                     self.result_index = [
                         self.result_index,
@@ -344,9 +350,13 @@ class optimizeWorker(QRunnable):
 
                     self._storeResult(optimized_constants, "optimized_constants")
                 else:
-                    result, log_beta, log_ks, saturation_index, total_concentration = (
-                        EqSolver(solver_data, mode=mode)
-                    )
+                    (
+                        result,
+                        log_beta,
+                        log_ks,
+                        saturation_index,
+                        total_concentration,
+                    ) = EqSolver(solver_data, mode=mode)
                     slices = [0, result.shape[0]]
                     # Calculate elapsed time between start to finish
                     elapsed_time = round((time.time() - start_time), 5)
@@ -588,13 +598,13 @@ class optimizeWorker(QRunnable):
                 columns=solver_data.solids_names,
             )
 
-            sigma_ref_tot_conc_soluble = np.array([
-                self.conc_sigma[:, ix] for ix in ref_percentage_soluble_ix
-            ]).T
+            sigma_ref_tot_conc_soluble = np.array(
+                [self.conc_sigma[:, ix] for ix in ref_percentage_soluble_ix]
+            ).T
 
-            sigma_ref_tot_conc_solids = np.array([
-                self.conc_sigma[:, ix] for ix in ref_percentage_solids_ix
-            ]).T
+            sigma_ref_tot_conc_solids = np.array(
+                [self.conc_sigma[:, ix] for ix in ref_percentage_solids_ix]
+            ).T
 
             soluble_percentages_sigma = self._create_df_result(
                 soluble_percentages_np

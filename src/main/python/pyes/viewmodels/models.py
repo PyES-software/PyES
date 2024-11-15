@@ -9,7 +9,7 @@ from typing import Any
 import pandas as pd
 from commands import ComponentsCellEdit, SpeciesCellEdit
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
-from PySide6.QtGui import QColorConstants, QPalette, QUndoStack, QColor, QBrush
+from PySide6.QtGui import QBrush, QColor, QColorConstants, QPalette, QUndoStack
 from PySide6.QtWidgets import QMessageBox
 from utils_func import getName
 

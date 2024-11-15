@@ -247,9 +247,9 @@ class SpeciesRemoveRows(QUndoCommand):
 
     def undo(self) -> None:
         self.model.insertRows(position=self.position - self.number, rows=self.number)
-        self.model._data.iloc[(self.position - self.number) : (self.position), :] = (
-            self.removed_rows
-        )
+        self.model._data.iloc[
+            (self.position - self.number) : (self.position), :
+        ] = self.removed_rows
         for item, row in zip(self.list_items, self.indexes):
             self.betas_list.insertItem(row, item)
 
@@ -518,9 +518,9 @@ class ComponentsRemoveRows(QUndoCommand):
 
         for i, m in enumerate(self.titrations_models):
             m.insertRows(position=self.position - self.number, rows=self.number)
-            m._data.iloc[(self.position - self.number) : (self.position), :] = (
-                self.titrations_removed_rows[i]
-            )
+            m._data.iloc[
+                (self.position - self.number) : (self.position), :
+            ] = self.titrations_removed_rows[i]
 
         self.conc_to_refine.setRowCount(len(self.previous_state))
         apply_table_map(self.conc_to_refine, self.previous_state)

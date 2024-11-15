@@ -14,9 +14,9 @@ def _comp_info(
 
     if mode == "distribution":
         comp_info["Tot. C. [mol/l]"] = data.distribution_opts.c0
-        comp_info["Tot. C. [mol/l]"][data.distribution_opts.independent_component] = (
-            None
-        )
+        comp_info["Tot. C. [mol/l]"][
+            data.distribution_opts.independent_component
+        ] = None
 
         comp_info = comp_info.set_index([data.components, data.charges]).rename_axis(
             index=["Component", "Charge"]
@@ -27,11 +27,13 @@ def _comp_info(
     elif mode == "titration":
         comp_info["Vessel Conc. [mol/l]"] = data.titration_opts.c0
         comp_info["Titrant Conc. [mol/l]"] = data.titration_opts.ct
-        comp_info = comp_info.set_index([
-            data.components,
-            data.charges,
-            [data.titration_opts.v0 for _ in data.components],
-        ]).rename_axis(index=["Component", "Charge", "V0 [ml]"])
+        comp_info = comp_info.set_index(
+            [
+                data.components,
+                data.charges,
+                [data.titration_opts.v0 for _ in data.components],
+            ]
+        ).rename_axis(index=["Component", "Charge", "V0 [ml]"])
 
         if errors:
             comp_info["Sigma C0"] = data.titration_opts.c0_sigma
@@ -91,15 +93,17 @@ def _comp_info(
         if errors:
             comp_info["Sigma C0"] = np.concatenate(vessel_conc_sigma, axis=0)
             comp_info["Sigma CT"] = np.concatenate(titrant_conc_sigma, axis=0)
-        comp_info = comp_info.set_index([
-            titration_index,
-            e0_index,
-            es_index,
-            v0_index,
-            vs_index,
-            components_index,
-            charges_index,
-        ]).rename_axis(
+        comp_info = comp_info.set_index(
+            [
+                titration_index,
+                e0_index,
+                es_index,
+                v0_index,
+                vs_index,
+                components_index,
+                charges_index,
+            ]
+        ).rename_axis(
             index=[
                 "Titration",
                 "E0 [mV]",

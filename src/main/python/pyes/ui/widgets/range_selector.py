@@ -1,8 +1,7 @@
-from PySide6.QtWidgets import QWidget, QDoubleSpinBox, QLabel
+from commands.fields import DoubleSpinBoxEdit
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QUndoStack
-
-from commands.fields import DoubleSpinBoxEdit
+from PySide6.QtWidgets import QDoubleSpinBox, QLabel, QWidget
 
 from .PyES_multipleRangeSelector import Ui_multipleRangeSelector
 from .spinbox import CustomSpinBox

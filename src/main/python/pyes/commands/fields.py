@@ -12,7 +12,6 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QWidget,
 )
-
 from utils_func import get_widgets_from_tab
 
 
@@ -191,7 +190,6 @@ class imodeEdit(QUndoCommand):
         titration_tabs: QTabWidget,
         index: int,
     ):
-
         QUndoCommand.__init__(self)
         self.field = field
         self.affected_fields = affected_fields
@@ -204,6 +202,7 @@ class imodeEdit(QUndoCommand):
 
     def undo(self) -> None:
         from ui.widgets import CustomSpinBox
+
         for field in self.affected_fields:
             field.setEnabled(self.previous_state)
 
@@ -236,6 +235,7 @@ class imodeEdit(QUndoCommand):
 
     def redo(self) -> None:
         from ui.widgets import CustomSpinBox
+
         for field in self.affected_fields:
             field.setEnabled(self.state)
 

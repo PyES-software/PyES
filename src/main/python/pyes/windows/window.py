@@ -1,16 +1,16 @@
 import json
 import os
 import sys
-from pathlib import Path
 import traceback
+from pathlib import Path
 
 import pandas as pd
-from libeq import SolverData
 from commands import (
     AddTab,
     BetaRefineCheckAll,
     BetaRefineEdit,
     BetaRefineUncheckAll,
+    ChangeWeightsModeCommand,
     ComponentsAddRows,
     ComponentsRemoveRows,
     ComponentsSwapRows,
@@ -27,7 +27,6 @@ from commands import (
     imodeEdit,
     indCompEdit,
     uncertaintyEdit,
-    ChangeWeightsModeCommand,
 )
 from dialogs import (
     AboutDialog,
@@ -39,8 +38,9 @@ from dialogs import (
     UncertaintyInfoDialog,
     WrongFileDialog,
 )
+from libeq import SolverData
 from PySide6.QtCore import QByteArray, QModelIndex, QSettings, Qt, QThreadPool, QUrl
-from PySide6.QtGui import QDesktopServices, QKeySequence, QUndoStack, QTextCursor
+from PySide6.QtGui import QDesktopServices, QKeySequence, QTextCursor, QUndoStack
 from PySide6.QtWidgets import (
     QComboBox,
     QDoubleSpinBox,
@@ -54,7 +54,6 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QWidget,
 )
-
 from ui.PyES_main import Ui_MainWindow
 from ui.widgets import CustomComboBox, inputTitrationOpt
 from utils_func import (
@@ -63,10 +62,10 @@ from utils_func import (
     cleanData,
     get_list_map,
     get_table_map,
+    get_widgets_from_tab,
     updateCompNames,
     updateIndComponent,
     value_or_problem,
-    get_widgets_from_tab,
 )
 from viewmodels.delegate import (
     CheckBoxDelegate,
@@ -83,8 +82,8 @@ from viewmodels.models import (
 from workers import optimizeWorker
 
 from windows.export import ExportWindow
-from windows.plot import PlotWindow
 from windows.monitor import MonitorWindow
+from windows.plot import PlotWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):

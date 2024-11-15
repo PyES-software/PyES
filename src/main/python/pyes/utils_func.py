@@ -3,13 +3,13 @@ import pandas as pd
 from openpyxl.utils import get_column_letter
 from PySide6.QtCore import QAbstractItemModel, Qt
 from PySide6.QtWidgets import (
-    QWidget,
     QComboBox,
     QListWidget,
     QTableView,
     QTableWidget,
     QTableWidgetItem,
     QTabWidget,
+    QWidget,
 )
 from viewmodels.delegate import ComboBoxDelegate
 

@@ -16,7 +16,6 @@ from PySide6.QtWidgets import (
 
 
 class NumberFormatDelegate(QItemDelegate):
-
     def __init__(
         self,
         parent=None,
@@ -31,6 +30,7 @@ class NumberFormatDelegate(QItemDelegate):
 
     def createEditor(self, parent, option, index):
         from ui.widgets.spinbox import LineSpinBox
+
         editor = LineSpinBox(
             parent,
             bottom=self.bottom,

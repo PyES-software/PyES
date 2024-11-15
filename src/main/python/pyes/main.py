@@ -17,7 +17,7 @@ class AppContext(ApplicationContext):
                 input_path,
                 "r",
             ) as input_file:
-                jsdata = json.load(input_file)    
+                jsdata = json.load(input_file)
             w.load_project_file(jsdata)
 
         w.show()

@@ -1,23 +1,21 @@
+import pandas as pd
+from commands.fields import DoubleSpinBoxEdit
+from dialogs import loadCSVDialog
+from PySide6.QtGui import QUndoCommand, QUndoStack
 from PySide6.QtWidgets import (
-    QLineEdit,
-    QDoubleSpinBox,
-    QWidget,
-    QSpinBox,
     QComboBox,
-    QTableView,
+    QDoubleSpinBox,
+    QLineEdit,
     QScrollArea,
+    QSpinBox,
+    QTableView,
+    QWidget,
 )
-from PySide6.QtGui import QUndoStack, QUndoCommand
-
 from viewmodels.delegate import CheckBoxDelegate
 
 from .combobox import CustomComboBox
-from .range_selector import MultipleRangeSelector
-
 from .PyES_inputTitrationOpt import Ui_inputTitrationOpt
-from commands.fields import DoubleSpinBoxEdit
-from dialogs import loadCSVDialog
-import pandas as pd
+from .range_selector import MultipleRangeSelector
 
 
 class inputTitrationOpt(QWidget, Ui_inputTitrationOpt):
@@ -27,7 +25,7 @@ class inputTitrationOpt(QWidget, Ui_inputTitrationOpt):
         undo_stack: QUndoStack = None,
         components: list[str] = ["A"],
     ) -> None:
-        from viewmodels.models import TitrationModel, ConcentrationsModel
+        from viewmodels.models import ConcentrationsModel, TitrationModel
 
         super().__init__(parent)
         self.setupUi(self)

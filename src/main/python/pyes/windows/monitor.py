@@ -2,10 +2,11 @@ import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
 import pandas as pd
 from pandas import ExcelWriter
-from PySide6.QtWidgets import QFileDialog, QWidget, QTableWidgetItem
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QFileDialog, QTableWidgetItem, QWidget
 from ui.PyES_monitorWindow import Ui_MonitorWindow
 from utils_func import resultToCSV, resultToExcel
 
@@ -18,12 +19,14 @@ class MonitorWindow(QWidget, Ui_MonitorWindow):
 
         self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.setColumnCount(4)
-        self.tableWidget.setHorizontalHeaderLabels([
-            "Type",
-            "Name",
-            "Value",
-            "Difference",
-        ])
+        self.tableWidget.setHorizontalHeaderLabels(
+            [
+                "Type",
+                "Name",
+                "Value",
+                "Difference",
+            ]
+        )
         # Add 3 rows to the tableWidget
 
         # Populate the rows with test strings

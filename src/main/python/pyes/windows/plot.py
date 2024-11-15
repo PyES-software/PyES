@@ -10,12 +10,12 @@ import pandas as pd
 import pyqtgraph as pg
 import pyqtgraph.exporters
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QStandardItem, QStandardItemModel, QFont
+from PySide6.QtGui import QFont, QStandardItem, QStandardItemModel
 from PySide6.QtWidgets import QDialog, QFileDialog, QInputDialog, QMainWindow, QToolTip
 from ui.PyES_graphExport import Ui_ExportGraphDialog
 from ui.PyES_pyqtgraphPlotExport import Ui_PlotWindow
-from viewmodels.delegate import ColorPickerDelegate
 from utils_func import resultToDataList
+from viewmodels.delegate import ColorPickerDelegate
 
 if typing.TYPE_CHECKING:
     from windows.window import MainWindow
