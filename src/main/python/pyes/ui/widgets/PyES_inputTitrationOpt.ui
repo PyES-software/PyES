@@ -95,7 +95,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>282</width>
+          <width>283</width>
           <height>69</height>
          </rect>
         </property>
@@ -142,6 +142,9 @@
        <property name="suffix">
         <string> mV</string>
        </property>
+       <property name="decimals">
+        <number>4</number>
+       </property>
        <property name="minimum">
         <double>-10000.000000000000000</double>
        </property>
@@ -159,6 +162,9 @@
      </item>
      <item row="8" column="1">
       <widget class="CustomSpinBox" name="slope">
+       <property name="decimals">
+        <number>4</number>
+       </property>
        <property name="minimum">
         <double>-10000.000000000000000</double>
        </property>
@@ -231,6 +237,9 @@
        <property name="suffix">
         <string/>
        </property>
+       <property name="decimals">
+        <number>4</number>
+       </property>
        <property name="minimum">
         <double>0.000000000000000</double>
        </property>
@@ -281,6 +290,9 @@
        <property name="suffix">
         <string/>
        </property>
+       <property name="decimals">
+        <number>4</number>
+       </property>
        <property name="maximum">
         <double>10000.000000000000000</double>
        </property>
@@ -300,6 +312,9 @@
       <widget class="CustomSpinBox" name="initialVolume">
        <property name="suffix">
         <string> ml</string>
+       </property>
+       <property name="decimals">
+        <number>4</number>
        </property>
        <property name="maximum">
         <double>10000.000000000000000</double>
