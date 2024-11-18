@@ -552,7 +552,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.load_project_file(parsed_data)
 
-            self.dmode.setCurrentIndex(-1)
+            self.dmode.setCurrentIndex(2)
 
     def load_project_file(self, jsdata, input_path=None):
         self.resetFields()
