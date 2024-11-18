@@ -31,7 +31,7 @@ jobs:
           tag: ${{ github.ref }}
           name: Release ${{ github.ref_name }}
           bodyFile: release_text.md
-          draft: ${{ steps.release_type.outputs.is_beta }}
+          draft: false
           prerelease: ${{ steps.release_type.outputs.is_beta }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
