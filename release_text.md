@@ -1,10 +1,12 @@
-# Version v2.0.1beta
+# Version v2.0.2beta
 
 ## Fixes
-* Fix regression in opening file from cli argument ([c39cf5a](https://github.com/Kastakin/PyES/commit/c39cf5a332acac2a4de465872e500d82e0e294d3))
-* Solve importing and exporting issues of titration data ([8bc5e03](https://github.com/Kastakin/PyES/commit/8bc5e03ae20c3d293fa1fcd752543d67d033f312))
+* Correctly handle github ref tags ([74e2e3f](https://github.com/Kastakin/PyES/commit/74e2e3fa48ac7023c808a301e37f408642d2d4a5))
+* Correctly assign artifact names in release ([28ee8ea](https://github.com/Kastakin/PyES/commit/28ee8eaa8b9e0deb3db92d0b8c701033cab0caad))
+* correctly select work mode when importing BSTAC files ([556adbd](https://github.com/Kastakin/PyES/commit/556adbd10a331ad7c625a577d5fe767e7aca3c21))
+* Increase number of allowed decimals for titration fields ([64e7c73](https://github.com/Kastakin/PyES/commit/64e7c736ef88a1446bc0e385aea5e1c3acc84bb9))
 
 ## Chores
-* Formatting and import sorting ([43b6bdd](https://github.com/Kastakin/PyES/commit/43b6bdda8c0871e820a0b1508eeb3c261bab2ed5))
+* Update libeq to fix bstac import ([f9ba49c](https://github.com/Kastakin/PyES/commit/f9ba49c878d28f1ac9614071ee81c09046b3f3df))
 
 
