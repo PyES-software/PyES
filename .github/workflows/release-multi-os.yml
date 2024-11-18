@@ -28,7 +28,7 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1.14.0
         with:
-          tag: ${{ github.ref_name }}
+          tag: ${{ github.ref }}
           name: Release ${{ github.ref_name }}
           bodyFile: release_text.md
           draft: ${{ steps.release_type.outputs.is_beta }}
@@ -66,7 +66,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES Beta.deb' || 'target/PyES.deb' }}
           asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.deb', github.ref_name) || format('PyES-{0}.deb', github.ref_name) }}
-          tag: ${{ github.ref_name }}
+          tag: ${{ github.ref }}
           overwrite: true
 
   build-macos:
@@ -94,7 +94,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES Beta.dmg' || 'target/PyES.dmg' }}
           asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.dmg', github.ref_name) || format('PyES-{0}.dmg', github.ref_name) }}
-          tag: ${{ github.ref_name }}
+          tag: ${{ github.ref }}
           overwrite: true
 
   build-windows:
@@ -122,7 +122,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES BetaSetup.exe' || 'target/PyESSetup.exe' }}
           asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.exe', github.ref_name) || format('PyES-{0}.exe', github.ref_name) }}
-          tag: ${{ github.ref_name }}
+          tag: ${{ github.ref }}
           overwrite: true
 
   rollback-release:
@@ -136,6 +136,6 @@ jobs:
       - name: Rollback
         uses: author/action-rollback@1.0.4
         with:
-          tag: ${{ github.ref_name }}
+          tag: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
