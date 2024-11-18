@@ -65,7 +65,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES Beta.deb' || 'target/PyES.deb' }}
-          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && 'PyES Beta-${{ github.ref_name }}.deb' || 'PyES-${{ github.ref_name }}.deb' }}
+          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.deb', github.ref_name) || format('PyES-{0}.deb', github.ref_name) }}
           tag: ${{ github.ref_name }}
           overwrite: true
 
@@ -93,7 +93,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES Beta.dmg' || 'target/PyES.dmg' }}
-          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && 'PyES Beta-${{ github.ref_name }}.dmg' || 'PyES-${{ github.ref_name }}.dmg' }}
+          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.dmg', github.ref_name) || format('PyES-{0}.dmg', github.ref_name) }}
           tag: ${{ github.ref_name }}
           overwrite: true
 
@@ -121,7 +121,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES BetaSetup.exe' || 'target/PyESSetup.exe' }}
-          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && 'PyES Beta-${{ github.ref_name }}.exe' || 'PyES-${{ github.ref_name }}.exe' }}
+          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.exe', github.ref_name) || format('PyES-{0}.exe', github.ref_name) }}
           tag: ${{ github.ref_name }}
           overwrite: true
 
