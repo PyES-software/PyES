@@ -15,3 +15,11 @@ TODO:
 [LIBEQ] Check error recovery return
 [x] Rapid result monitoring
 [x] Total Sigma for each iteration
+
+[] Verificare rimozione intervallo curva
+[] Rivalutare unione punti in pxrange
+[] Verificare pesi bstac
+[] Inserire unità di misura concentrazioni (in tutte work mode)
+[] Allargare colonna forza ionica input
+[] Verificare percentuali zn-edta (mai 100%)
+[] Riordinare fogli output esportato
