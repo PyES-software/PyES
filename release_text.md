@@ -1,6 +1,6 @@
-# Version v2.0.6beta
+# Version v2.0.7beta
 
 ## Fixes
-* Shiboken version ([1f02bfc](https://github.com/Kastakin/PyES/commit/1f02bfc9cd99cbd4c319222063a099721dafbb92))
+* Try rolling back to previous working PySide version ([de023c3](https://github.com/Kastakin/PyES/commit/de023c3f1852d9d49cdee2339e0a007a6e397095))
 
 
