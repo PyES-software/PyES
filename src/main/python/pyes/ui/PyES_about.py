@@ -68,7 +68,7 @@ class Ui_dialogAbout(object):
 
     def retranslateUi(self, dialogAbout):
         dialogAbout.setWindowTitle(QCoreApplication.translate("dialogAbout", u"About", None))
-        self.label.setText(QCoreApplication.translate("dialogAbout", u"PyES Version 2.0.5beta", None))
+        self.label.setText(QCoreApplication.translate("dialogAbout", u"PyES Version 2.0.6beta", None))
         self.label_3.setText(QCoreApplication.translate("dialogAbout", u"<html><head/><body><p>PyES is a sotware created by the chemistry department of the University of Turin in collabration with the University of Messina and the University of Bialystok.</p><p>Based on the previous work of Professor Sammartano of the University of Messina, PyES aims to empower researchers with the ability to easly compute species distribution and simulate titration curves even for complex systems.</p><p>PyES is licensed under GPL3 and its source code is aviable on its entirety on <a href=\"https://github.com/Kastakin/PyES\"><span style=\" text-decoration: underline; color:#0000ff;\">GitHub</span></a>.</p></body></html>", None))
     # retranslateUi
 

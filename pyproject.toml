@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyes"
-version = "2.0.5beta"
+version = "2.0.6beta"
 description = ""
 authors = ["Lorenzo Castellino <castellino96@gmail.com>"]
 license = "GPLv3"
