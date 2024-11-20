@@ -12,7 +12,7 @@ ppg = {git = "ssh://git@github.com/Kastakin/ppg.git", rev = "main"}
 pandas = "^1.5.0"
 openpyxl = "^3.0.9"
 pyqtgraph = "^0.13.0"
-pyside6-essentials = "~6.8"
+pyside6-essentials = "~6.4"
 libeq = {git = "https://github.com/Kastakin/libeq.git"}
 
 [tool.poetry.group.dev.dependencies]
