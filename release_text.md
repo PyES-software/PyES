@@ -1,6 +1,9 @@
-# Version v2.0.4beta
+# Version v2.0.5beta
 
 ## Fixes
-* Tentative fix in runner version (hdiutil: create failed) ([b8f1f7c](https://github.com/Kastakin/PyES/commit/b8f1f7c52a1cbf9499ddda65556cd662ddbe3604))
+* Tentative fix for W11 UI problems ([2b09dc1](https://github.com/Kastakin/PyES/commit/2b09dc1038d40472627370d9f84ba13ebc1b194b))
+
+## Others
+* Add todo tasks for final release ([86fb44b](https://github.com/Kastakin/PyES/commit/86fb44bb1758c0a6c717e95737e89d95fe2050f5))
 
 
