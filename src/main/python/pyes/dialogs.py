@@ -176,6 +176,7 @@ class loadCSVDialog(QDialog, Ui_loadCSVDialog):
         self.updateSettings()
 
         self.no_weights.stateChanged.connect(self.importWeights)
+        self.no_weights.setChecked(True)
 
         self.eCol.valueChanged.connect(self.updateEColumnColor)
         self.vCol.valueChanged.connect(self.updateVColumnColor)
@@ -265,7 +266,11 @@ class loadCSVDialog(QDialog, Ui_loadCSVDialog):
     def get_final_model(self):
         columns = [self.settings["vcol"], self.settings["ecol"]]
         if not self.no_weights.isChecked():
-            columns.append(self.settings["wcol"])
+            wcol = self.settings["wcol"]
+            if self.previewModel._data.columns.size <= wcol:
+                columns.append(0)
+            else:
+                columns.append(self.settings["wcol"])
         else:
             columns.append(0)
         data = self.previewModel._data.iloc[:, columns]
