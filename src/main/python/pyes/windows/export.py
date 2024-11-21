@@ -123,7 +123,7 @@ class ExportWindow(QWidget, Ui_ExportWindow):
                     resultToExcel(
                         writer,
                         self.result["optimized_constants"],
-                        "Optimized Constants",
+                        "Optimized Parameters",
                     )
 
                 if self.distribution_check_excel.isChecked():

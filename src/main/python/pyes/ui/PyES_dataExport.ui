@@ -103,16 +103,16 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="distribution_check_excel">
+           <widget class="QCheckBox" name="optimized_check_excel">
             <property name="text">
-             <string>Distribution</string>
+             <string>Optimized parameters</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="perc_check_excel">
+           <widget class="QCheckBox" name="distribution_check_excel">
             <property name="text">
-             <string>% with respect to component</string>
+             <string>Species distribution</string>
             </property>
            </widget>
           </item>
@@ -124,16 +124,16 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="adjlogb_check_excel">
+           <widget class="QCheckBox" name="perc_check_excel">
             <property name="text">
-             <string>Adjusted formation constants</string>
+             <string>Percentages with respect to component</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="optimized_check_excel">
+           <widget class="QCheckBox" name="adjlogb_check_excel">
             <property name="text">
-             <string>Optimized parameters</string>
+             <string>Adjusted formation constants</string>
             </property>
            </widget>
           </item>
@@ -224,16 +224,16 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="distribution_check_csv">
+           <widget class="QCheckBox" name="optimized_check_csv">
             <property name="text">
-             <string>Distribution</string>
+             <string>Optimized parameters</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="perc_check_csv">
+           <widget class="QCheckBox" name="distribution_check_csv">
             <property name="text">
-             <string>% with respect to component</string>
+             <string>Species distribution</string>
             </property>
            </widget>
           </item>
@@ -245,16 +245,16 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="adjlogb_check_csv">
+           <widget class="QCheckBox" name="perc_check_csv">
             <property name="text">
-             <string>Adjusted formation constants</string>
+             <string>Percentages with respect to component</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="optimized_check_csv">
+           <widget class="QCheckBox" name="adjlogb_check_csv">
             <property name="text">
-             <string>Optimized parameters</string>
+             <string>Adjusted formation constants</string>
             </property>
            </widget>
           </item>

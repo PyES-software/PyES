@@ -23,4 +23,4 @@ TODO:
 [x] Allargare colonna forza ionica input
 [x] Alert se mancano pesi
 [x] Verificare percentuali zn-edta (mai 100%)
-[] Riordinare fogli output esportato
+[x] Riordinare fogli output esportato

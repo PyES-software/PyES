@@ -67,30 +67,30 @@ class Ui_ExportWindow(object):
 
         self.verticalLayout_5.addWidget(self.input_check_excel)
 
+        self.optimized_check_excel = QCheckBox(self.widget_2)
+        self.optimized_check_excel.setObjectName(u"optimized_check_excel")
+
+        self.verticalLayout_5.addWidget(self.optimized_check_excel)
+
         self.distribution_check_excel = QCheckBox(self.widget_2)
         self.distribution_check_excel.setObjectName(u"distribution_check_excel")
 
         self.verticalLayout_5.addWidget(self.distribution_check_excel)
-
-        self.perc_check_excel = QCheckBox(self.widget_2)
-        self.perc_check_excel.setObjectName(u"perc_check_excel")
-
-        self.verticalLayout_5.addWidget(self.perc_check_excel)
 
         self.errors_check_excel = QCheckBox(self.widget_2)
         self.errors_check_excel.setObjectName(u"errors_check_excel")
 
         self.verticalLayout_5.addWidget(self.errors_check_excel)
 
+        self.perc_check_excel = QCheckBox(self.widget_2)
+        self.perc_check_excel.setObjectName(u"perc_check_excel")
+
+        self.verticalLayout_5.addWidget(self.perc_check_excel)
+
         self.adjlogb_check_excel = QCheckBox(self.widget_2)
         self.adjlogb_check_excel.setObjectName(u"adjlogb_check_excel")
 
         self.verticalLayout_5.addWidget(self.adjlogb_check_excel)
-
-        self.optimized_check_excel = QCheckBox(self.widget_2)
-        self.optimized_check_excel.setObjectName(u"optimized_check_excel")
-
-        self.verticalLayout_5.addWidget(self.optimized_check_excel)
 
 
         self.verticalLayout_2.addWidget(self.widget_2)
@@ -130,30 +130,30 @@ class Ui_ExportWindow(object):
 
         self.verticalLayout_4.addWidget(self.input_check_csv)
 
+        self.optimized_check_csv = QCheckBox(self.widget_5)
+        self.optimized_check_csv.setObjectName(u"optimized_check_csv")
+
+        self.verticalLayout_4.addWidget(self.optimized_check_csv)
+
         self.distribution_check_csv = QCheckBox(self.widget_5)
         self.distribution_check_csv.setObjectName(u"distribution_check_csv")
 
         self.verticalLayout_4.addWidget(self.distribution_check_csv)
-
-        self.perc_check_csv = QCheckBox(self.widget_5)
-        self.perc_check_csv.setObjectName(u"perc_check_csv")
-
-        self.verticalLayout_4.addWidget(self.perc_check_csv)
 
         self.errors_check_csv = QCheckBox(self.widget_5)
         self.errors_check_csv.setObjectName(u"errors_check_csv")
 
         self.verticalLayout_4.addWidget(self.errors_check_csv)
 
+        self.perc_check_csv = QCheckBox(self.widget_5)
+        self.perc_check_csv.setObjectName(u"perc_check_csv")
+
+        self.verticalLayout_4.addWidget(self.perc_check_csv)
+
         self.adjlogb_check_csv = QCheckBox(self.widget_5)
         self.adjlogb_check_csv.setObjectName(u"adjlogb_check_csv")
 
         self.verticalLayout_4.addWidget(self.adjlogb_check_csv)
-
-        self.optimized_check_csv = QCheckBox(self.widget_5)
-        self.optimized_check_csv.setObjectName(u"optimized_check_csv")
-
-        self.verticalLayout_4.addWidget(self.optimized_check_csv)
 
 
         self.verticalLayout_3.addWidget(self.widget_5)
@@ -189,20 +189,20 @@ class Ui_ExportWindow(object):
         ExportWindow.setWindowTitle(QCoreApplication.translate("ExportWindow", u"Export Results", None))
         self.options_label_excel.setText(QCoreApplication.translate("ExportWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Options:</span></p></body></html>", None))
         self.input_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Input info", None))
-        self.distribution_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Distribution", None))
-        self.perc_check_excel.setText(QCoreApplication.translate("ExportWindow", u"% with respect to component", None))
-        self.errors_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Std. Deviation of concentration", None))
-        self.adjlogb_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Adjusted formation constants", None))
         self.optimized_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Optimized parameters", None))
+        self.distribution_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Species distribution", None))
+        self.errors_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Std. Deviation of concentration", None))
+        self.perc_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Percentages with respect to component", None))
+        self.adjlogb_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Adjusted formation constants", None))
         self.export_button_excel.setText(QCoreApplication.translate("ExportWindow", u"Export", None))
         self.export_type.setTabText(self.export_type.indexOf(self.excel_tab), QCoreApplication.translate("ExportWindow", u"Excel", None))
         self.options_label_csv.setText(QCoreApplication.translate("ExportWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Options:</span></p></body></html>", None))
         self.input_check_csv.setText(QCoreApplication.translate("ExportWindow", u"Input info", None))
-        self.distribution_check_csv.setText(QCoreApplication.translate("ExportWindow", u"Distribution", None))
-        self.perc_check_csv.setText(QCoreApplication.translate("ExportWindow", u"% with respect to component", None))
-        self.errors_check_csv.setText(QCoreApplication.translate("ExportWindow", u"Std. Deviation of concentration", None))
-        self.adjlogb_check_csv.setText(QCoreApplication.translate("ExportWindow", u"Adjusted formation constants", None))
         self.optimized_check_csv.setText(QCoreApplication.translate("ExportWindow", u"Optimized parameters", None))
+        self.distribution_check_csv.setText(QCoreApplication.translate("ExportWindow", u"Species distribution", None))
+        self.errors_check_csv.setText(QCoreApplication.translate("ExportWindow", u"Std. Deviation of concentration", None))
+        self.perc_check_csv.setText(QCoreApplication.translate("ExportWindow", u"Percentages with respect to component", None))
+        self.adjlogb_check_csv.setText(QCoreApplication.translate("ExportWindow", u"Adjusted formation constants", None))
         self.export_button_csv.setText(QCoreApplication.translate("ExportWindow", u"Export", None))
         self.export_type.setTabText(self.export_type.indexOf(self.csv_tab), QCoreApplication.translate("ExportWindow", u"CSV", None))
     # retranslateUi
