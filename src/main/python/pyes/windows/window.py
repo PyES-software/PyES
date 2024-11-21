@@ -39,8 +39,16 @@ from dialogs import (
     WrongFileDialog,
 )
 from libeq import SolverData
-from PySide6.QtCore import QByteArray, QModelIndex, QSettings, Qt, QThreadPool, QUrl
-from PySide6.QtGui import QDesktopServices, QKeySequence, QTextCursor, QUndoStack
+from PySide6.QtCore import (
+    QByteArray,
+    QModelIndex,
+    QSettings,
+    Qt,
+    QThreadPool,
+    QUrl,
+    QSize,
+)
+from PySide6.QtGui import QDesktopServices, QKeySequence, QTextCursor, QUndoStack, QIcon
 from PySide6.QtWidgets import (
     QComboBox,
     QDoubleSpinBox,
@@ -53,6 +61,7 @@ from PySide6.QtWidgets import (
     QTableView,
     QTableWidgetItem,
     QWidget,
+    QToolButton,
 )
 from ui.PyES_main import Ui_MainWindow
 from ui.widgets import CustomComboBox, inputTitrationOpt
@@ -265,6 +274,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionAbout.triggered.connect(self.help_about)
         self.actionAbout_Qt.triggered.connect(self.help_about_qt)
         self.actionWebsite.triggered.connect(self.help_website)
+
+        # Create a QWidget to hold the corner widgets
+        titration_corner_widget = QWidget()
+        titration_corner_layout = QHBoxLayout()
+
+        # Create two QToolButtons
+        add_titration_button = QToolButton()
+        add_icon = QIcon()
+        add_icon.addFile(
+            ":/icons/plus.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
+        add_titration_button.setIcon(add_icon)
+        add_titration_button.clicked.connect(self.addTitration)
+        add_titration_button.setFixedSize(20, 20)
+
+        remove_titration_button = QToolButton()
+        add_icon = QIcon()
+        add_icon.addFile(
+            ":/icons/minus.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
+        remove_titration_button.setIcon(add_icon)
+        remove_titration_button.clicked.connect(self.removeTitration)
+        remove_titration_button.setFixedSize(20, 20)
+
+        # Add the QToolButtons to the layout
+        titration_corner_layout.addWidget(add_titration_button)
+        titration_corner_layout.addWidget(remove_titration_button)
+
+        # Set layout margins to zero for a tighter layout
+        titration_corner_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Set the layout to the corner widget
+        titration_corner_widget.setLayout(titration_corner_layout)
+
+        # Set the corner widget to the top-left corner
+        self.titration_tabs.setCornerWidget(titration_corner_widget, Qt.TopLeftCorner)
 
         self.concModel = ConcentrationsModel(self.conc_data, self.undostack)
 

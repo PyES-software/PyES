@@ -20,7 +20,7 @@ TODO:
 [x] Rivalutare unione punti in pxrange
 [x] Verificare pesi bstac
 [x] Inserire unità di misura concentrazioni (in tutte work mode)
-[] Allargare colonna forza ionica input
+[x] Allargare colonna forza ionica input
 [] Alert se mancano pesi
 [x] Verificare percentuali zn-edta (mai 100%)
 [] Riordinare fogli output esportato

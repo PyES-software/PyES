@@ -48,7 +48,7 @@
        <enum>QTabWidget::TabShape::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="usesScrollButtons">
        <bool>false</bool>
@@ -2077,77 +2077,6 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QFrame" name="frame_3">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::Shape::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Shadow::Raised</enum>
-              </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_11">
-               <item>
-                <widget class="QToolButton" name="add_titration">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="../../../resources/base/resources.qrc">
-                   <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>18</width>
-                   <height>18</height>
-                  </size>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="remove_titration">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="../../../resources/base/resources.qrc">
-                   <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>18</width>
-                   <height>18</height>
-                  </size>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_4">
-                 <property name="orientation">
-                  <enum>Qt::Orientation::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,1">
               <property name="spacing">
                <number>10</number>
@@ -2874,8 +2803,8 @@
    <slot>calculate()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>98</x>
-     <y>688</y>
+     <x>103</x>
+     <y>737</y>
     </hint>
     <hint type="destinationlabel">
      <x>429</x>
@@ -2938,8 +2867,8 @@
    <slot>updateComp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>240</x>
-     <y>135</y>
+     <x>239</x>
+     <y>134</y>
     </hint>
     <hint type="destinationlabel">
      <x>382</x>
@@ -2954,8 +2883,8 @@
    <slot>updateSpecies()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>240</x>
-     <y>166</y>
+     <x>239</x>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
      <x>548</x>
@@ -2986,8 +2915,8 @@
    <slot>updateSolid()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>240</x>
-     <y>197</y>
+     <x>239</x>
+     <y>196</y>
     </hint>
     <hint type="destinationlabel">
      <x>411</x>
@@ -3002,8 +2931,8 @@
    <slot>insertSpeciesAbove()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>601</x>
-     <y>143</y>
+     <x>598</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>715</x>
@@ -3018,8 +2947,8 @@
    <slot>insertSpeciesBelow()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>639</x>
-     <y>143</y>
+     <x>636</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>888</x>
@@ -3034,8 +2963,8 @@
    <slot>removeSpecies()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>677</x>
-     <y>143</y>
+     <x>674</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>1026</x>
@@ -3050,8 +2979,8 @@
    <slot>moveSpeciesUp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>730</x>
-     <y>143</y>
+     <x>727</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>855</x>
@@ -3066,8 +2995,8 @@
    <slot>moveSpeciesDown()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>766</x>
-     <y>143</y>
+     <x>763</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>673</x>
@@ -3082,7 +3011,7 @@
    <slot>insertCompAbove()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>294</x>
+     <x>292</x>
      <y>140</y>
     </hint>
     <hint type="destinationlabel">
@@ -3098,7 +3027,7 @@
    <slot>insertCompBelow()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>332</x>
+     <x>330</x>
      <y>140</y>
     </hint>
     <hint type="destinationlabel">
@@ -3114,7 +3043,7 @@
    <slot>removeComp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>370</x>
+     <x>368</x>
      <y>140</y>
     </hint>
     <hint type="destinationlabel">
@@ -3130,7 +3059,7 @@
    <slot>moveCompUp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>423</x>
+     <x>421</x>
      <y>140</y>
     </hint>
     <hint type="destinationlabel">
@@ -3146,7 +3075,7 @@
    <slot>moveCompDown()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>459</x>
+     <x>457</x>
      <y>140</y>
     </hint>
     <hint type="destinationlabel">
@@ -3162,8 +3091,8 @@
    <slot>displayUncertaintyInfo()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>239</x>
-     <y>279</y>
+     <x>238</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel">
      <x>159</x>
@@ -3178,8 +3107,8 @@
    <slot>displayIonicStrengthInfo()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>239</x>
-     <y>343</y>
+     <x>238</x>
+     <y>342</y>
     </hint>
     <hint type="destinationlabel">
      <x>283</x>
@@ -3194,44 +3123,12 @@
    <slot>massEditColumn()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1255</x>
-     <y>142</y>
+     <x>1276</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>1282</x>
      <y>120</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>add_titration</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>addTitration()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>30</x>
-     <y>157</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>0</x>
-     <y>159</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>remove_titration</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>removeTitration()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>86</x>
-     <y>167</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>138</y>
     </hint>
    </hints>
   </connection>
