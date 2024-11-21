@@ -192,7 +192,7 @@ def resultToExcel(
 ):
     if isinstance(data, list):
         for i, d in enumerate(data):
-            name = sheet_name + " Titr. " + str(i)
+            name = sheet_name + " Titr. " + str(i + 1)
             d.to_excel(writer, sheet_name=name, **kwargs)
             adjustColumnWidths(writer.book, name, d)
     else:
@@ -203,7 +203,7 @@ def resultToExcel(
 def resultToCSV(data: pd.DataFrame | list[pd.DataFrame], path: str):
     if isinstance(data, list):
         for i, d in enumerate(data):
-            name = path + " Titration " + str(i) + ".csv"
+            name = path + " Titration " + str(i + 1) + ".csv"
             d.to_csv(name)
     else:
         data.to_csv(path + ".csv")
