@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 
-class NumberFormatDelegate(QItemDelegate):
+class NumberFormatDelegate(QStyledItemDelegate):
     def __init__(
         self,
         parent=None,
@@ -47,7 +47,7 @@ class NumberFormatDelegate(QItemDelegate):
         model.setData(index, editor.text(), Qt.EditRole)
 
 
-class LineEditDelegate(QItemDelegate):
+class LineEditDelegate(QStyledItemDelegate):
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
 
@@ -160,9 +160,9 @@ class CheckBoxDelegate(QStyledItemDelegate):
         return QRect(check_box_point, check_box_rect.size())
 
 
-class ComboBoxDelegate(QItemDelegate):
+class ComboBoxDelegate(QStyledItemDelegate):
     def __init__(self, view, choices, parent=None):
-        QItemDelegate.__init__(self, parent)
+        QStyledItemDelegate.__init__(self, parent)
         self.items = choices
         self._view = view
 
@@ -188,7 +188,7 @@ class ComboBoxDelegate(QItemDelegate):
         opt.text = str(value)
         opt.rect = option.rect
         style.drawComplexControl(QStyle.CC_ComboBox, opt, painter)
-        QItemDelegate.paint(self, painter, option, index)
+        QStyledItemDelegate.paint(self, painter, option, index)
 
     def setEditorData(self, editor, index):
         value = index.data(Qt.DisplayRole)
@@ -206,9 +206,9 @@ class ComboBoxDelegate(QItemDelegate):
         editor.setGeometry(option.rect)
 
 
-class ColorPickerDelegate(QItemDelegate):
+class ColorPickerDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
-        QItemDelegate.__init__(self, parent)
+        QStyledItemDelegate.__init__(self, parent)
 
     def paint(self, painter, option, index):
         color = index.data(Qt.DisplayRole)
