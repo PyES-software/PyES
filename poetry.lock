@@ -643,7 +643,7 @@ pydantic-numpy = "^4.2.0"
 type = "git"
 url = "https://github.com/Kastakin/libeq.git"
 reference = "HEAD"
-resolved_reference = "c75e188bb2539759275c4faa5f2eac77bb50d57f"
+resolved_reference = "3a88274b54bdb393a7ffbecc8fdd4dc6ea3d3ec2"
 
 [[package]]
 name = "lz4"
