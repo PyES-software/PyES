@@ -199,20 +199,21 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
                     + (point_conc[:, None] * self.x_values[i] * 1e-3)
                 ) / (v0 + self.x_values[i] * 1e-3)
 
-                sigma_c0 = parent.result["comp_info"]["Sigma C0"].to_numpy()[
-                    i * self.nc : i * self.nc + self.nc
-                ]
-                sigma_ct = parent.result["comp_info"]["Sigma CT"].to_numpy()[
-                    i * self.nc : i * self.nc + self.nc
-                ]
-                sigma_reference = (
-                    sigma_c0[:, None] + sigma_ct[:, None] * self.x_values[i] * 1e-3
-                )
-
                 self.tot_conc.append(tot_conc)
                 self.point_conc.append(point_conc)
                 self.perc_reference.append(perc_reference)
-                self.sigma_perc_reference.append(sigma_reference)
+
+                if self.with_errors:
+                    sigma_c0 = parent.result["comp_info"]["Sigma C0"].to_numpy()[
+                        i * self.nc : i * self.nc + self.nc
+                    ]
+                    sigma_ct = parent.result["comp_info"]["Sigma CT"].to_numpy()[
+                        i * self.nc : i * self.nc + self.nc
+                    ]
+                    sigma_reference = (
+                        sigma_c0[:, None] + sigma_ct[:, None] * self.x_values[i] * 1e-3
+                    )
+                    self.sigma_perc_reference.append(sigma_reference)
 
         self.original_soluble_values = [
             {
