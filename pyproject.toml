@@ -1,40 +1,38 @@
-[tool.poetry]
+[project]
+authors = [{ name = "Lorenzo Castellino", email = "castellino96@gmail.com" }]
+license = { text = "GPLv3" }
+requires-python = "<3.12,>=3.11"
+dependencies = [
+    "pyinstaller<7,>=5",
+    "ppg @ git+ssh://git@github.com/Kastakin/ppg.git@main",
+    "pandas<2.0.0,>=1.5.0",
+    "openpyxl<4.0.0,>=3.0.9",
+    "pyqtgraph<1.0.0,>=0.13.0",
+    "pyside6-essentials<6.9,>=6.8",
+    "libeq @ git+https://github.com/Kastakin/libeq.git",
+]
 name = "pyes"
 version = "2.0.9beta"
 description = ""
-authors = ["Lorenzo Castellino <castellino96@gmail.com>"]
-license = "GPLv3"
 
-[tool.poetry.dependencies]
-python = ">=3.10,<3.11"
-pyinstaller = "~5"
-ppg = {git = "ssh://git@github.com/Kastakin/ppg.git", rev = "main"}
-pandas = "^1.5.0"
-openpyxl = "^3.0.9"
-pyqtgraph = "^0.13.0"
-pyside6-essentials = "~6.8"
-libeq = {git = "https://github.com/Kastakin/libeq.git"}
-
-[tool.poetry.group.dev.dependencies]
-tbump = "^6.7.0"
-isort = "^5.10.1"
-black = "^22.3.0"
-pre-commit = "^2.18.1"
-matplotlib = "^3.6.0"
-scipy = "^1.9.1"
-pyinstrument = "^4.3.0"
-Pillow = "^10.0.0"
-ruff = "~0.0"
-pytest = "^7.2.0"
-pytest-sugar = "^0.9.6"
-pytest-cov = "^4.0.0"
-pytest-qt = "^4.2.0"
-pytest-xvfb = "^2.0.0"
-debugpy = "^1.8.1"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.uv]
+dev-dependencies = [
+    "tbump<7.0.0,>=6.7.0",
+    "isort<6.0.0,>=5.10.1",
+    "black<23.0.0,>=22.3.0",
+    "pre-commit<3.0.0,>=2.18.1",
+    "matplotlib<4.0.0,>=3.6.0",
+    "scipy<2.0.0,>=1.9.1",
+    "pyinstrument<5.0.0,>=4.3.0",
+    "Pillow<11.0.0,>=10.0.0",
+    "ruff<1,>0",
+    "pytest<8.0.0,>=7.2.0",
+    "pytest-sugar<1.0.0,>=0.9.6",
+    "pytest-cov<5.0.0,>=4.0.0",
+    "pytest-qt<5.0.0,>=4.2.0",
+    "pytest-xvfb<3.0.0,>=2.0.0",
+    "debugpy<2.0.0,>=1.8.1",
+]
 
 [tool.pytest.ini_options]
 testpaths = "tests"
