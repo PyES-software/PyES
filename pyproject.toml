@@ -12,7 +12,7 @@ dependencies = [
     "libeq @ git+https://github.com/Kastakin/libeq.git",
 ]
 name = "pyes"
-version = "2.0.9beta"
+version = "2.0.10beta"
 description = ""
 
 [tool.uv]
