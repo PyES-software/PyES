@@ -842,17 +842,17 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
         else:
             self.conc_graph.setLabel(
                 "bottom",
-                text="Volume of Titrant [l]",
+                text="Volume of Titrant [ml]",
             )
             self.perc_graph.setLabel(
                 "bottom",
-                text="Volume of Titrant [l]",
+                text="Volume of Titrant [ml]",
             )
 
             self.titration_graph.setTitle("Titration Curve")
             self.titration_graph.setLabel(
                 "bottom",
-                text="Volume of Titrant [l]",
+                text="Volume of Titrant [ml]",
             )
         for plot in self.plot_widgets:
             plot.enableAutoRange()
