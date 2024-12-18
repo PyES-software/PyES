@@ -155,11 +155,11 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
                 self._updateTitrationCurve
             )
             self.calculated_potential = [
-                self.soluble_result[i].index.get_level_values(1).to_numpy()
+                self.soluble_result[i].index.get_level_values(2).to_numpy()
                 for i in range(self.number_of_results)
             ]
             self.potential = [
-                self.soluble_result[i].index.get_level_values(2).to_numpy()
+                self.soluble_result[i].index.get_level_values(1).to_numpy()
                 for i in range(self.number_of_results)
             ]
 
@@ -1001,15 +1001,15 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
             potential_line = pg.PlotDataItem(
                 self.x_values[result_index],
                 y,
-                pen=pg.mkPen("b", width=self.line_width, style=Qt.PenStyle.SolidLine),
-            )
-            calculated_line = pg.PlotDataItem(
-                self.x_values[result_index],
-                self.calculated_potential[result_index],
                 pen=pg.mkPen("r", width=self.line_width, style=Qt.PenStyle.SolidLine),
                 symbol="o",
                 symbolSize=5,
                 symbolBrush="r",
+            )
+            calculated_line = pg.PlotDataItem(
+                self.x_values[result_index],
+                self.calculated_potential[result_index],
+                pen=pg.mkPen("b", width=self.line_width, style=Qt.PenStyle.SolidLine),
             )
 
             self.titration_graph.addItem(potential_line)
