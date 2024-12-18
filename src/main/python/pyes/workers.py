@@ -50,12 +50,10 @@ class optimizeWorker(QRunnable):
         # If run with debug enabled create the logging istance
 
         def log_reporter(*args):
-            report = pd.DataFrame(
-                {
-                    "logB": args[1],
-                    "logB shift": args[2],
-                }
-            )
+            report = pd.DataFrame({
+                "logB": args[1],
+                "logB shift": args[2],
+            })
 
             report.index = [
                 solver_data.species_names[solver_data.nc :][ix]
@@ -115,9 +113,9 @@ class optimizeWorker(QRunnable):
 
         ok, errors = solver_data.model_ready
         if not ok:
-            error_messages = "\n".join(
-                [f"  {field}: {msg}" for field, msg in errors.items()]
-            )
+            error_messages = "\n".join([
+                f"  {field}: {msg}" for field, msg in errors.items()
+            ])
             self.signals.aborted.emit(
                 "Model not ready, please check the errors and try again:\n"
                 + error_messages
@@ -129,9 +127,9 @@ class optimizeWorker(QRunnable):
             case 0:
                 ok, errors = solver_data.titration_ready
                 if not ok:
-                    error_messages = "\n".join(
-                        [f"  {field}: {msg}" for field, msg in errors.items()]
-                    )
+                    error_messages = "\n".join([
+                        f"  {field}: {msg}" for field, msg in errors.items()
+                    ])
                     self.signals.aborted.emit(
                         "Titration data not complete, please check the errors and try again:\n"
                         + error_messages
@@ -141,9 +139,9 @@ class optimizeWorker(QRunnable):
             case 1:
                 ok, errors = solver_data.distribution_ready
                 if not ok:
-                    error_messages = "\n".join(
-                        [f"  {field}: {msg}" for field, msg in errors.items()]
-                    )
+                    error_messages = "\n".join([
+                        f"  {field}: {msg}" for field, msg in errors.items()
+                    ])
                     self.signals.aborted.emit(
                         "Distribution data not complete, please check the errors and try again:\n"
                         + error_messages
@@ -153,9 +151,9 @@ class optimizeWorker(QRunnable):
             case 2:
                 ok, errors = solver_data.potentiometry_ready
                 if not ok:
-                    error_messages = "\n".join(
-                        [f"  {field}: {msg}" for field, msg in errors.items()]
-                    )
+                    error_messages = "\n".join([
+                        f"  {field}: {msg}" for field, msg in errors.items()
+                    ])
                     self.signals.aborted.emit(
                         "Potentiometry optimization data not complete, please check the errors and try again:\n"
                         + error_messages
@@ -290,20 +288,22 @@ class optimizeWorker(QRunnable):
                         return_extra["calculated_potential"]
                     )
 
-                    self.result_index = np.concatenate(
-                        [
-                            t.v_add[idx_to_keep[i]]
-                            for i, t in enumerate(
-                                solver_data.potentiometry_opts.titrations
-                            )
-                        ]
-                    )
+                    px = np.concatenate([
+                        (return_extra["calculated_potential"][i] - t.e0) / -t.slope
+                        for i, t in enumerate(solver_data.potentiometry_opts.titrations)
+                    ])
+
+                    self.result_index = np.concatenate([
+                        t.v_add[idx_to_keep[i]]
+                        for i, t in enumerate(solver_data.potentiometry_opts.titrations)
+                    ])
 
                     self.result_index = [
                         self.result_index,
                         read_poetential,
                         calculated_potential,
                         read_poetential - calculated_potential,
+                        px,
                         np.diag(return_extra["weights"]),
                     ]
 
@@ -329,6 +329,7 @@ class optimizeWorker(QRunnable):
                         "Read Potential [V]",
                         "Calculated Potential [V]",
                         "Residual [V]",
+                        "pX",
                         "Weight",
                     ]
 
@@ -598,13 +599,13 @@ class optimizeWorker(QRunnable):
                 columns=solver_data.solids_names,
             )
 
-            sigma_ref_tot_conc_soluble = np.array(
-                [self.conc_sigma[:, ix] for ix in ref_percentage_soluble_ix]
-            ).T
+            sigma_ref_tot_conc_soluble = np.array([
+                self.conc_sigma[:, ix] for ix in ref_percentage_soluble_ix
+            ]).T
 
-            sigma_ref_tot_conc_solids = np.array(
-                [self.conc_sigma[:, ix] for ix in ref_percentage_solids_ix]
-            ).T
+            sigma_ref_tot_conc_solids = np.array([
+                self.conc_sigma[:, ix] for ix in ref_percentage_solids_ix
+            ]).T
 
             soluble_percentages_sigma = self._create_df_result(
                 soluble_percentages_np
