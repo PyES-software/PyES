@@ -2,7 +2,7 @@
   "app_name": "PyES Beta",
   "author": "Lorenzo Castellino",
   "main_module": "src/main/python/pyes/main.py",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "extra_pyinstaller_args": [
     "--exclude-module",
     "PySide6.QtQml",
