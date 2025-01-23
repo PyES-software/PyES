@@ -871,22 +871,19 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
 
     def _createLegend(self):
         self.conc_legend = pg.LegendItem(
-            pen=pg.mkPen("k", width=2),
-            brush=pg.mkBrush("w"),
+            brush=pg.mkBrush(None),
             labelTextSize=f"{self.font_size}pt",
             verAlignment=Qt.AlignmentFlag.AlignBaseline,
             offset=(-10, 100),
         )
         self.perc_legend = pg.LegendItem(
-            pen=pg.mkPen("k", brush=pg.mkBrush("w"), width=2),
-            brush=pg.mkBrush("w"),
+            brush=pg.mkBrush(None),
             labelTextSize=f"{self.font_size}pt",
             verAlignment=Qt.AlignmentFlag.AlignVCenter,
             offset=(-10, 100),
         )
         self.titr_legend = pg.LegendItem(
-            pen=pg.mkPen("k", brush=pg.mkBrush("w"), width=2),
-            brush=pg.mkBrush("w"),
+            brush=pg.mkBrush(None),
             labelTextSize=f"{self.font_size}pt",
             verAlignment=Qt.AlignmentFlag.AlignVCenter,
             offset=(-10, 100),
