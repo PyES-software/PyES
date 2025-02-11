@@ -9,7 +9,7 @@ dependencies = [
     "openpyxl<4.0.0,>=3.0.9",
     "pyqtgraph<1.0.0,>=0.13.0",
     "pyside6-essentials<6.9,>=6.8",
-    "libeq @ git+https://github.com/Kastakin/libeq.git",
+    "libeq",
 ]
 name = "pyes"
 version = "2.0.12beta"
@@ -33,6 +33,9 @@ dev-dependencies = [
     "pytest-xvfb<3.0.0,>=2.0.0",
     "debugpy<2.0.0,>=1.8.1",
 ]
+
+[tool.uv.sources]
+libeq = { git = "https://github.com/Kastakin/libeq.git" }
 
 [tool.pytest.ini_options]
 testpaths = "tests"
