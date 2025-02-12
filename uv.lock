@@ -264,7 +264,7 @@ wheels = [
 [[package]]
 name = "libeq"
 version = "0.1.0"
-source = { git = "https://github.com/Kastakin/libeq.git#1c1de26e2ffff4123ff577d56a758ec43ebafd70" }
+source = { git = "https://github.com/Kastakin/libeq.git#fdee7b8379779bae122d2cb90a6b3fee26762ebe" }
 dependencies = [
     { name = "numpy" },
     { name = "pydantic" },
@@ -532,7 +532,7 @@ wheels = [
 
 [[package]]
 name = "pyes"
-version = "2.0.12b0"
+version = "2.0.13b0"
 source = { virtual = "." }
 dependencies = [
     { name = "libeq" },
