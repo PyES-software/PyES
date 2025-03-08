@@ -12,7 +12,7 @@ dependencies = [
     "libeq",
 ]
 name = "pyes"
-version = "2.0.14beta"
+version = "2.0.15beta"
 description = ""
 
 [tool.uv]
