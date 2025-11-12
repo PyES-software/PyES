@@ -1,5 +1,6 @@
 [project]
-authors = [{ name = "Lorenzo Castellino", email = "castellino96@gmail.com" }]
+authors = [{ name = "Lorenzo Castellino", email = "castellino96@gmail.com" },
+           { name = "Salvador Blasco", email = "salvador.blasco@uv.es" }]
 license = { text = "GPLv3" }
 requires-python = "<3.12,>=3.11"
 dependencies = [
@@ -12,37 +13,26 @@ dependencies = [
     "libeq",
 ]
 name = "pyes"
-version = "2.0.15beta"
+version = "2.0.16beta"
 description = ""
 
-[tool.uv]
-dev-dependencies = [
-    "tbump<7.0.0,>=6.7.0",
-    "isort<6.0.0,>=5.10.1",
-    "black<23.0.0,>=22.3.0",
-    "pre-commit<3.0.0,>=2.18.1",
-    "matplotlib<4.0.0,>=3.6.0",
-    "scipy<2.0.0,>=1.9.1",
-    "pyinstrument<5.0.0,>=4.3.0",
-    "Pillow<11.0.0,>=10.0.0",
-    "ruff<1,>0",
-    "pytest<8.0.0,>=7.2.0",
-    "pytest-sugar<1.0.0,>=0.9.6",
-    "pytest-cov<5.0.0,>=4.0.0",
-    "pytest-qt<5.0.0,>=4.2.0",
-    "pytest-xvfb<3.0.0,>=2.0.0",
-    "debugpy<2.0.0,>=1.8.1",
-]
+[tool.run.ini_options]
+pythonpath = ["src/main/python/", "../libeq/src"]
 
 [tool.uv.sources]
 libeq = { git = "https://github.com/Kastakin/libeq.git" }
 
 [tool.pytest.ini_options]
 testpaths = "tests"
-pythonpath = "src/main/python/pyes"
+pythonpath = ["src/main/python/"]
 addopts = "--cov=src/main/python/pyes --cov-report=html --cov-config=.coveragerc"
 qt_api = "pyside6"
 
 [tool.ruff.format]
 # Enable preview style formatting.
 preview = true
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.4",
+]

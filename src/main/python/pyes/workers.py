@@ -253,6 +253,7 @@ class optimizeWorker(QRunnable):
         with warnings.catch_warnings(record=True) as recorded_warnings:
             try:
                 if mode == "potentiometry":
+                    breakpoint()
                     (
                         x,
                         result,

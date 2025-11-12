@@ -1,9 +1,10 @@
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QMessageBox, QTableView
 from pytest import MonkeyPatch, fixture
 from pytestqt.qtbot import QtBot
 
-from src.main.python.pyes.main import MainWindow
+from pyes.windows.window import MainWindow
 
 
 @fixture
@@ -953,3 +954,4 @@ class TestSolidChanges:
             )
 
         assert column_data == ["1", "2", "3"]
+
