@@ -11,6 +11,7 @@ dependencies = [
     "pyqtgraph<1.0.0,>=0.13.0",
     "pyside6-essentials<6.9,>=6.8",
     "libeq",
+    "pyside6>=6.8.3",
 ]
 name = "pyes"
 version = "2.0.16beta"
