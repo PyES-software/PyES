@@ -264,6 +264,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionSaveAs.triggered.connect(self.file_save_as)
         self.actionOpen.triggered.connect(self.file_open)
         self.actionBSTAC.triggered.connect(self.import_bstac)
+        self.actionExit.triggered.connect(self.close)
 
         self.actionCalculate.triggered.connect(self.calculate)
 

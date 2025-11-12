@@ -108,6 +108,8 @@ class inputTitrationOpt(QWidget, Ui_inputTitrationOpt):
         data = dict()
         children = self.children()
         for c in children:
+            #if c.objectName() == 'titrationView':
+            #    breakpoint()
             if isinstance(c, QLineEdit):
                 data[c.objectName()] = c.text()
             elif isinstance(c, (QDoubleSpinBox, QSpinBox)):
