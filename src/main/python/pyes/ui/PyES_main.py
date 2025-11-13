@@ -539,7 +539,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_8.addWidget(self.move_down_comp_button)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
 
         self.horizontalLayout_8.addItem(self.horizontalSpacer_2)
 
@@ -667,7 +667,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4.addWidget(self.move_down_species_button)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer)
 
@@ -680,6 +680,10 @@ class Ui_MainWindow(object):
         self.edit_column_button.setAutoRaise(True)
 
         self.horizontalLayout_4.addWidget(self.edit_column_button)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
 
 
         self.verticalLayout.addWidget(self.horizontalFrame)
@@ -1431,7 +1435,7 @@ class Ui_MainWindow(object):
         self.checkAllSpeciesButton.clicked.connect(MainWindow.checkAllSpecies)
         self.uncheckAllSpeciesButton.clicked.connect(MainWindow.uncheckAllSpecies)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.tablesTab.setCurrentIndex(0)
         self.dmode.setCurrentIndex(0)
         self.mode_views.setCurrentIndex(1)
