@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'PyES_inputTitrationOpt.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -34,15 +34,15 @@ class Ui_inputTitrationOpt(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(inputTitrationOpt.sizePolicy().hasHeightForWidth())
         inputTitrationOpt.setSizePolicy(sizePolicy)
-        inputTitrationOpt.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        inputTitrationOpt.setFocusPolicy(Qt.NoFocus)
         self.horizontalLayout = QHBoxLayout(inputTitrationOpt)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.formLayout = QFormLayout()
         self.formLayout.setObjectName(u"formLayout")
-        self.formLayout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
-        self.formLayout.setLabelAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
-        self.formLayout.setFormAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.formLayout.setFieldGrowthPolicy(QFormLayout.FieldsStayAtSizeHint)
+        self.formLayout.setLabelAlignment(Qt.AlignLeading)
+        self.formLayout.setFormAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
         self.formLayout.setContentsMargins(10, -1, 0, -1)
         self.titrationNameLabel = QLabel(inputTitrationOpt)
         self.titrationNameLabel.setObjectName(u"titrationNameLabel")
@@ -79,7 +79,7 @@ class Ui_inputTitrationOpt(object):
         self.px_ranges.setWidgetResizable(True)
         self.rangesScrollAreaWidgetContents = QWidget()
         self.rangesScrollAreaWidgetContents.setObjectName(u"rangesScrollAreaWidgetContents")
-        self.rangesScrollAreaWidgetContents.setGeometry(QRect(0, 0, 283, 69))
+        self.rangesScrollAreaWidgetContents.setGeometry(QRect(0, 0, 282, 68))
         self.verticalLayout = QVBoxLayout(self.rangesScrollAreaWidgetContents)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -89,7 +89,7 @@ class Ui_inputTitrationOpt(object):
 
         self.line_6 = QFrame(inputTitrationOpt)
         self.line_6.setObjectName(u"line_6")
-        self.line_6.setFrameShape(QFrame.Shape.HLine)
+        self.line_6.setFrameShape(QFrame.Shape.VLine)
         self.line_6.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.formLayout.setWidget(5, QFormLayout.SpanningRole, self.line_6)
@@ -183,7 +183,7 @@ class Ui_inputTitrationOpt(object):
 
         self.line = QFrame(inputTitrationOpt)
         self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShape(QFrame.Shape.VLine)
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.formLayout.setWidget(13, QFormLayout.SpanningRole, self.line)
@@ -222,7 +222,7 @@ class Ui_inputTitrationOpt(object):
 
         self.line_3 = QFrame(inputTitrationOpt)
         self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.Shape.HLine)
+        self.line_3.setFrameShape(QFrame.Shape.VLine)
         self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.formLayout.setWidget(17, QFormLayout.SpanningRole, self.line_3)
@@ -363,24 +363,24 @@ class Ui_inputTitrationOpt(object):
         self.jaLabel.setText(QCoreApplication.translate("inputTitrationOpt", u"Ja", None))
         self.jbLabel.setText(QCoreApplication.translate("inputTitrationOpt", u"Jb", None))
         self.eSigmaLabel.setText(QCoreApplication.translate("inputTitrationOpt", u"E Sigma", None))
-        self.eSigma.setSuffix("")
+        self.eSigma.setSuffix(QCoreApplication.translate("inputTitrationOpt", u" mV", None))
         self.electroActiveComponentLabel.setText(QCoreApplication.translate("inputTitrationOpt", u"Electro Active Component", None))
         self.label_8.setText(QCoreApplication.translate("inputTitrationOpt", u"<html><head/><body><p><span style=\" font-weight:600;\">Vessel Options:</span></p></body></html>", None))
         self.vSigmaLabel.setText(QCoreApplication.translate("inputTitrationOpt", u"V Sigma", None))
-        self.vSigma.setSuffix("")
+        self.vSigma.setSuffix(QCoreApplication.translate("inputTitrationOpt", u" mL", None))
         self.initialVolumeLabel.setText(QCoreApplication.translate("inputTitrationOpt", u"Initial Volume", None))
-        self.initialVolume.setSuffix(QCoreApplication.translate("inputTitrationOpt", u" ml", None))
+        self.initialVolume.setSuffix(QCoreApplication.translate("inputTitrationOpt", u" mL", None))
         self.label_6.setText(QCoreApplication.translate("inputTitrationOpt", u"<html><head/><body><p><span style=\" font-weight:600;\">Background Ions Settings:</span></p></body></html>", None))
         self.c0back_label.setText(QCoreApplication.translate("inputTitrationOpt", u"Initial C:", None))
 #if QT_CONFIG(statustip)
         self.c0back.setStatusTip(QCoreApplication.translate("inputTitrationOpt", u"Initial concentration of background ions in titration vessel.", None))
 #endif // QT_CONFIG(statustip)
-        self.c0back.setSuffix(QCoreApplication.translate("inputTitrationOpt", u" mol/l", None))
+        self.c0back.setSuffix(QCoreApplication.translate("inputTitrationOpt", u" mol/L", None))
         self.ctback_label.setText(QCoreApplication.translate("inputTitrationOpt", u"Titrant C:", None))
 #if QT_CONFIG(statustip)
         self.ctback.setStatusTip(QCoreApplication.translate("inputTitrationOpt", u"Concentration of background ions in the titrant.", None))
 #endif // QT_CONFIG(statustip)
-        self.ctback.setSuffix(QCoreApplication.translate("inputTitrationOpt", u" mol/l", None))
+        self.ctback.setSuffix(QCoreApplication.translate("inputTitrationOpt", u" mol/L", None))
         self.ranges_label.setText(QCoreApplication.translate("inputTitrationOpt", u"<html><head/><body><p><span style=\" font-weight:700;\">pX Ranges:</span></p></body></html>", None))
         self.addRangeButton.setText("")
         self.removeRangeButton.setText(QCoreApplication.translate("inputTitrationOpt", u"...", None))
@@ -388,6 +388,6 @@ class Ui_inputTitrationOpt(object):
         self.useAllButton.setText(QCoreApplication.translate("inputTitrationOpt", u"Use All", None))
         self.useEvenButton.setText(QCoreApplication.translate("inputTitrationOpt", u"Use Half (even)", None))
         self.useOddButton.setText(QCoreApplication.translate("inputTitrationOpt", u"Use Half (odd)", None))
-        self.conc_label.setText(QCoreApplication.translate("inputTitrationOpt", u"<html><head/><body><p><span style=\" font-weight:700;\">Concentrations [mol/l]:</span></p></body></html>", None))
+        self.conc_label.setText(QCoreApplication.translate("inputTitrationOpt", u"<html><head/><body><p><span style=\" font-weight:700;\">Concentrations [mol/L]:</span></p></body></html>", None))
     # retranslateUi
 

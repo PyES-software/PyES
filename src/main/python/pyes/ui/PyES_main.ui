@@ -634,6 +634,9 @@
            </item>
            <item>
             <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
@@ -851,6 +854,9 @@
               </item>
               <item>
                <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
                 <property name="sizeHint" stdset="0">
                  <size>
                   <width>40</width>
@@ -1158,6 +1164,9 @@
               </item>
               <item>
                <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
                 <property name="sizeHint" stdset="0">
                  <size>
                   <width>40</width>
@@ -1734,6 +1743,9 @@
                       </item>
                       <item>
                        <spacer name="verticalSpacer_3">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
                         <property name="sizeType">
                          <enum>QSizePolicy::Fixed</enum>
                         </property>
@@ -1974,6 +1986,9 @@
                       </item>
                       <item>
                        <spacer name="verticalSpacer_6">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
                         <property name="sizeHint" stdset="0">
                          <size>
                           <width>20</width>
@@ -2165,7 +2180,7 @@
                   <item row="0" column="2">
                    <widget class="QToolButton" name="concUncheckAll">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="icon">
                      <iconset resource="../../../resources/base/resources.qrc">
@@ -2176,7 +2191,7 @@
                   <item row="0" column="1">
                    <widget class="QToolButton" name="concCheckAll">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string/>
@@ -2190,7 +2205,7 @@
                   <item row="0" column="0">
                    <widget class="QLabel" name="conToRefineLabel">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string>Concentrations</string>
@@ -2202,7 +2217,7 @@
                 <item>
                  <widget class="QTableWidget" name="concToRefine">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <attribute name="horizontalHeaderCascadingSectionResizes">
                    <bool>false</bool>

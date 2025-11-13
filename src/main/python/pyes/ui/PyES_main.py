@@ -447,7 +447,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_6.addWidget(self.widget_8)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_6.addItem(self.verticalSpacer_2)
 
@@ -539,7 +539,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_8.addWidget(self.move_down_comp_button)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.horizontalLayout_8.addItem(self.horizontalSpacer_2)
 
@@ -667,7 +667,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4.addWidget(self.move_down_species_button)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer)
 
@@ -928,7 +928,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_9.addWidget(self.frame)
 
-        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
         self.verticalLayout_9.addItem(self.verticalSpacer_3)
 
@@ -1047,7 +1047,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_11.addWidget(self.frame_2)
 
-        self.verticalSpacer_6 = QSpacerItem(20, 40, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.verticalSpacer_6 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_11.addItem(self.verticalSpacer_6)
 
@@ -1162,21 +1162,21 @@ class Ui_MainWindow(object):
         self.gridLayout_4.setContentsMargins(-1, -1, -1, 0)
         self.concUncheckAll = QToolButton(self.bstac_modes)
         self.concUncheckAll.setObjectName(u"concUncheckAll")
-        self.concUncheckAll.setEnabled(False)
+        self.concUncheckAll.setEnabled(True)
         self.concUncheckAll.setIcon(icon18)
 
         self.gridLayout_4.addWidget(self.concUncheckAll, 0, 2, 1, 1)
 
         self.concCheckAll = QToolButton(self.bstac_modes)
         self.concCheckAll.setObjectName(u"concCheckAll")
-        self.concCheckAll.setEnabled(False)
+        self.concCheckAll.setEnabled(True)
         self.concCheckAll.setIcon(icon17)
 
         self.gridLayout_4.addWidget(self.concCheckAll, 0, 1, 1, 1)
 
         self.conToRefineLabel = QLabel(self.bstac_modes)
         self.conToRefineLabel.setObjectName(u"conToRefineLabel")
-        self.conToRefineLabel.setEnabled(False)
+        self.conToRefineLabel.setEnabled(True)
 
         self.gridLayout_4.addWidget(self.conToRefineLabel, 0, 0, 1, 1)
 
@@ -1195,7 +1195,7 @@ class Ui_MainWindow(object):
         __qtablewidgetitem1.setCheckState(Qt.Unchecked);
         self.concToRefine.setItem(0, 0, __qtablewidgetitem1)
         self.concToRefine.setObjectName(u"concToRefine")
-        self.concToRefine.setEnabled(False)
+        self.concToRefine.setEnabled(True)
         self.concToRefine.horizontalHeader().setCascadingSectionResizes(False)
         self.concToRefine.horizontalHeader().setDefaultSectionSize(25)
 
