@@ -45,7 +45,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="tabShape">
-       <enum>QTabWidget::TabShape::Rounded</enum>
+       <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
        <number>1</number>
@@ -58,14 +58,14 @@
       </property>
       <widget class="QWidget" name="Species">
        <property name="layoutDirection">
-        <enum>Qt::LayoutDirection::LeftToRight</enum>
+        <enum>Qt::LeftToRight</enum>
        </property>
        <attribute name="title">
         <string>Species</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,5">
         <property name="sizeConstraint">
-         <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+         <enum>QLayout::SetDefaultConstraint</enum>
         </property>
         <property name="leftMargin">
          <number>5</number>
@@ -129,10 +129,10 @@
              </property>
              <layout class="QFormLayout" name="formLayout_3">
               <property name="sizeConstraint">
-               <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+               <enum>QLayout::SetDefaultConstraint</enum>
               </property>
               <property name="fieldGrowthPolicy">
-               <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
+               <enum>QFormLayout::FieldsStayAtSizeHint</enum>
               </property>
               <property name="topMargin">
                <number>5</number>
@@ -242,14 +242,14 @@
               <item row="3" column="0" colspan="2">
                <widget class="Line" name="line_7">
                 <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
+                 <enum>Qt::Vertical</enum>
                 </property>
                </widget>
               </item>
               <item row="8" column="0" colspan="2">
                <widget class="Line" name="line">
                 <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
+                 <enum>Qt::Vertical</enum>
                 </property>
                </widget>
               </item>
@@ -309,7 +309,7 @@
                 <item row="1" column="0" colspan="3">
                  <layout class="QFormLayout" name="formLayout_7">
                   <property name="sizeConstraint">
-                   <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+                   <enum>QLayout::SetDefaultConstraint</enum>
                   </property>
                   <item row="0" column="0">
                    <widget class="QLabel" name="refIonicStr_label">
@@ -634,9 +634,6 @@
            </item>
            <item>
             <spacer name="verticalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Orientation::Vertical</enum>
-             </property>
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
@@ -694,10 +691,7 @@
               </sizepolicy>
              </property>
              <property name="frameShape">
-              <enum>QFrame::Shape::Box</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Shadow::Raised</enum>
+              <enum>QFrame::NoFrame</enum>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_8">
               <property name="leftMargin">
@@ -799,7 +793,7 @@
               <item>
                <widget class="Line" name="line_5">
                 <property name="orientation">
-                 <enum>Qt::Orientation::Vertical</enum>
+                 <enum>Qt::Vertical</enum>
                 </property>
                </widget>
               </item>
@@ -857,9 +851,6 @@
               </item>
               <item>
                <spacer name="horizontalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
-                </property>
                 <property name="sizeHint" stdset="0">
                  <size>
                   <width>40</width>
@@ -886,22 +877,22 @@
               </size>
              </property>
              <property name="sizeAdjustPolicy">
-              <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
+              <enum>QAbstractScrollArea::AdjustIgnored</enum>
              </property>
              <property name="editTriggers">
-              <set>QAbstractItemView::EditTrigger::AllEditTriggers</set>
+              <set>QAbstractItemView::NoEditTriggers</set>
              </property>
              <property name="showDropIndicator" stdset="0">
               <bool>false</bool>
              </property>
              <property name="selectionMode">
-              <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+              <enum>QAbstractItemView::NoSelection</enum>
              </property>
              <property name="selectionBehavior">
-              <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+              <enum>QAbstractItemView::SelectItems</enum>
              </property>
              <property name="textElideMode">
-              <enum>Qt::TextElideMode::ElideNone</enum>
+              <enum>Qt::ElideLeft</enum>
              </property>
              <attribute name="verticalHeaderVisible">
               <bool>false</bool>
@@ -951,10 +942,7 @@
               </sizepolicy>
              </property>
              <property name="frameShape">
-              <enum>QFrame::Shape::Box</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Shadow::Raised</enum>
+              <enum>QFrame::NoFrame</enum>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <property name="leftMargin">
@@ -1021,7 +1009,7 @@
               <item>
                <widget class="Line" name="line_6">
                 <property name="orientation">
-                 <enum>Qt::Orientation::Vertical</enum>
+                 <enum>Qt::Vertical</enum>
                 </property>
                </widget>
               </item>
@@ -1112,7 +1100,7 @@
               <item>
                <widget class="Line" name="line_4">
                 <property name="orientation">
-                 <enum>Qt::Orientation::Vertical</enum>
+                 <enum>Qt::Vertical</enum>
                 </property>
                </widget>
               </item>
@@ -1170,9 +1158,6 @@
               </item>
               <item>
                <spacer name="horizontalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
-                </property>
                 <property name="sizeHint" stdset="0">
                  <size>
                   <width>40</width>
@@ -1245,22 +1230,22 @@
                <item>
                 <widget class="QTableView" name="speciesView">
                  <property name="sizeAdjustPolicy">
-                  <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
+                  <enum>QAbstractScrollArea::AdjustIgnored</enum>
                  </property>
                  <property name="editTriggers">
-                  <set>QAbstractItemView::EditTrigger::AllEditTriggers</set>
+                  <set>QAbstractItemView::NoEditTriggers</set>
                  </property>
                  <property name="showDropIndicator" stdset="0">
                   <bool>false</bool>
                  </property>
                  <property name="selectionMode">
-                  <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+                  <enum>QAbstractItemView::NoSelection</enum>
                  </property>
                  <property name="selectionBehavior">
-                  <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+                  <enum>QAbstractItemView::SelectItems</enum>
                  </property>
                  <property name="textElideMode">
-                  <enum>Qt::TextElideMode::ElideNone</enum>
+                  <enum>Qt::ElideLeft</enum>
                  </property>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>true</bool>
@@ -1296,19 +1281,19 @@
                <item>
                 <widget class="QTableView" name="solidSpeciesView">
                  <property name="sizeAdjustPolicy">
-                  <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
+                  <enum>QAbstractScrollArea::AdjustIgnored</enum>
                  </property>
                  <property name="editTriggers">
-                  <set>QAbstractItemView::EditTrigger::AllEditTriggers</set>
+                  <set>QAbstractItemView::NoEditTriggers</set>
                  </property>
                  <property name="showDropIndicator" stdset="0">
                   <bool>false</bool>
                  </property>
                  <property name="selectionMode">
-                  <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+                  <enum>QAbstractItemView::NoSelection</enum>
                  </property>
                  <property name="selectionBehavior">
-                  <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+                  <enum>QAbstractItemView::SelectItems</enum>
                  </property>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>true</bool>
@@ -1339,7 +1324,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <property name="sizeConstraint">
-         <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
+         <enum>QLayout::SetDefaultConstraint</enum>
         </property>
         <property name="leftMargin">
          <number>5</number>
@@ -1540,14 +1525,11 @@
                          </size>
                         </property>
                         <property name="frameShape">
-                         <enum>QFrame::Shape::StyledPanel</enum>
-                        </property>
-                        <property name="frameShadow">
-                         <enum>QFrame::Shadow::Raised</enum>
+                         <enum>QFrame::NoFrame</enum>
                         </property>
                         <layout class="QFormLayout" name="formLayout">
                          <property name="labelAlignment">
-                          <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                          <set>Qt::AlignLeading</set>
                          </property>
                          <property name="topMargin">
                           <number>0</number>
@@ -1672,7 +1654,7 @@
                          <item row="5" column="0" colspan="2">
                           <widget class="Line" name="line_2">
                            <property name="orientation">
-                            <enum>Qt::Orientation::Horizontal</enum>
+                            <enum>Qt::Vertical</enum>
                            </property>
                           </widget>
                          </item>
@@ -1752,11 +1734,8 @@
                       </item>
                       <item>
                        <spacer name="verticalSpacer_3">
-                        <property name="orientation">
-                         <enum>Qt::Orientation::Vertical</enum>
-                        </property>
                         <property name="sizeType">
-                         <enum>QSizePolicy::Policy::Expanding</enum>
+                         <enum>QSizePolicy::Fixed</enum>
                         </property>
                         <property name="sizeHint" stdset="0">
                          <size>
@@ -1833,14 +1812,11 @@
                          </size>
                         </property>
                         <property name="frameShape">
-                         <enum>QFrame::Shape::StyledPanel</enum>
-                        </property>
-                        <property name="frameShadow">
-                         <enum>QFrame::Shadow::Raised</enum>
+                         <enum>QFrame::NoFrame</enum>
                         </property>
                         <layout class="QFormLayout" name="formLayout_2">
                          <property name="labelAlignment">
-                          <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                          <set>Qt::AlignLeading</set>
                          </property>
                          <property name="topMargin">
                           <number>0</number>
@@ -1947,7 +1923,7 @@
                          <item row="5" column="0" colspan="2">
                           <widget class="Line" name="line_3">
                            <property name="orientation">
-                            <enum>Qt::Orientation::Horizontal</enum>
+                            <enum>Qt::Vertical</enum>
                            </property>
                           </widget>
                          </item>
@@ -1998,9 +1974,6 @@
                       </item>
                       <item>
                        <spacer name="verticalSpacer_6">
-                        <property name="orientation">
-                         <enum>Qt::Orientation::Vertical</enum>
-                        </property>
                         <property name="sizeHint" stdset="0">
                          <size>
                           <width>20</width>
@@ -2047,7 +2020,7 @@
                   <item>
                    <widget class="QTableView" name="concView">
                     <property name="sizeAdjustPolicy">
-                     <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
+                     <enum>QAbstractScrollArea::AdjustIgnored</enum>
                     </property>
                    </widget>
                   </item>
@@ -2430,7 +2403,7 @@
            <bool>false</bool>
           </property>
           <property name="lineWrapMode">
-           <enum>QTextEdit::LineWrapMode::NoWrap</enum>
+           <enum>QTextEdit::NoWrap</enum>
           </property>
           <property name="readOnly">
            <bool>true</bool>
@@ -2524,7 +2497,7 @@
      <x>0</x>
      <y>0</y>
      <width>1289</width>
-     <height>24</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -2536,6 +2509,7 @@
       <string>Import Legacy</string>
      </property>
      <addaction name="actionBSTAC"/>
+     <addaction name="actionSuperquad"/>
     </widget>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
@@ -2671,7 +2645,7 @@
     <string>Ctrl+Q</string>
    </property>
    <property name="menuRole">
-    <enum>QAction::MenuRole::QuitRole</enum>
+    <enum>QAction::NoRole</enum>
    </property>
   </action>
   <action name="actionWebsite">
@@ -2777,6 +2751,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionSuperquad">
+   <property name="text">
+    <string>Superquad</string>
    </property>
   </action>
  </widget>

@@ -264,6 +264,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionSaveAs.triggered.connect(self.file_save_as)
         self.actionOpen.triggered.connect(self.file_open)
         self.actionBSTAC.triggered.connect(self.import_bstac)
+        self.actionSuperquad.triggered.connect(self.import_superquad)
         self.actionExit.triggered.connect(self.close)
 
         self.actionCalculate.triggered.connect(self.calculate)
@@ -599,6 +600,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.load_project_file(parsed_data)
 
             self.dmode.setCurrentIndex(2)
+
+    def import_superquad(self):
+        """
+        Import Superquad file.
+        """
+        raise NotImplementedError
 
     def load_project_file(self, jsdata, input_path=None):
         self.resetFields()
