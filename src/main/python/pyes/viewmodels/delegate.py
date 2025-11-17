@@ -1,11 +1,9 @@
-from PySide6.QtCore import QEvent, QLocale, QObject, QPoint, QRect, Qt, QTimer
-from PySide6.QtGui import QDoubleValidator
+from PySide6.QtCore import QEvent, QObject, QPoint, QRect, Qt, QTimer
 from PySide6.QtWidgets import (
     QAbstractItemDelegate,
     QApplication,
     QColorDialog,
     QComboBox,
-    QItemDelegate,
     QLineEdit,
     QStyle,
     QStyledItemDelegate,
@@ -88,7 +86,7 @@ class CheckBoxDelegate(QStyledItemDelegate):
         checked = index.data()  # .toBool()
         check_box_style_option = QStyleOptionButton()
 
-        if (index.flags() & Qt.ItemFlag.ItemIsEditable) != False:
+        if (index.flags() & Qt.ItemFlag.ItemIsEditable):  # != False:
             check_box_style_option.state |= QStyle.State_Enabled
         else:
             check_box_style_option.state |= QStyle.State_ReadOnly
@@ -199,7 +197,7 @@ class ComboBoxDelegate(QStyledItemDelegate):
         try:
             value = self.items[editor.currentIndex()]
             model.setData(index, value, Qt.EditRole)
-        except:
+        except Exception:
             pass
 
     def updateEditorGeometry(self, editor, option, index):

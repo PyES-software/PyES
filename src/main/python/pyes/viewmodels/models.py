@@ -325,7 +325,7 @@ class ConcentrationsModel(_GenericModel):
         if role == Qt.ItemDataRole.EditRole:
             try:
                 self.undostack.push(ComponentsCellEdit(self, index, float(value)))
-            except:
+            except Exception:
                 return False
             self.dataChanged.emit(index, index)
             return True
@@ -395,7 +395,7 @@ class ComponentsModel(_GenericModel):
             else:
                 try:
                     self.undostack.push(ComponentsCellEdit(self, index, int(value)))
-                except:
+                except Exception:
                     return False
             self.dataChanged.emit(index, index)
         return True
@@ -453,7 +453,7 @@ class GenericSpeciesModel(_GenericModel):
                 return False
 
     def updateCompName(self, new_comp: list[str]):
-        if self._data["Ref. Comp."].isin(new_comp).all() == False:
+        if not self._data["Ref. Comp."].isin(new_comp).all():
             self._data["Ref. Comp."] = self._data["Ref. Comp."].where(
                 self._data["Ref. Comp."].isin(new_comp),
                 new_comp[0],
@@ -479,7 +479,7 @@ class GenericSpeciesModel(_GenericModel):
             flags = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
         else:
             value = self._data.iloc[index.row(), 0]
-            if value == False:
+            if not value:
                 if index.column() == self.columnCount() - 1:
                     flags = Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
                 else:
@@ -500,7 +500,7 @@ class GenericSpeciesModel(_GenericModel):
                 try:
                     self.undostack.push(SpeciesCellEdit(self, index, value))
                     self.layoutChanged.emit()
-                except:
+                except Exception:
                     return False
             # The second column holds the species name as a string
             elif index.column() == 1:
@@ -509,7 +509,7 @@ class GenericSpeciesModel(_GenericModel):
             elif index.column() < 8:
                 try:
                     self.undostack.push(SpeciesCellEdit(self, index, float(value)))
-                except:
+                except Exception:
                     return False
             # Last column always stores the info relative to % calculations
             elif index.column() == self.columnCount() - 1:
@@ -518,7 +518,7 @@ class GenericSpeciesModel(_GenericModel):
             else:
                 try:
                     self.undostack.push(SpeciesCellEdit(self, index, int(value)))
-                except:
+                except Exception:
                     return False
             self.dataChanged.emit(index, index)
         return True
