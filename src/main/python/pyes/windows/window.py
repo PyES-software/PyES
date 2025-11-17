@@ -1074,7 +1074,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.titration_tabs, CustomComboBox, "electroActiveComponent"
                 ),
             )
-        except:
+        except Exception:
             pass
         finally:
             self.tabWidget.setCurrentIndex(0)
@@ -1474,6 +1474,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return counter
 
     def calculate(self):
+        "Initiate calculations."
         # Disable the button, one omptimization calculation at the time
         self.calcButton.setEnabled(False)
         self.plotDistButton.setEnabled(False)

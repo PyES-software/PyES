@@ -9,6 +9,8 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+from PySide6.QtCore import QObject, QRunnable, Signal, Slot
+
 from libeq import (
     EqSolver,
     PotentiometryOptimizer,
@@ -21,8 +23,6 @@ from libeq.optimizers.potentiometry import ravel
 from libeq.solver.solids_solver import _compute_saturation_index
 from libeq.solver.solver_utils import _titration_background_ions_c
 
-# from optimizers.distribution import Distribution
-from PySide6.QtCore import QObject, QRunnable, Signal, Slot
 from workers_utils import _comp_info, _species_info
 
 
@@ -43,10 +43,6 @@ class optimizeWorker(QRunnable):
 
     @Slot()
     def run(self):
-        # import debugpy
-
-        # debugpy.debug_this_thread()
-
         # If run with debug enabled create the logging istance
 
         def log_reporter(*args):
@@ -83,7 +79,7 @@ class optimizeWorker(QRunnable):
             log.addHandler(filehandler)
             log.setLevel(logging.DEBUG)
 
-        # # Start timer to time entire process
+        # Start timer to time entire process
         start_time = time.time()
 
         self.signals.log.emit(r"### Beginning Calculation ###")
@@ -253,7 +249,6 @@ class optimizeWorker(QRunnable):
         with warnings.catch_warnings(record=True) as recorded_warnings:
             try:
                 if mode == "potentiometry":
-                    breakpoint()
                     (
                         x,
                         result,
