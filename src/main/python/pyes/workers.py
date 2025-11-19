@@ -51,10 +51,13 @@ class optimizeWorker(QRunnable):
             sigma = kwargs['sigma']
             gradient_norm = kwargs['gradient_norm']
             log_beta = kwargs['log_beta']
+            stoich = kwargs['stoichiometry']
 
-            self.signals.log.emit(f"iteration #{iteration}\n")
-            self.signals.log.emit(f"sigma: {sigma}; chi-squared: {chisq}\n")
-            self.signals.log.emit(f"log_beta = {log_beta}")
+            self.signals.log.emit(f"iteration #{iteration}")
+            self.signals.log.emit(f"sigma: {sigma}; chi-squared: {chisq}")
+            for a, lgb in zip(stoich, log_beta):
+                stoich_txt = "".join(f"{n:>4}" for n in a)
+                self.signals.log.emit(f"{stoich_txt}  {lgb:>10.4f}")
             self.signals.log.emit("--" * 40 + "\n")
 
         if self.debug:
