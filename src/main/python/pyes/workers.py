@@ -35,7 +35,7 @@ class optimizeSignal(QObject):
 
 
 class optimizeWorker(QRunnable):
-    def __init__(self, data_list, debug):
+    def __init__(self, data_list: dict, debug: bool):
         super().__init__()
         self.signals = optimizeSignal()
         self.data = data_list
@@ -44,22 +44,17 @@ class optimizeWorker(QRunnable):
     @Slot()
     def run(self):
         # If run with debug enabled create the logging istance
+        def log_reporter(**kwargs):
+            iteration = kwargs['iteration']
+            damping = kwargs['damping']
+            chisq = kwargs['chisq']
+            sigma = kwargs['sigma']
+            gradient_norm = kwargs['gradient_norm']
+            log_beta = kwargs['log_beta']
 
-        def log_reporter(*args):
-            report = pd.DataFrame({
-                "logB": args[1],
-                "logB shift": args[2],
-            })
-
-            report.index = [
-                solver_data.species_names[solver_data.nc :][ix]
-                for ix, f in enumerate(self.optimized_species)
-                if f
-            ]
-
-            self.signals.log.emit(f"iteration n.{args[0]}\n")
-            self.signals.log.emit(f"Sigma: {args[3]}\n")
-            self.signals.log.emit(report.to_string())
+            self.signals.log.emit(f"iteration #{iteration}\n")
+            self.signals.log.emit(f"sigma: {sigma}; chi-squared: {chisq}\n")
+            self.signals.log.emit(f"log_beta = {log_beta}")
             self.signals.log.emit("--" * 40 + "\n")
 
         if self.debug:
