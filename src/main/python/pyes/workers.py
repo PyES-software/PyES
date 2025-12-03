@@ -16,7 +16,7 @@ from libeq import (
     PotentiometryOptimizer,
     SolverData,
     species_concentration,
-    uncertanties,
+    uncertanties
 )
 from libeq.excepts import DivergedIonicStrengthWarning
 from libeq.optimizers.potentiometry import ravel
@@ -247,6 +247,7 @@ class optimizeWorker(QRunnable):
         with warnings.catch_warnings(record=True) as recorded_warnings:
             try:
                 if mode == "potentiometry":
+                    breakpoint()
                     (
                         x,
                         result,

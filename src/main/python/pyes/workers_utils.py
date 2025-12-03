@@ -2,7 +2,7 @@ from typing import Literal
 
 import numpy as np
 import pandas as pd
-from libeq import SolverData
+from libeq import SolverData, Flags
 
 
 def _comp_info(
@@ -135,7 +135,7 @@ def _species_info(
 
     if mode == "potentiometry":
         species_info["Optimize"] = [
-            "*" if flag else "" for flag in data.potentiometry_opts.beta_flags
+            "*" if flag == Flags.REFINE else "" for flag in data.potentiometry_opts.beta_flags
         ]
 
     if data.nf > 0:
