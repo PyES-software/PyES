@@ -2,26 +2,28 @@
 authors = [{ name = "Lorenzo Castellino", email = "castellino96@gmail.com" },
            { name = "Salvador Blasco", email = "salvador.blasco@uv.es" }]
 license = { text = "GPLv3" }
-requires-python = "<3.12,>=3.11"
+requires-python = ">=3.11"
 dependencies = [
     "pyinstaller<7,>=5",
     "ppg @ git+ssh://git@github.com/Kastakin/ppg.git@main",
-    "pandas<2.0.0,>=1.5.0",
+    "pandas>=2.3.3",
     "openpyxl<4.0.0,>=3.0.9",
     "pyqtgraph<1.0.0,>=0.13.0",
     "pyside6-essentials<6.9,>=6.8",
     "libeq",
     "pyside6>=6.8.3",
+    "numpy>2.0",
+    "pydantic-numpy>=8.0",
 ]
 name = "pyes"
-version = "2.0.16beta"
+version = "2.0.17beta"
 description = ""
 
 [tool.run.ini_options]
 pythonpath = ["src/main/python/", "../libeq/src"]
 
 [tool.uv.sources]
-libeq = { git = "https://github.com/Kastakin/libeq.git" }
+libeq = { git = "https://github.com/PyES-software/libeq.git" }
 
 [tool.pytest.ini_options]
 testpaths = "tests"

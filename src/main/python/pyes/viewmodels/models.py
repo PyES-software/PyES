@@ -18,7 +18,7 @@ class TitrationModel(QAbstractTableModel):
     def __init__(self):
         super().__init__()
         self._data = pd.DataFrame(
-            [[False, 0.0, 0.0, 0.0, 0]], columns=[str(i) for i in range(5)]
+            [[False, 0.0, 0.0, 0.0, 0.0]], columns=[str(i) for i in range(5)]
         )
         self.readonly_columns = set()
         self.readonly_rows = set()
@@ -124,7 +124,7 @@ class TitrationModel(QAbstractTableModel):
         potential = self._data.iloc[:, 2].astype(float).to_numpy()
         # rtzf = (8.31446261815324 * 298.15) / (z * faraday_constant)
         if slope == 0:
-            new_pX = 0
+            new_pX = 0.0
         else:
             new_pX = (potential - e0) / -slope
         self._data.iloc[:, 4] = new_pX
