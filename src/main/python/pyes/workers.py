@@ -16,7 +16,8 @@ from libeq import (
     PotentiometryOptimizer,
     SolverData,
     species_concentration,
-    uncertanties
+    uncertanties,
+    Flags
 )
 from libeq.excepts import DivergedIonicStrengthWarning
 from libeq.optimizers.potentiometry import ravel
@@ -24,6 +25,12 @@ from libeq.solver.solids_solver import _compute_saturation_index
 from libeq.solver.solver_utils import _titration_background_ions_c
 
 from workers_utils import _comp_info, _species_info
+
+
+pd.set_option('display.max_rows', None)     # to display all rows.
+pd.set_option('display.max_columns', None)  # to display all columns.
+pd.set_option('display.width', None)        # to prevent line wrapping and allow full width display.
+pd.set_option('display.max_colwidth', None)
 
 
 # Main optimization routine worker and signals
@@ -238,7 +245,7 @@ class optimizeWorker(QRunnable):
             self.index_name = "V Add. [mL]"
 
             self.optimized_species = (
-                np.array(solver_data.potentiometry_opts.beta_flags) > 0
+                np.array(solver_data.potentiometry_opts.beta_flags) == Flags.REFINE
             )
 
         start_time = time.time()
@@ -247,23 +254,32 @@ class optimizeWorker(QRunnable):
         with warnings.catch_warnings(record=True) as recorded_warnings:
             try:
                 if mode == "potentiometry":
-                    breakpoint()
-                    (
-                        x,
-                        result,
-                        log_beta,
-                        b_error,
-                        cor_matrix,
-                        cov_matrix,
-                        return_extra,
-                    ) = PotentiometryOptimizer(solver_data, reporter=log_reporter)
+                    # (
+                    #     x,
+                    #     result,
+                    #     log_beta,
+                    #     b_error,
+                    #     cor_matrix,
+                    #     cov_matrix,
+                    #     return_extra,
+                    # ) = PotentiometryOptimizer(solver_data, reporter=log_reporter)
+                    fit_result = PotentiometryOptimizer(solver_data, reporter=log_reporter)
+                    x = fit_result['final variables']
+                    concentrations = fit_result['free concentration']
+                    log_beta = fit_result['final log beta']
+                    b_error = fit_result['error log beta']
+                    cor_matrix = fit_result['correlation']
+                    cov_matrix = fit_result['covariance']
+
                     # Calculate elapsed time between start to finish
                     elapsed_time = round((time.time() - start_time), 5)
 
-                    slices = return_extra["slices"]
-                    idx_to_keep = return_extra["idx_to_keep"]
+                    slices = fit_result['slices']
+                    #idx_to_keep = return_extra["idx_to_keep"]
 
-                    total_concentration = return_extra["total_concentration"]
+                    idx_to_keep = [tuple(n for n, f in enumerate(t.ignored) if not f) for t in solver_data.potentiometry_opts.titrations]
+
+                    total_concentration = fit_result["total concentration"]
 
                     solver_data.log_beta_sigma = np.array(
                         list(
@@ -278,46 +294,53 @@ class optimizeWorker(QRunnable):
                         solver_data.log_ks, (total_concentration.shape[0], 1)
                     )
 
-                    read_poetential = np.concatenate(return_extra["read_potential"])
-                    calculated_potential = np.concatenate(
-                        return_extra["calculated_potential"]
-                    )
+                    read_potential = fit_result["read emf"]
+                    residuals = fit_result["residuals"]
+                    calculated_potential = read_potential - residuals
 
-                    px = np.concatenate([
-                        (return_extra["calculated_potential"][i] - t.e0) / -t.slope
-                        for i, t in enumerate(solver_data.potentiometry_opts.titrations)
-                    ])
+                    px = -np.log10(fit_result['eactive'])
+                    # px = np.concatenate([
+                    #     (return_extra["calculated_potential"][i] - t.e0) / -t.slope
+                    #     for i, t in enumerate(solver_data.potentiometry_opts.titrations)
+                    # ])
 
                     self.result_index = np.concatenate([
-                        t.v_add[idx_to_keep[i]]
-                        for i, t in enumerate(solver_data.potentiometry_opts.titrations)
+                         t.v_add[~t.ignored]
+                         for t in solver_data.potentiometry_opts.titrations
                     ])
+                    # self.result_index = np.concatenate([
+                    #     t.v_add[idx_to_keep[i]]
+                    #     for i, t in enumerate(solver_data.potentiometry_opts.titrations)
+                    # ])
 
                     self.result_index = [
                         self.result_index,
-                        read_poetential,
+                        read_potential,
                         calculated_potential,
-                        read_poetential - calculated_potential,
+                        residuals,
                         px,
-                        np.diag(return_extra["weights"]),
+                        fit_result["weights"]
+                        #np.diag(return_extra["weights"]),
                     ]
 
                     conc_sigma = []
-                    background_ions_conc = []
+                    # background_ions_conc = []
                     for i, t in enumerate(solver_data.potentiometry_opts.titrations):
+                        v_aux = t.v_add[~t.ignored]
                         conc_sigma.append(
-                            np.tile(t.c0_sigma, [t.v_add[idx_to_keep[i]].size, 1])
+                            np.tile(t.c0_sigma, [v_aux.size, 1])
                             + (
-                                np.tile(t.v_add[idx_to_keep[i]], [solver_data.nc, 1]).T
+                                np.tile(v_aux, [solver_data.nc, 1]).T
                                 * 1e-3
                                 * t.ct_sigma
                             )
                         )
-                        background_ions_conc.append(
-                            _titration_background_ions_c(t, idx_to_keep[i])
-                        )
+                        # background_ions_conc.append(
+                        #     _titration_background_ions_c(t, idx_to_keep[i])
+                        # )
                     self.conc_sigma = np.concatenate(conc_sigma)
-                    self.background_ions_concentration = np.vstack(background_ions_conc)
+                    # self.background_ions_concentration = np.vstack(background_ions_conc)
+                    self.background_ions_concentration = fit_result['background ion concentration']
 
                     self.index_name = [
                         "V Add. [mL]",
@@ -340,7 +363,7 @@ class optimizeWorker(QRunnable):
                                 solver_data.species_names[solver_data.nc :],
                                 solver_data.potentiometry_opts.beta_flags,
                             )
-                            if flag != 0
+                            if flag == Flags.REFINE
                         ],
                     )
 
@@ -382,9 +405,9 @@ class optimizeWorker(QRunnable):
                             self.signals.log.emit(str(w.message))
                     self.signals.log.emit("\n")
 
-        concentrations = species_concentration(
-            result, log_beta, solver_data.stoichiometry, full=True
-        )
+        # concentrations = species_concentration(
+        #     result, log_beta, solver_data.stoichiometry, full=True
+        # )
 
         soluble_concentration = concentrations[
             :,
@@ -421,7 +444,7 @@ class optimizeWorker(QRunnable):
 
         saturation_index = pd.DataFrame(
             _compute_saturation_index(
-                result[:, : solver_data.nc], log_ks, solver_data.solid_stoichiometry
+                concentrations[:, : solver_data.nc], log_ks, solver_data.solid_stoichiometry
             ),
             index=self.result_index,
             columns=["SI" + name for name in solver_data.solids_names],
@@ -475,18 +498,21 @@ class optimizeWorker(QRunnable):
             )
         ).rename_axis(columns="Solubility Product")
 
-        self._storeResult(
-            soluble_concentration,
-            "species_concentrations",
-            slices=slices,
-            extra=means_to_report,
-        )
-        self._storeResult(
-            solids_concentration,
-            "solids_concentrations",
-            slices=slices,
-            extra=means_to_report,
-        )
+        self.signals.log.emit(repr(soluble_concentration))
+        self.signals.log.emit(repr(solids_concentration))
+
+        # self._storeResult(
+        #     soluble_concentration,
+        #     "species_concentrations",
+        #     slices=slices,
+        #     extra=means_to_report,
+        # )
+        # self._storeResult(
+        #     solids_concentration,
+        #     "solids_concentrations",
+        #     slices=slices,
+        #     extra=means_to_report,
+        # )
 
         ref_percentage_soluble = solver_data.components + list(
             self.data["speciesModel"]["Ref. Comp."].values()
@@ -548,24 +574,29 @@ class optimizeWorker(QRunnable):
             columns=[solver_data.solids_names, ref_poercentage_solids],
         ).rename_axis(columns=["Solids", r"% relative to comp."])
 
+        self.signals.log.emit(repr(soluble_percentages))
+        self.signals.log.emit(repr(solids_percentages))
+        self.signals.log.emit(repr(formation_constants))
+        self.signals.log.emit(repr(solubility_products))
+
         # Print and store species percentages
-        self._storeResult(
-            soluble_percentages,
-            "soluble_percentages",
-            slices=slices,
-            extra=means_to_report,
-        )
+        # self._storeResult(
+        #     soluble_percentages,
+        #     "soluble_percentages",
+        #     slices=slices,
+        #     extra=means_to_report,
+        # )
         # Print and store solid species percentages
-        self._storeResult(
-            solids_percentages,
-            "solids_percentages",
-            slices=slices,
-            extra=means_to_report,
-        )
+        # self._storeResult(
+        #     solids_percentages,
+        #     "solids_percentages",
+        #     slices=slices,
+        #     extra=means_to_report,
+        # )
 
         # If working at variable ionic strength print and store formation constants/solubility products aswell
-        self._storeResult(formation_constants, "formation_constants", slices=slices)
-        self._storeResult(solubility_products, "solubility_products", slices=slices)
+        # self._storeResult(formation_constants, "formation_constants", slices=slices)
+        # self._storeResult(solubility_products, "solubility_products", slices=slices)
 
         if self.data["emode"] is True:
             soluble_sigma_np, solids_sigma_np = uncertanties(
