@@ -281,15 +281,19 @@ class optimizeWorker(QRunnable):
 
                     total_concentration = fit_result["total concentration"]
 
-                    solver_data.log_beta_sigma = np.array(
-                        list(
-                            ravel(
-                                solver_data.log_beta_sigma,
-                                b_error,
-                                solver_data.potentiometry_opts.beta_flags,
-                            )
-                        )
-                    )
+                    solver_data.log_beta_sigma = solver_data.log_beta_sigma.copy()
+                    refined = [ f == Flags.REFINE for f in solver_data.potentiometry_opts.beta_flags ]
+                    solver_data.log_beta_sigma[refined] = b_error[:]
+                    # solver_data.log_beta_sigma = np.array(
+                    #     list(
+                    #         ravel(
+                    #             solver_data.log_beta_sigma,
+                    #             b_error,
+                    #             solver_data.potentiometry_opts.beta_flags,
+                    #         )
+                    #     )
+                    # )
+
                     log_ks = np.tile(
                         solver_data.log_ks, (total_concentration.shape[0], 1)
                     )
