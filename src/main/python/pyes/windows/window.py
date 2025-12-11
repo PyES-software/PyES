@@ -605,7 +605,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Import Superquad file.
         """
-        raise NotImplementedError
+        if not self.save_or_discard():
+            return False
+
+        default_path = (
+            self.settings.value("path/default")
+            if self.project_path is None
+            else os.path.dirname(self.project_path)
+        )
+        input_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Import SUPERQUAD file",
+            default_path,
+        )
+        if not input_path:
+            return
+
+        try:
+            parsed_data = SolverData.load_from_superquad(input_path)
+            parsed_data = parsed_data.to_pyes()
+        except Exception as e:
+            dialog = WrongFileDialog(self)
+            dialog.setText(
+                "Error in parsing provided file as a valid SUPERQUAD file:\n"
+                + "".join(traceback.TracebackException.from_exception(e).format())
+            )
+            dialog.exec()
+            return False
+
+        self.load_project_file(parsed_data)
+
+        self.dmode.setCurrentIndex(2)
+
 
     def load_project_file(self, jsdata, input_path=None):
         self.resetFields()
