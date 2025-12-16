@@ -61,7 +61,6 @@ class TitrationModel(QAbstractTableModel):
         if index.column() == 0:
             flags = Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
 
-        # return self.updateFlags(flags, index)
         return flags
 
     def headerData(self, section, orientation, role):
@@ -86,13 +85,6 @@ class TitrationModel(QAbstractTableModel):
 
     def columnCount(self, index=QModelIndex()):
         return self._data.shape[1]
-
-    # def updateFlags(self, flags: Qt.ItemFlag, index: QModelIndex):
-    #     if self.columnReadOnly(index.column()):
-    #         flags &= ~Qt.ItemFlag.ItemIsEditable
-    #         flags &= ~Qt.ItemFlag.ItemIsEnabled
-
-    #     return flags
 
     def columnReadOnly(self, column):
         return column in self.readonly_columns
@@ -233,16 +225,6 @@ class _GenericModel(QAbstractTableModel):
             if orientation == Qt.Orientation.Vertical:
                 return str(self._data.index[section])
 
-    # def updateFlags(self, flags: Qt.ItemFlag, index: QModelIndex):
-    #     if self.columnReadOnly(index.column()):
-    #         flags &= ~Qt.ItemFlag.ItemIsEditable
-    #         flags &= ~Qt.ItemFlag.ItemIsEnabled
-    #     if self.rowReadOnly(index.row()):
-    #         flags &= ~Qt.ItemFlag.ItemIsEditable
-    #         flags &= ~Qt.ItemFlag.ItemIsEnabled
-
-    #     return flags
-
     def columnReadOnly(self, column):
         return column in self.readonly_columns
 
@@ -320,7 +302,6 @@ class ConcentrationsModel(_GenericModel):
             | Qt.ItemFlag.ItemIsEnabled
             | Qt.ItemFlag.ItemIsSelectable
         )
-        # return self.updateFlags(flags, index)
         return flags
 
     def setData(self, index, value, role):
@@ -357,51 +338,59 @@ class ComponentsModel(_GenericModel):
         super().__init__(data, undo_stack)
 
     def data(self, index, role: Qt.ItemDataRole = Qt.ItemDataRole.DisplayRole):
-        if role == Qt.ItemDataRole.DisplayRole:
+        if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole):
             value = self._data.iloc[index.row(), index.column()]
-            return str(value)
+            return str(value) if role == Qt.ItemDataRole.DisplayRole else value
 
         if role == Qt.ItemDataRole.UserRole:
             value = self._data.iloc[index.row(), index.column()]
             return value
 
+        return None
+
     def flags(self, index):
-        # flags = (
-        #     Qt.ItemFlag.ItemIsEditable
-        #     | Qt.ItemFlag.ItemIsEnabled
-        #     | Qt.ItemFlag.ItemIsSelectable
-        # )
-        # return self.updateFlags(flags, index)
-        # return super().flags(index) | Qt.ItemFlag.ItemIsEditable
-        return Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
+        if not index.isValid():
+            return Qt.ItemFlag.NoItemFlags
+
+        return (
+            Qt.ItemFlag.ItemIsEditable
+            | Qt.ItemFlag.ItemIsEnabled
+            | Qt.ItemFlag.ItemIsSelectable
+        )
 
     def setData(self, index, value, role):
-        if role == Qt.ItemDataRole.EditRole:
-            # First column must contain non-empty strings
-            if index.column() == 0:
-                if (
-                    re.match(r"^\S+$", value)
-                    and value != self._data.iloc[index.row(), index.column()]
-                ):
-                    if value not in self._data["Name"].to_list():
-                        self.undostack.push(ComponentsCellEdit(self, index, value))
-                    else:
-                        QMessageBox.warning(
-                            None,
-                            "Duplicate Name",
-                            f"The name '{value}' already exists. Please choose a different name.",
-                        )
-                        return False
-                else:
-                    return False
-            # The other column can accept only int values
-            else:
-                try:
-                    self.undostack.push(ComponentsCellEdit(self, index, int(value)))
-                except Exception:
-                    return False
+        if role != Qt.ItemDataRole.EditRole:
+            return False
+
+        if index.column() == 0:  # Name column
+            old_value = self._data.iloc[index.row(), index.column()]
+            if value == old_value:
+                return False  # No change
+
+            if not re.match(r"^\S+$", value):
+                return False
+
+            if value in self._data["Name"].to_list():
+                QMessageBox.warning(
+                    None,
+                    "Duplicate Name",
+                    f"The name '{value}' already exists. Please choose a different name.",
+                )
+                return False
+
+            # Success: apply change via undo command
+            self.undostack.push(ComponentsCellEdit(self, index, value))
             self.dataChanged.emit(index, index)
-        return True
+            return True
+
+        else:  # Charge column
+            try:
+                new_charge = int(value)
+                self.undostack.push(ComponentsCellEdit(self, index, new_charge))
+                self.dataChanged.emit(index, index)
+                return True
+            except ValueError:
+                return False
 
     def insertRows(self, position, rows=1, index=QModelIndex()) -> bool:
         """Insert a row into the model."""
@@ -494,12 +483,11 @@ class GenericSpeciesModel(_GenericModel):
             else:
                 flags = Qt.ItemFlag.NoItemFlags
 
-        # return self.updateFlags(flags, index)
         return flags
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:
-            # The frist column holds the ignore flag
+            # The first column holds the ignore flag
             if index.column() == 0:
                 try:
                     self.undostack.push(SpeciesCellEdit(self, index, value))

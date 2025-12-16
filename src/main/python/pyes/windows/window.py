@@ -326,6 +326,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.compView.setModel(self.compModel)
         self.compView.setItemDelegateForColumn(0, LineEditDelegate(self.compView))
         self.compView.setItemDelegateForColumn(1, NumberFormatDelegate(self.compView))
+        from PySide6.QtWidgets import QAbstractItemView
+        self.compView.setEditTriggers(
+            QAbstractItemView.EditTrigger.DoubleClicked |
+            QAbstractItemView.EditTrigger.AnyKeyPressed |
+            QAbstractItemView.EditTrigger.EditKeyPressed
+        )
         compHeader = self.compView.horizontalHeader()
         compHeader.setSectionResizeMode(QHeaderView.ResizeToContents)
         # Connect the dataChanged signal to the corresponding slot
@@ -384,6 +390,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         solidSpeciesHeader = self.solidSpeciesView.horizontalHeader()
         solidSpeciesHeader.setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.solidSpeciesView.setEditTriggers(
+            QAbstractItemView.EditTrigger.DoubleClicked |
+            QAbstractItemView.EditTrigger.AnyKeyPressed |
+            QAbstractItemView.EditTrigger.EditKeyPressed
+        )
 
         self.speciesModel.dataChanged.connect(self.rename_beta_to_refine)
 

@@ -38,11 +38,16 @@ class NumberFormatDelegate(QStyledItemDelegate):
         return editor
 
     def setEditorData(self, editor, index):
-        data = index.data(Qt.DisplayRole)
-        editor.setText(data)
+        value = index.model().data(index, Qt.EditRole)
+        if value is not None:
+            editor.setText(str(value))
+        else:
+            editor.setText("")
 
     def setModelData(self, editor, model, index):
-        model.setData(index, editor.text(), Qt.EditRole)
+        text = editor.text()
+        if text:  # or add validation if needed
+            model.setData(index, text, Qt.EditRole)
 
 
 class LineEditDelegate(QStyledItemDelegate):
@@ -54,7 +59,7 @@ class LineEditDelegate(QStyledItemDelegate):
         return editor
 
     def setEditorData(self, editor, index):
-        data = index.data(Qt.DisplayRole)
+        data = index.model().data(index, Qt.EditRole)
         editor.setText(data)
 
     def setModelData(self, editor, model, index):
