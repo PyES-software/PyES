@@ -963,7 +963,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.speciesModel.layoutChanged.emit()
         self.solidSpeciesModel.layoutChanged.emit()
         self.concModel.layoutChanged.emit()
-
         # Clear logger output
         self.consoleOutput.clear()
 

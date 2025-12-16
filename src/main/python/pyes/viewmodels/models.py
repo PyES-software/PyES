@@ -61,7 +61,8 @@ class TitrationModel(QAbstractTableModel):
         if index.column() == 0:
             flags = Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
 
-        return self.updateFlags(flags, index)
+        # return self.updateFlags(flags, index)
+        return flags
 
     def headerData(self, section, orientation, role):
         if role == Qt.DisplayRole:
@@ -86,12 +87,12 @@ class TitrationModel(QAbstractTableModel):
     def columnCount(self, index=QModelIndex()):
         return self._data.shape[1]
 
-    def updateFlags(self, flags: Qt.ItemFlag, index: QModelIndex):
-        if self.columnReadOnly(index.column()):
-            flags &= ~Qt.ItemFlag.ItemIsEditable
-            flags &= ~Qt.ItemFlag.ItemIsEnabled
+    # def updateFlags(self, flags: Qt.ItemFlag, index: QModelIndex):
+    #     if self.columnReadOnly(index.column()):
+    #         flags &= ~Qt.ItemFlag.ItemIsEditable
+    #         flags &= ~Qt.ItemFlag.ItemIsEnabled
 
-        return flags
+    #     return flags
 
     def columnReadOnly(self, column):
         return column in self.readonly_columns
@@ -232,15 +233,15 @@ class _GenericModel(QAbstractTableModel):
             if orientation == Qt.Orientation.Vertical:
                 return str(self._data.index[section])
 
-    def updateFlags(self, flags: Qt.ItemFlag, index: QModelIndex):
-        if self.columnReadOnly(index.column()):
-            flags &= ~Qt.ItemFlag.ItemIsEditable
-            flags &= ~Qt.ItemFlag.ItemIsEnabled
-        if self.rowReadOnly(index.row()):
-            flags &= ~Qt.ItemFlag.ItemIsEditable
-            flags &= ~Qt.ItemFlag.ItemIsEnabled
+    # def updateFlags(self, flags: Qt.ItemFlag, index: QModelIndex):
+    #     if self.columnReadOnly(index.column()):
+    #         flags &= ~Qt.ItemFlag.ItemIsEditable
+    #         flags &= ~Qt.ItemFlag.ItemIsEnabled
+    #     if self.rowReadOnly(index.row()):
+    #         flags &= ~Qt.ItemFlag.ItemIsEditable
+    #         flags &= ~Qt.ItemFlag.ItemIsEnabled
 
-        return flags
+    #     return flags
 
     def columnReadOnly(self, column):
         return column in self.readonly_columns
@@ -319,7 +320,8 @@ class ConcentrationsModel(_GenericModel):
             | Qt.ItemFlag.ItemIsEnabled
             | Qt.ItemFlag.ItemIsSelectable
         )
-        return self.updateFlags(flags, index)
+        # return self.updateFlags(flags, index)
+        return flags
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:
@@ -364,13 +366,14 @@ class ComponentsModel(_GenericModel):
             return value
 
     def flags(self, index):
-        flags = (
-            Qt.ItemFlag.ItemIsEditable
-            | Qt.ItemFlag.ItemIsEnabled
-            | Qt.ItemFlag.ItemIsSelectable
-        )
-
-        return self.updateFlags(flags, index)
+        # flags = (
+        #     Qt.ItemFlag.ItemIsEditable
+        #     | Qt.ItemFlag.ItemIsEnabled
+        #     | Qt.ItemFlag.ItemIsSelectable
+        # )
+        # return self.updateFlags(flags, index)
+        # return super().flags(index) | Qt.ItemFlag.ItemIsEditable
+        return Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:
@@ -491,7 +494,8 @@ class GenericSpeciesModel(_GenericModel):
             else:
                 flags = Qt.ItemFlag.NoItemFlags
 
-        return self.updateFlags(flags, index)
+        # return self.updateFlags(flags, index)
+        return flags
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:
