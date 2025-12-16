@@ -59,11 +59,20 @@ wheels = [
 [[package]]
 name = "libeq"
 version = "0.4.0"
-source = { git = "https://github.com/PyES-software/libeq.git#29dcfb1333ab4e24a2b0d51e419f9c34cd3e671c" }
+source = { editable = "../libeq" }
 dependencies = [
     { name = "numpy" },
     { name = "pandas" },
 ]
+
+[package.metadata]
+requires-dist = [
+    { name = "numpy" },
+    { name = "numpy", marker = "extra == 'dev'", specifier = ">=1.2" },
+    { name = "pandas" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.4" },
+]
+provides-extras = ["dev"]
 
 [[package]]
 name = "lz4"
@@ -450,7 +459,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "libeq", git = "https://github.com/PyES-software/libeq.git" },
+    { name = "libeq", editable = "../libeq" },
     { name = "numpy", specifier = ">2.0" },
     { name = "openpyxl", specifier = ">=3.0.9,<4.0.0" },
     { name = "pandas", specifier = ">=2.3.3" },

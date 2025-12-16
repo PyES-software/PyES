@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import traceback
+from typing import Callable
 from pathlib import Path
 
 import pandas as pd
@@ -570,6 +571,79 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Import a BSTAC file
         """
+        self._import_common("BSTAC", SolverData.load_from_bstac)
+        # if not self.save_or_discard():
+        #     return False
+
+        # default_path = (
+        #     self.settings.value("path/default")
+        #     if self.project_path is None
+        #     else os.path.dirname(self.project_path)
+        # )
+        # input_path, _ = QFileDialog.getOpenFileName(
+        #     self,
+        #     "Import BSTAC file",
+        #     default_path,
+        # )
+
+        # if input_path:
+        #     try:
+        #         parsed_data = SolverData.load_from_bstac(input_path)
+        #         parsed_data = parsed_data.to_pyes()
+        #     except Exception as e:
+        #         dialog = WrongFileDialog(self)
+        #         dialog.setText(
+        #             "Error in parsing provided file as a valid BSTAC file:\n"
+        #             + "".join(traceback.TracebackException.from_exception(e).format())
+        #         )
+        #         dialog.exec()
+        #         return False
+
+        #     self.load_project_file(parsed_data)
+
+        #     self.dmode.setCurrentIndex(2)
+
+    def import_superquad(self):
+        """
+        Import Superquad file.
+        """
+        self._import_common("SUPERQUAD", SolverData.load_from_superquad)
+        # if not self.save_or_discard():
+        #     return False
+
+        # default_path = (
+        #     self.settings.value("path/default")
+        #     if self.project_path is None
+        #     else os.path.dirname(self.project_path)
+        # )
+        # input_path, _ = QFileDialog.getOpenFileName(
+        #     self,
+        #     "Import SUPERQUAD file",
+        #     default_path,
+        # )
+        # if not input_path:
+        #     return
+
+        # try:
+        #     parsed_data = SolverData.load_from_superquad(input_path)
+        #     parsed_data = parsed_data.to_pyes()
+        # except Exception as e:
+        #     dialog = WrongFileDialog(self)
+        #     dialog.setText(
+        #         "Error in parsing provided file as a valid SUPERQUAD file:\n"
+        #         + "".join(traceback.TracebackException.from_exception(e).format())
+        #     )
+        #     dialog.exec()
+        #     return False
+
+        # self.load_project_file(parsed_data)
+
+        # self.dmode.setCurrentIndex(2)
+
+    def _import_common(self, legacy_name: str, legacy_parser: Callable):
+        """
+        Common tasks for importing legacy file
+        """
         if not self.save_or_discard():
             return False
 
@@ -580,18 +654,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         input_path, _ = QFileDialog.getOpenFileName(
             self,
-            "Import BSTAC file",
+            f"Import {legacy_name} file",
             default_path,
         )
 
         if input_path:
             try:
-                parsed_data = SolverData.load_from_bstac(input_path)
+                parsed_data = legacy_parser(input_path)
                 parsed_data = parsed_data.to_pyes()
             except Exception as e:
                 dialog = WrongFileDialog(self)
                 dialog.setText(
-                    "Error in parsing provided file as a valid BSTAC file:\n"
+                    f"Error in parsing provided file as a valid {legacy_name} file:\n"
                     + "".join(traceback.TracebackException.from_exception(e).format())
                 )
                 dialog.exec()
@@ -600,42 +674,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.load_project_file(parsed_data)
 
             self.dmode.setCurrentIndex(2)
-
-    def import_superquad(self):
-        """
-        Import Superquad file.
-        """
-        if not self.save_or_discard():
-            return False
-
-        default_path = (
-            self.settings.value("path/default")
-            if self.project_path is None
-            else os.path.dirname(self.project_path)
-        )
-        input_path, _ = QFileDialog.getOpenFileName(
-            self,
-            "Import SUPERQUAD file",
-            default_path,
-        )
-        if not input_path:
-            return
-
-        try:
-            parsed_data = SolverData.load_from_superquad(input_path)
-            parsed_data = parsed_data.to_pyes()
-        except Exception as e:
-            dialog = WrongFileDialog(self)
-            dialog.setText(
-                "Error in parsing provided file as a valid SUPERQUAD file:\n"
-                + "".join(traceback.TracebackException.from_exception(e).format())
-            )
-            dialog.exec()
-            return False
-
-        self.load_project_file(parsed_data)
-
-        self.dmode.setCurrentIndex(2)
 
 
     def load_project_file(self, jsdata, input_path=None):

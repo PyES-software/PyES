@@ -23,7 +23,7 @@ description = ""
 pythonpath = ["src/main/python/", "../libeq/src"]
 
 [tool.uv.sources]
-libeq = { git = "https://github.com/PyES-software/libeq.git" }
+libeq = { path = "../libeq", editable = true }
 
 [tool.pytest.ini_options]
 testpaths = "tests"
