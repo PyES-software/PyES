@@ -258,7 +258,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.solid_species_data,
         ) = cleanData()
 
-        # Conncect slots for actions
+        # Connect slots for actions
         self.actionNew.triggered.connect(self.file_new)
         self.actionSave.triggered.connect(self.file_save)
         self.actionSaveAs.triggered.connect(self.file_save_as)
