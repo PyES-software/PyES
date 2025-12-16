@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="icons">
+    <file>table--pencil.png</file>
+    <file>ui-check-box.png</file>
+    <file>ui-check-box-uncheck.png</file>
     <file>disk--plus.png</file>
     <file>information-frame.png</file>
     <file>row_down.png</file>

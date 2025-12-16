@@ -42,6 +42,9 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
         super().__init__()
         self.setupUi(self)
         self.componentComboBox.currentTextChanged.connect(self._updateTitrationCurve)
+        self.componentComboBox_perc.currentTextChanged.connect(
+            self._updatePercentageReference
+        )
         self.exportButton.clicked.connect(self._exportGraph)
         self.monochrome_check.clicked.connect(self.changeMonochrome)
         self.monochrome_color.colorChanged.connect(self.redraw)
@@ -90,7 +93,20 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
 
         # Get values for the x from the index
         self.original_x_values = self.conc_result.index.get_level_values(0)
-        self.x_values = self.conc_result.index.get_level_values(0)
+        self.x_values = self.conc_result.index.get_level_values(0).to_numpy()
+
+        self.perc_comp = 0
+        if self.distribution:
+            self.tot_conc = parent.result["comp_info"]["Tot. C."].to_numpy()
+            self.point_conc = None
+            self.perc_reference = self.tot_conc
+        else:
+            self.tot_conc = parent.result["comp_info"]["Vessel Conc."].to_numpy()
+            self.point_conc = parent.result["comp_info"]["Titrant Conc."].to_numpy()
+
+            self.perc_reference = self.tot_conc[:, None] + (
+                self.point_conc[:, None] * self.x_values
+            )
 
         self.original_species_values = {
             name: [
@@ -179,11 +195,22 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
         else:
             self.regions_check.setEnabled(False)
 
+        self.componentComboBox_perc.blockSignals(True)
+        self.componentComboBox_perc.addItems(self.comp_names)
+        self.componentComboBox_perc.blockSignals(False)
+
         if self.distribution:
             self.independent_comp_name = parent.indComp.currentText()
             self.tabWidget.setTabEnabled(2, False)
             self.v_unit.setEnabled(False)
             self.v_unit_label.setEnabled(False)
+            ind_comp_idx = np.argwhere(np.isnan(self.tot_conc))[0, 0]
+            self.componentComboBox_perc.setItemData(
+                ind_comp_idx,
+                self.comp_names[ind_comp_idx],
+                Qt.ItemDataRole.UserRole - 1,
+            )
+
         else:
             self.componentComboBox.addItems(self.comp_names)
 
@@ -198,7 +225,7 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
     def check_checked_state(self, i):
         if i.isCheckable():  # Skip data columns.
             name = i.text()
-            checked = i.checkState() == Qt.Checked
+            checked = i.checkState() == Qt.CheckState.Checked
 
             if name in self._data_visible:
                 if not checked:
@@ -263,9 +290,15 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
                         self._addErrorLines(e, name, color, errorline_style)
                 else:
                     for i, plot in enumerate(self._data_lines[name]):
-                        if i < 2:
+                        if i == 0:
                             plot.setPen(pg.mkPen(color, width=2, style=line_style))
                             plot.setData(self.x_values, v[i])
+                        elif i == 1:
+                            plot.setPen(pg.mkPen(color, width=2, style=line_style))
+                            plot.setData(
+                                self.x_values,
+                                v[0] / self.perc_reference[self.perc_comp] * 100,
+                            )
                         else:
                             plot.setPen(pg.mkPen(color, width=2, style=errorline_style))
                             plot.setData(self.x_values, e[i - 2])
@@ -314,22 +347,34 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
                                 self._addErrorLines(e, name, color, errorline_style)
                         else:
                             for i, plot in enumerate(self._data_lines[name]):
-                                if i < 2:
+                                if i == 0:
                                     plot.setPen(
                                         pg.mkPen(color, width=2, style=line_style)
                                     )
                                     plot.setData(self.x_values, v[i])
+                                elif i == 1:
+                                    plot.setPen(
+                                        pg.mkPen(color, width=2, style=line_style)
+                                    )
+                                    plot.setData(
+                                        self.x_values,
+                                        v[i]
+                                        / self.perc_reference[self.perc_comp]
+                                        * 100,
+                                    )
                                 else:
                                     plot.setPen(
                                         pg.mkPen(color, width=2, style=errorline_style)
                                     )
                                     plot.setData(self.x_values, e[i - 2])
 
-                        conc_y_min, conc_y_max = min(conc_y_min, *v[0]), max(
-                            conc_y_max, *v[0]
+                        conc_y_min, conc_y_max = (
+                            min(conc_y_min, *v[0]),
+                            max(conc_y_max, *v[0]),
                         )
-                        perc_y_min, perc_y_max = min(perc_y_min, *v[1]), max(
-                            perc_y_max, *v[1]
+                        perc_y_min, perc_y_max = (
+                            min(perc_y_min, *v[1]),
+                            max(perc_y_max, *v[1]),
                         )
 
                     else:
@@ -361,7 +406,7 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
         self.perc_graph.setTitle("Relative Percentage")
         self.perc_graph.setLabel(
             "left",
-            text="Percentage %",
+            text=f"Percentage of {self.comp_names[0]} %",
         )
 
         if self.distribution:
@@ -416,7 +461,7 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
             ),
             self.perc_graph.plot(
                 self.x_values,
-                values[1],
+                values[0] / self.perc_reference[self.perc_comp] * 100,
                 pen=pg.mkPen(color, width=2, style=line_style),
                 name=name,
             ),
@@ -602,13 +647,13 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
         """
         for row in range(self.speciesModel.rowCount()):
             item = self.speciesModel.item(row)
-            if item.checkState() != Qt.Checked:
-                item.setCheckState(Qt.Checked)
+            if item.checkState() != Qt.CheckState.Checked:
+                item.setCheckState(Qt.CheckState.Checked)
 
         for row in range(self.solidsModel.rowCount()):
             item = self.solidsModel.item(row)
-            if item.checkState() != Qt.Checked:
-                item.setCheckState(Qt.Checked)
+            if item.checkState() != Qt.CheckState.Checked:
+                item.setCheckState(Qt.CheckState.Checked)
 
     def deselectAll(self):
         """
@@ -616,13 +661,13 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
         """
         for row in range(self.speciesModel.rowCount()):
             item = self.speciesModel.item(row)
-            if item.checkState() == Qt.Checked:
-                item.setCheckState(Qt.Unchecked)
+            if item.checkState() == Qt.CheckState.Checked:
+                item.setCheckState(Qt.CheckState.Unchecked)
 
         for row in range(self.solidsModel.rowCount()):
             item = self.solidsModel.item(row)
-            if item.checkState() == Qt.Checked:
-                item.setCheckState(Qt.Unchecked)
+            if item.checkState() == Qt.CheckState.Checked:
+                item.setCheckState(Qt.CheckState.Unchecked)
 
     def filterSpecies(self):
         """
@@ -636,12 +681,12 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
             for row in range(self.speciesModel.rowCount()):
                 item = self.speciesModel.item(row)
                 if choice in item.text():
-                    item.setCheckState(Qt.Checked)
+                    item.setCheckState(Qt.CheckState.Checked)
 
             for row in range(self.solidsModel.rowCount()):
                 item = self.solidsModel.item(row)
                 if choice in item.text():
-                    item.setCheckState(Qt.Checked)
+                    item.setCheckState(Qt.CheckState.Checked)
 
     def _createLegend(self):
         self.conc_legend = pg.LegendItem()
@@ -668,6 +713,30 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
             -np.log10(self.conc_result[comp_name].to_numpy()),
             pen=pg.mkPen("b", width=2, style=Qt.PenStyle.SolidLine),
         )
+
+    def _updatePercentageReference(self, comp_name: str):
+        self.perc_graph.setLabel(
+            "left",
+            text=f"Percentage of {self.componentComboBox_perc.currentText()} %",
+        )
+
+        choice = self.componentComboBox_perc.currentText()
+        self.perc_comp = self.componentComboBox_perc.currentIndex()
+        for row in range(self.speciesModel.rowCount()):
+            item = self.speciesModel.item(row)
+            if choice not in item.text():
+                item.setCheckState(Qt.CheckState.Unchecked)
+        for row in range(self.solidsModel.rowCount()):
+            item = self.solidsModel.item(row)
+            if choice not in item.text():
+                item.setCheckState(Qt.CheckState.Unchecked)
+
+    # self.titration_graph.clear()
+    # self.titration_graph.plot(
+    #     self.original_x_values,
+    #     -np.log10(self.conc_result[comp_name].to_numpy()),
+    #     pen=pg.mkPen("b", width=2, style=Qt.PenStyle.SolidLine),
+    # )
 
     def _exportGraph(self):
         selected_plot = self.tabWidget.currentWidget().findChild(pg.PlotWidget)

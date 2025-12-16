@@ -1,7 +1,9 @@
 import logging
+from collections import deque
 
 import numpy as np
 import pandas as pd
+from numba import jit, njit, prange
 from numpy.typing import NDArray
 
 
@@ -85,7 +87,8 @@ class Distribution:
 
             if v0 > initial_volume:
                 raise Exception(
-                    "Initial titration volume should be higer or equal to initial volume."
+                    "Initial titration volume should be higer or equal to initial"
+                    " volume."
                 )
 
             self.v_added = np.array([volume_increments * x for x in range(self.nop)])
@@ -155,7 +158,10 @@ class Distribution:
         ]
         if not species_duplicates.empty:
             raise Exception(
-                f"Species {', '.join(species_duplicates.to_list())} with indices {', '.join(species_duplicates.index.astype(str).to_list())} appear to be duplicates, you can and should remove them to avoid ambiguities in the results."
+                f"Species {', '.join(species_duplicates.to_list())} with indices"
+                f" {', '.join(species_duplicates.index.astype(str).to_list())} appear"
+                " to be duplicates, you can and should remove them to avoid"
+                " ambiguities in the results."
             )
 
         solids_duplicates = solid_not_ignored.loc[
@@ -164,7 +170,10 @@ class Distribution:
         ]
         if not solids_duplicates.empty:
             raise Exception(
-                f"Solids {', '.join(solids_duplicates.to_list())} with indices {', '.join(solids_duplicates.index.astype(str).to_list())} appear to be duplicates, you can and should remove them to avoid ambiguities in the results."
+                f"Solids {', '.join(solids_duplicates.to_list())} with indices"
+                f" {', '.join(solids_duplicates.index.astype(str).to_list())} appear to"
+                " be duplicates, you can and should remove them to avoid ambiguities"
+                " in the results."
             )
 
         # Store the stoichiometric coefficients for the species and solid species
@@ -224,7 +233,8 @@ class Distribution:
         # Number of components and number of species/solids has to be > 0
         if self.nc <= 0 | (self.ns <= 0 & self.nf <= 0):
             raise Exception(
-                "Number of components and number of not ignored species should be more then zero."
+                "Number of components and number of not ignored species should be more"
+                " then zero."
             )
 
         if self.errors:
@@ -683,15 +693,19 @@ class Distribution:
         """
         # Initialize array to contain the species concentration
         # obtained from the calculations
-        for_estimation_c = []
-        results_species_conc = []
-        results_solid_conc = []
-        results_solid_si = []
-        results_species_sigma = []
-        results_solid_sigma = []
-        results_log_b = []
-        results_log_ks = []
-        results_ionic_strength = []
+        for_estimation_c = deque(maxlen=3)
+        results_species_conc = np.zeros(
+            dtype=float, shape=(self.nop, self.ns + self.nc)
+        )
+        results_solid_conc = np.zeros(dtype=float, shape=(self.nop, self.nf))
+        results_solid_si = np.zeros(dtype=float, shape=(self.nop, self.nf))
+        results_species_sigma = np.zeros(
+            dtype=float, shape=(self.nop, self.ns + self.nc)
+        )
+        results_solid_sigma = np.zeros(dtype=float, shape=(self.nop, self.nf))
+        results_log_b = np.zeros(dtype=float, shape=(self.nop, self.ns + self.nc))
+        results_log_ks = np.zeros(dtype=float, shape=(self.nop, self.nf))
+        results_ionic_strength = np.zeros(dtype=float, shape=(self.nop, 1))
 
         # Cycle over each point of titration
         for point in range(self.nop):
@@ -784,28 +798,28 @@ class Distribution:
                 solid_sigma = np.array([None for _ in range(self.nf)])
 
             # Store calculated species/solid concentration into a vector
-            results_species_conc.append(species_conc_calc)
-            results_solid_conc.append(solid_conc_calc)
+            results_species_conc[point, :] = species_conc_calc
+            results_solid_conc[point, :] = solid_conc_calc
 
-            results_solid_si.append(saturation_index_calc)
+            results_solid_si[point, :] = saturation_index_calc
             # Store uncertainty for calculated values
-            results_species_sigma.append(species_sigma)
-            results_solid_sigma.append(solid_sigma)
+            results_species_sigma[point, :] = species_sigma
+            results_solid_sigma[point, :] = solid_sigma
             # Store calculated ionic strength
-            results_ionic_strength.append(ionic_strength)
+            results_ionic_strength[point] = ionic_strength
             # Store calculated LogB/LogKs
-            results_log_b.append(log_b)
-            results_log_ks.append(log_ks)
+            results_log_b[point, :] = log_b
+            results_log_ks[point, :] = log_ks
 
         # Stack calculated species concentration/logB/ionic strength in tabular fashion
-        results_species_conc = np.stack(results_species_conc)
-        results_solid_conc = np.stack(results_solid_conc)
-        results_solid_si = np.stack(results_solid_si)
-        results_species_sigma = np.stack(results_species_sigma)
-        results_solid_sigma = np.stack(results_solid_sigma)
-        results_log_b = np.stack(results_log_b)
-        results_log_ks = np.stack(results_log_ks)
-        results_ionic_strength = np.stack(results_ionic_strength)
+        # results_species_conc = np.stack(results_species_conc)
+        # results_solid_conc = np.stack(results_solid_conc)
+        # results_solid_si = np.stack(results_solid_si)
+        # results_species_sigma = np.stack(results_species_sigma)
+        # results_solid_sigma = np.stack(results_solid_sigma)
+        # results_log_b = np.stack(results_log_b)
+        # results_log_ks = np.stack(results_log_ks)
+        # results_ionic_strength = np.stack(results_ionic_strength)
 
         # Return distribution/logb/ionic strength
         return (
@@ -972,7 +986,10 @@ class Distribution:
             comp_conv_criteria = np.sum(can_delta / c_tot) ** 2
 
             logging.debug(
-                "Convergence for analytical concentrations at Point %s iteration %s: %s",
+                (
+                    "Convergence for analytical concentrations at Point %s iteration"
+                    " %s: %s"
+                ),
                 point,
                 iteration,
                 comp_conv_criteria,
@@ -991,9 +1008,8 @@ class Distribution:
 
         # If during the first or second run you exceed the iteration limit report it
         logging.error(
-            "Calculation terminated early, no convergence found at point {} in {} iterations".format(
-                point, iteration
-            )
+            "Calculation terminated early, no convergence found at point {} in {}"
+            " iterations".format(point, iteration)
             + (
                 (
                     " after solids were considered."
@@ -1005,7 +1021,8 @@ class Distribution:
             )
         )
         raise Exception(
-            "Calculation of species concentration aborted, no convergence found with conc {} at point {} in {} iterations".format(
+            "Calculation of species concentration aborted, no convergence found with"
+            " conc {} at point {} in {} iterations".format(
                 str(c_spec), point, iteration
             )
             + (
@@ -1069,30 +1086,18 @@ class Distribution:
         else:
             nt = self.nc
 
-        J = np.zeros(shape=(nt, nt))
-
-        # Compute Jacobian
-        # Jacobian for aqueous species
-        J[: self.nc, : self.nc] = (
-            (
-                np.tile(c_spec, (self.nc, self.nc, 1))
-                / np.tile(
-                    c_spec[: self.nc].reshape((self.nc, 1)),
-                    (self.nc, 1, self.ns + self.nc),
-                )
-            )
-            * np.tile(self.model, (self.nc, 1, 1))
-            * np.rot90(np.tile(self.model, (self.nc, 1, 1)), -1, axes=(0, 1))
-        ).sum(axis=-1)
+        J = numba_jacobian(
+            self.nc,
+            nt,
+            c_spec,
+            saturation_index,
+            self.model,
+            self.solid_model,
+            with_solids,
+        )
+        # print(numba_jacobian.parallel_diagnostics(level=4))
 
         if with_solids:
-            # Jacobian for solid species
-            J[: self.nc, self.nc : nt] = self.solid_model
-
-            J[self.nc : nt, : self.nc] = -self.solid_model.T * (
-                np.tile(saturation_index, (self.nc, 1)).T
-                / np.tile(c_spec[: self.nc], (nt - self.nc, 1))
-            )
             # Remove rows and columns referring to under-saturated solids
             J = np.delete(J, to_skip, axis=0)
             J = np.delete(J, to_skip, axis=1)
@@ -1138,9 +1143,9 @@ class Distribution:
         #   - Second and third points as estimate from previous point
         #   - Subsequent points are extrapolated as follows
         if point > 2:
-            lp1 = -np.log10(for_estimation_c[(point - 1)][: self.nc])
-            lp2 = -np.log10(for_estimation_c[(point - 2)][: self.nc])
-            lp3 = -np.log10(for_estimation_c[(point - 3)][: self.nc])
+            lp1 = -np.log10(for_estimation_c[-1][: self.nc])
+            lp2 = -np.log10(for_estimation_c[-2][: self.nc])
+            lp3 = -np.log10(for_estimation_c[-3][: self.nc])
 
             # If two subsequent points present the same concentration
             # avoid the issue by using simply the previous point concentration
@@ -1157,7 +1162,7 @@ class Distribution:
             c[self.ind_comp] = fixed_c
             logging.debug("ESTIMATED C WITH INTERPOLATION")
         elif point > 0:
-            c = for_estimation_c[(point - 1)][: self.nc].copy()
+            c = for_estimation_c[-1][: self.nc].copy()
             c[self.ind_comp] = fixed_c
             logging.debug("ESTIMATED C FROM PREVIOUS POINT")
         elif point == 0:
@@ -1179,9 +1184,9 @@ class Distribution:
             v1 = self.v_added[(point - 1)]
             v2 = self.v_added[(point - 2)]
             v3 = self.v_added[(point - 3)]
-            lp1 = -np.log10(for_estimation_c[(point - 1)][: self.nc])
-            lp2 = -np.log10(for_estimation_c[(point - 2)][: self.nc])
-            lp3 = -np.log10(for_estimation_c[(point - 3)][: self.nc])
+            lp1 = -np.log10(for_estimation_c[-1][: self.nc])
+            lp2 = -np.log10(for_estimation_c[-2][: self.nc])
+            lp3 = -np.log10(for_estimation_c[-3][: self.nc])
 
             # If two subsequent points present the same concentration
             # avoid the issue by using simply the previous point concentration
@@ -1491,10 +1496,16 @@ class Distribution:
 
             f = np.concatenate((f, np.diag(saturation_index / ks)), axis=0)
             b = np.concatenate(
-                (b, [[0 for _ in range(self.ns)] for _ in range(self.nf)])
+                (
+                    b,
+                    [[0 for _ in range(self.ns)] for _ in range(self.nf)],
+                )
             )
             d = np.concatenate(
-                (d, [[0 for _ in range(self.nc)] for _ in range(self.nf)])
+                (
+                    d,
+                    [[0 for _ in range(self.nc)] for _ in range(self.nf)],
+                )
             )
 
             der_solid_beta = np.delete(der_solid_beta, c_solid == 0, axis=0)
@@ -1646,3 +1657,30 @@ class Distribution:
         J = d1 @ J @ d2
         delta = d1 @ delta
         return J, delta
+
+
+@njit(parallel=True, cache=True)
+def numba_jacobian(nc, nt, c_spec, saturation_index, model, solid_model, with_solids):
+    J = np.empty(shape=(nt, nt))
+    ns = len(c_spec)
+    # Compute Jacobian
+    # Jacobian for aqueous species
+    for j in prange(nc):
+        for k in prange(nc):
+            val = 0
+            for z in prange(ns):
+                val += model[j, z] * model[k, z] * (c_spec[z] / c_spec[k])
+            J[j, k] = val
+
+    if with_solids:
+        # Jacobian for solid species
+        for j in range(nc):
+            for k in range(nc, nt):
+                J[j, k] = solid_model[j, (k - nc)]
+
+        for j in range(nc, nt):
+            for k in range(nc):
+                J[j, k] = -(solid_model[k, (j - nc)]) * (
+                    saturation_index[(j - nc)] / c_spec[k]
+                )
+    return J

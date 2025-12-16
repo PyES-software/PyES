@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from commands import (
     ComponentsAddRows,
@@ -9,6 +10,7 @@ from commands import (
     ComponentsSwapRows,
     DoubleSpinBoxEdit,
     SpeciesAddRows,
+    SpeciesEditColumn,
     SpeciesRemoveRows,
     SpeciesSwapRows,
     dmodeEdit,
@@ -19,6 +21,7 @@ from commands import (
 from dialogs import (
     AboutDialog,
     CompletedCalculation,
+    EditColumnDialog,
     IonicStrengthInfoDialog,
     IssuesLoadingDialog,
     NewDialog,
@@ -26,7 +29,7 @@ from dialogs import (
     UncertaintyInfoDialog,
     WrongFileDialog,
 )
-from PySide6.QtCore import QByteArray, QSettings, QThreadPool, QUrl
+from PySide6.QtCore import QByteArray, QSettings, Qt, QThreadPool, QUrl
 from PySide6.QtGui import QDesktopServices, QKeySequence, QUndoStack
 from PySide6.QtWidgets import (
     QComboBox,
@@ -1010,6 +1013,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             row = selected_indexes[0].row()
             if row != (table.model().rowCount() - 1):
                 self.undostack.push(SpeciesSwapRows(table, row, row + 1))
+
+    def checkAll(self):
+        table = self.get_shown_tab()
+        if not table:
+            return
+        self.undostack.push(SpeciesEditColumn(table, 0, True))
+
+    def uncheckAll(self):
+        table = self.get_shown_tab()
+        if not table:
+            return
+        self.undostack.push(SpeciesEditColumn(table, 0, False))
+
+    def massEditColumn(self):
+        table = self.get_shown_tab()
+        if not table:
+            return
+
+        items = dict(zip(table.model()._data.columns[2:8], ["float" for _ in range(6)]))
+        items.update(
+            dict(zip(table.model()._data.columns[8:-1], ["integer" for _ in range(6)]))
+        )
+        items[table.model()._data.columns[-1]] = "choice"
+
+        dlg = EditColumnDialog(items=items)
+        if dlg.exec():
+            self.undostack.push(
+                SpeciesEditColumn(
+                    table,
+                    list(items.keys()).index(dlg.selected_field_name) + 2,
+                    dlg.choice,
+                )
+            )
 
     def get_shown_tab(self):
         if self.tablesTab.currentIndex() == 0:

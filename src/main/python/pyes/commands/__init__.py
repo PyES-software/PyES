@@ -12,6 +12,7 @@ from .models import (
     ComponentsSwapRows,
     SpeciesAddRows,
     SpeciesCellEdit,
+    SpeciesEditColumn,
     SpeciesRemoveRows,
     SpeciesSwapRows,
 )

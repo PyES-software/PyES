@@ -4,6 +4,7 @@
 import re
 import string
 from itertools import permutations
+from typing import Any
 
 import pandas as pd
 from commands import ComponentsCellEdit, SpeciesCellEdit
@@ -125,6 +126,12 @@ class GenericModel(QAbstractTableModel):
 
     def columnCount(self, index=QModelIndex()):
         return self._data.columns.size
+
+    def data(self, index, role: Qt.ItemDataRole = Qt.ItemDataRole.DisplayRole):
+        raise NotImplementedError()
+
+    def setData(self, index: QModelIndex, value: Any, role) -> bool:
+        raise NotImplementedError
 
 
 class ConcentrationsModel(GenericModel):

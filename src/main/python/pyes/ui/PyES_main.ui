@@ -997,6 +997,62 @@
                <number>2</number>
               </property>
               <item>
+               <widget class="QToolButton" name="select_all_button">
+                <property name="toolTip">
+                 <string>Ignore all species</string>
+                </property>
+                <property name="statusTip">
+                 <string>Ignore all species</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../../../resources/base/resources.qrc">
+                  <normaloff>:/icons/ui-check-box.png</normaloff>:/icons/ui-check-box.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>18</width>
+                  <height>18</height>
+                 </size>
+                </property>
+                <property name="autoRaise">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QToolButton" name="deselect_all_button">
+                <property name="toolTip">
+                 <string>Consider all species</string>
+                </property>
+                <property name="statusTip">
+                 <string>Consider all species</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="../../../resources/base/resources.qrc">
+                  <normaloff>:/icons/ui-check-box-uncheck.png</normaloff>:/icons/ui-check-box-uncheck.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>18</width>
+                  <height>18</height>
+                 </size>
+                </property>
+                <property name="autoRaise">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="Line" name="line_6">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QToolButton" name="insert_above_species_button">
                 <property name="toolTip">
                  <string>Add Species Above</string>
@@ -1151,6 +1207,32 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item>
+               <widget class="QToolButton" name="edit_column_button">
+                <property name="toolTip">
+                 <string>Edit whole column</string>
+                </property>
+                <property name="statusTip">
+                 <string>Edit whole column</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="../../../resources/base/resources.qrc">
+                  <normaloff>:/icons/table--pencil.png</normaloff>:/icons/table--pencil.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>18</width>
+                  <height>18</height>
+                 </size>
+                </property>
+                <property name="autoRaise">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -2062,7 +2144,7 @@
      <x>0</x>
      <y>0</y>
      <width>1283</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -2317,8 +2399,8 @@
    <slot>exportDist()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>745</y>
+     <x>112</x>
+     <y>743</y>
     </hint>
     <hint type="destinationlabel">
      <x>90</x>
@@ -2333,8 +2415,8 @@
    <slot>plotDist()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>743</x>
-     <y>745</y>
+     <x>1273</x>
+     <y>743</y>
     </hint>
     <hint type="destinationlabel">
      <x>683</x>
@@ -2401,8 +2483,8 @@
      <y>687</y>
     </hint>
     <hint type="destinationlabel">
-     <x>896</x>
-     <y>737</y>
+     <x>1265</x>
+     <y>735</y>
     </hint>
    </hints>
   </connection>
@@ -2429,8 +2511,8 @@
    <slot>insertSpeciesAbove()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>487</x>
-     <y>146</y>
+     <x>566</x>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
      <x>715</x>
@@ -2445,8 +2527,8 @@
    <slot>insertSpeciesBelow()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>519</x>
-     <y>146</y>
+     <x>598</x>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
      <x>888</x>
@@ -2461,8 +2543,8 @@
    <slot>removeSpecies()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>551</x>
-     <y>146</y>
+     <x>630</x>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
      <x>1026</x>
@@ -2477,8 +2559,8 @@
    <slot>moveSpeciesUp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>592</x>
-     <y>146</y>
+     <x>671</x>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
      <x>855</x>
@@ -2493,8 +2575,8 @@
    <slot>moveSpeciesDown()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>624</x>
-     <y>146</y>
+     <x>703</x>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
      <x>673</x>
@@ -2605,12 +2687,60 @@
    <slot>displayIonicStrengthInfo()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>250</x>
-     <y>311</y>
+     <x>260</x>
+     <y>344</y>
     </hint>
     <hint type="destinationlabel">
      <x>283</x>
      <y>754</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>select_all_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>checkAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>483</x>
+     <y>146</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>511</x>
+     <y>752</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>deselect_all_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>uncheckAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>513</x>
+     <y>145</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>610</x>
+     <y>751</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>edit_column_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>massEditColumn()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1255</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1282</x>
+     <y>120</y>
     </hint>
    </hints>
   </connection>
@@ -2643,5 +2773,8 @@
   <slot>moveCompDown()</slot>
   <slot>displayUncertaintyInfo()</slot>
   <slot>displayIonicStrengthInfo()</slot>
+  <slot>checkAll()</slot>
+  <slot>uncheckAll()</slot>
+  <slot>massEditColumn()</slot>
  </slots>
 </ui>

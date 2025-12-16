@@ -6,6 +6,28 @@ from PySide6.QtWidgets import QComboBox, QSpinBox, QTableView
 from utils_func import addSpeciesComp, getName, removeSpeciesComp, updateCompNames
 
 
+class SpeciesEditColumn(QUndoCommand):
+    def __init__(self, table: QTableView, column: int, value):
+        QUndoCommand.__init__(self)
+        self.table = table
+        self.model = table.model()
+        self.column = column
+        self.new_value = value
+        self.old_values = self.model._data.iloc[:, column].copy()
+
+    def undo(self) -> None:
+        print(self.old_values)
+        self.model._data.iloc[:, self.column] = self.old_values
+        self.cleanup()
+
+    def redo(self) -> None:
+        self.model._data.iloc[:, self.column] = self.new_value
+        self.cleanup()
+
+    def cleanup(self) -> None:
+        self.model.layoutChanged.emit()
+
+
 class SpeciesSwapRows(QUndoCommand):
     def __init__(self, table: QTableView, first_row: int, second_row: int):
         QUndoCommand.__init__(self)
