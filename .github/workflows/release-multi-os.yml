@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
+      - "v*"
 
 name: Release Multi Platform
 
@@ -9,25 +9,37 @@ jobs:
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
+    outputs:
+      is_beta: ${{ steps.release_type.outputs.is_beta }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Create Release # Creates the release, assets will be added after building
+
+      - name: Determine Release Type
+        id: release_type
+        run: |
+          if [[ "${GITHUB_REF##*/}" == *beta* ]]; then
+            echo "is_beta=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_beta=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
         id: create_release
-        uses: ncipollo/release-action@v1.11.2
+        uses: ncipollo/release-action@v1.14.0
         with:
           tag: ${{ github.ref }}
-          name: Release ${{ github.ref }}
+          name: Release ${{ github.ref_name }}
           bodyFile: release_text.md
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.release_type.outputs.is_beta }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-linux:
     name: Build Ubuntu
     needs: create-release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -39,9 +51,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
-          cache: "pip"
-          cache-dependency-path: "requirements/base.txt"
+          python-version: "3.11"
       - name: Install Python dependencies
         run: pip install -r requirements/base.txt
       - name: Run ppg
@@ -52,24 +62,22 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/PyES.deb
-          asset_name: PyES-${{ github.ref }}.deb
+          file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES Beta.deb' || 'target/PyES.deb' }}
+          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.deb', github.ref_name) || format('PyES-{0}.deb', github.ref_name) }}
           tag: ${{ github.ref }}
           overwrite: true
 
   build-macos:
     name: Build macOS
     needs: create-release
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
-          cache: "pip"
-          cache-dependency-path: "requirements/base.txt"
+          python-version: "3.11"
       - name: Install Python dependencies
         run: pip install -r requirements/base.txt
       - name: Run ppg
@@ -80,8 +88,8 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/PyES.dmg
-          asset_name: PyES-${{ github.ref }}.dmg
+          file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES Beta.dmg' || 'target/PyES.dmg' }}
+          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.dmg', github.ref_name) || format('PyES-{0}.dmg', github.ref_name) }}
           tag: ${{ github.ref }}
           overwrite: true
 
@@ -95,9 +103,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
-          cache: "pip"
-          cache-dependency-path: "requirements/base.txt"
+          python-version: "3.11"
       - name: Install Python dependencies
         run: pip install -r requirements/base.txt
       - name: Run ppg
@@ -108,8 +114,8 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/PyESSetup.exe
-          asset_name: PyES-${{ github.ref }}.exe
+          file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES BetaSetup.exe' || 'target/PyESSetup.exe' }}
+          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.exe', github.ref_name) || format('PyES-{0}.exe', github.ref_name) }}
           tag: ${{ github.ref }}
           overwrite: true
 
@@ -122,7 +128,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Rollback
-        uses: author/action-rollback@stable
+        uses: author/action-rollback@1.0.4
         with:
           tag: ${{ github.ref }}
         env:

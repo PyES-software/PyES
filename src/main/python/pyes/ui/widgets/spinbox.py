@@ -1,5 +1,5 @@
-from PySide6.QtCore import QLocale
-from PySide6.QtGui import QDoubleValidator
+from PySide6.QtCore import QLocale, Qt
+from PySide6.QtGui import QDoubleValidator, QWheelEvent
 from PySide6.QtWidgets import QDoubleSpinBox, QLineEdit, QWidget
 
 
@@ -7,10 +7,18 @@ class CustomSpinBox(QDoubleSpinBox):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.previous_value = self.value()
+        self.setButtonSymbols(QDoubleSpinBox.ButtonSymbols.NoButtons)
+        self.setLineEdit(
+            LineSpinBox(self, self.minimum(), self.maximum(), self.decimals())
+        )
+        self.setFocusPolicy(Qt.StrongFocus)
 
     def focusInEvent(self, event):
         self.previous_value = self.value()
-        QDoubleSpinBox.focusInEvent(self, event)
+        super().focusInEvent(event)
+
+    def wheelEvent(self, event):
+        event.ignore()
 
 
 class LineSpinBox(QLineEdit):
@@ -21,10 +29,10 @@ class LineSpinBox(QLineEdit):
         top: float = float("inf"),
         decimals: int = -1,
     ):
-        QLineEdit.__init__(self, parent)
+        super().__init__(parent)
         float_validator = DotDoubleValidator(bottom, top, decimals)
         float_validator.setLocale(QLocale("UnitedStates"))
-        float_validator.setNotation(DotDoubleValidator.StandardNotation)
+        float_validator.setNotation(DotDoubleValidator.ScientificNotation)
 
         self.setValidator(float_validator)
 

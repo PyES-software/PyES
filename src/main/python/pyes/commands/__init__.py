@@ -6,15 +6,24 @@ from .fields import (
     uncertaintyEdit,
 )
 from .models import (
+    BetaRefineCheckAll,
+    BetaRefineEdit,
+    BetaRefineUncheckAll,
     ComponentsAddRows,
     ComponentsCellEdit,
     ComponentsRemoveRows,
     ComponentsSwapRows,
+    ListWidgetEditAll,
     SpeciesAddRows,
     SpeciesCellEdit,
+    SpeciesEditColumn,
     SpeciesRemoveRows,
     SpeciesSwapRows,
+    TableCheckAll,
+    TableUncheckAll,
+    TitrationRefineEdit,
 )
+from .widgets import AddTab, ChangeWeightsModeCommand, RemoveTab
 
 __all__ = [
     uncertaintyEdit,
@@ -25,10 +34,20 @@ __all__ = [
     ComponentsAddRows,
     ComponentsRemoveRows,
     ComponentsSwapRows,
-    ComponentsRemoveRows,
     ComponentsCellEdit,
     SpeciesAddRows,
     SpeciesCellEdit,
+    SpeciesEditColumn,
     SpeciesRemoveRows,
     SpeciesSwapRows,
+    ListWidgetEditAll,
+    BetaRefineCheckAll,
+    BetaRefineUncheckAll,
+    BetaRefineEdit,
+    TitrationRefineEdit,
+    TableCheckAll,
+    TableUncheckAll,
+    AddTab,
+    RemoveTab,
+    ChangeWeightsModeCommand,
 ]

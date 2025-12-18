@@ -1,11 +1,9 @@
-from PySide6.QtCore import QEvent, QLocale, QObject, QPoint, QRect, Qt, QTimer
-from PySide6.QtGui import QDoubleValidator
+from PySide6.QtCore import QEvent, QObject, QPoint, QRect, Qt, QTimer
 from PySide6.QtWidgets import (
     QAbstractItemDelegate,
     QApplication,
     QColorDialog,
     QComboBox,
-    QItemDelegate,
     QLineEdit,
     QStyle,
     QStyledItemDelegate,
@@ -13,10 +11,9 @@ from PySide6.QtWidgets import (
     QStyleOptionComboBox,
     QStyleOptionViewItem,
 )
-from ui.widgets import LineSpinBox
 
 
-class NumberFormatDelegate(QItemDelegate):
+class NumberFormatDelegate(QStyledItemDelegate):
     def __init__(
         self,
         parent=None,
@@ -30,6 +27,8 @@ class NumberFormatDelegate(QItemDelegate):
         self.decimals = decimals
 
     def createEditor(self, parent, option, index):
+        from ui.widgets.spinbox import LineSpinBox
+
         editor = LineSpinBox(
             parent,
             bottom=self.bottom,
@@ -39,14 +38,19 @@ class NumberFormatDelegate(QItemDelegate):
         return editor
 
     def setEditorData(self, editor, index):
-        data = index.data(Qt.DisplayRole)
-        editor.setText(data)
+        value = index.model().data(index, Qt.EditRole)
+        if value is not None:
+            editor.setText(str(value))
+        else:
+            editor.setText("")
 
     def setModelData(self, editor, model, index):
-        model.setData(index, editor.text(), Qt.EditRole)
+        text = editor.text()
+        if text:  # or add validation if needed
+            model.setData(index, text, Qt.EditRole)
 
 
-class LineEditDelegate(QItemDelegate):
+class LineEditDelegate(QStyledItemDelegate):
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
 
@@ -55,7 +59,7 @@ class LineEditDelegate(QItemDelegate):
         return editor
 
     def setEditorData(self, editor, index):
-        data = index.data(Qt.DisplayRole)
+        data = index.model().data(index, Qt.EditRole)
         editor.setText(data)
 
     def setModelData(self, editor, model, index):
@@ -87,7 +91,7 @@ class CheckBoxDelegate(QStyledItemDelegate):
         checked = index.data()  # .toBool()
         check_box_style_option = QStyleOptionButton()
 
-        if (index.flags() & Qt.ItemFlag.ItemIsEditable) != False:
+        if (index.flags() & Qt.ItemFlag.ItemIsEditable):  # != False:
             check_box_style_option.state |= QStyle.State_Enabled
         else:
             check_box_style_option.state |= QStyle.State_ReadOnly
@@ -159,9 +163,9 @@ class CheckBoxDelegate(QStyledItemDelegate):
         return QRect(check_box_point, check_box_rect.size())
 
 
-class ComboBoxDelegate(QItemDelegate):
+class ComboBoxDelegate(QStyledItemDelegate):
     def __init__(self, view, choices, parent=None):
-        QItemDelegate.__init__(self, parent)
+        QStyledItemDelegate.__init__(self, parent)
         self.items = choices
         self._view = view
 
@@ -187,7 +191,7 @@ class ComboBoxDelegate(QItemDelegate):
         opt.text = str(value)
         opt.rect = option.rect
         style.drawComplexControl(QStyle.CC_ComboBox, opt, painter)
-        QItemDelegate.paint(self, painter, option, index)
+        QStyledItemDelegate.paint(self, painter, option, index)
 
     def setEditorData(self, editor, index):
         value = index.data(Qt.DisplayRole)
@@ -198,16 +202,16 @@ class ComboBoxDelegate(QItemDelegate):
         try:
             value = self.items[editor.currentIndex()]
             model.setData(index, value, Qt.EditRole)
-        except:
+        except Exception:
             pass
 
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
 
 
-class ColorPickerDelegate(QItemDelegate):
+class ColorPickerDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
-        QItemDelegate.__init__(self, parent)
+        QStyledItemDelegate.__init__(self, parent)
 
     def paint(self, painter, option, index):
         color = index.data(Qt.DisplayRole)

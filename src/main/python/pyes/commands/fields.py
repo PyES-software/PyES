@@ -9,8 +9,10 @@ from PySide6.QtWidgets import (
     QLabel,
     QStackedWidget,
     QTableView,
+    QTabWidget,
     QWidget,
 )
+from utils_func import get_widgets_from_tab
 
 
 class DoubleSpinBoxEdit(QUndoCommand):
@@ -90,7 +92,7 @@ class indCompEdit(QUndoCommand):
         for label in self.affected_labels:
             label.setText(
                 re.sub(
-                    f"\[\w+\]",
+                    "\[\w+\]",
                     f"[{self.field.itemText(self.previous_index)}]",
                     label.text(),
                 )
@@ -109,7 +111,7 @@ class indCompEdit(QUndoCommand):
         for label in self.affected_labels:
             label.setText(
                 re.sub(
-                    f"\[\w+\]",
+                    "\[\w+\]",
                     f"[{self.field.itemText(self.index)}]",
                     label.text(),
                 )
@@ -125,7 +127,7 @@ class dmodeEdit(QUndoCommand):
         self,
         field: QComboBox,
         index: int,
-        affected_fields: QStackedWidget,
+        affected_fields: list[QStackedWidget],
         affected_table: QTableView,
     ):
         QUndoCommand.__init__(self)
@@ -141,7 +143,7 @@ class dmodeEdit(QUndoCommand):
             self.to_hide = True
 
     def undo(self) -> None:
-        self.affected_fields.setCurrentIndex(self.previous_index)
+        self.show_stacked_widgets(self.previous_index)
         self.affected_table.setColumnHidden(1, not self.to_hide)
         self.affected_table.setColumnHidden(3, not self.to_hide)
 
@@ -155,7 +157,7 @@ class dmodeEdit(QUndoCommand):
         self.field.blockSignals(False)
 
     def redo(self) -> None:
-        self.affected_fields.setCurrentIndex(self.index)
+        self.show_stacked_widgets(self.index)
         self.affected_table.setColumnHidden(1, self.to_hide)
         self.affected_table.setColumnHidden(3, self.to_hide)
 
@@ -168,6 +170,16 @@ class dmodeEdit(QUndoCommand):
         self.field.setCurrentIndex(self.index)
         self.field.blockSignals(False)
 
+    def show_stacked_widgets(self, index):
+        if index > 1:
+            self.affected_fields[1].setCurrentIndex(1)
+        else:
+            self.affected_fields[1].setCurrentIndex(0)
+            if index == 0:
+                self.affected_fields[0].setCurrentIndex(0)
+            else:
+                self.affected_fields[0].setCurrentIndex(1)
+
 
 class imodeEdit(QUndoCommand):
     def __init__(
@@ -175,34 +187,80 @@ class imodeEdit(QUndoCommand):
         field: QComboBox,
         affected_fields: list[QWidget],
         affected_models: list[QAbstractItemModel],
+        titration_tabs: QTabWidget,
         index: int,
     ):
         QUndoCommand.__init__(self)
         self.field = field
         self.affected_fields = affected_fields
         self.affected_models = affected_models
+        self.titration_tabs = titration_tabs
         self.index = index
         self.previous_index = field.previous_index
         self.state = bool(self.index)
         self.previous_state = bool(self.previous_index)
 
     def undo(self) -> None:
+        from ui.widgets import CustomSpinBox
+
         for field in self.affected_fields:
             field.setEnabled(self.previous_state)
 
         for model in self.affected_models:
             model.setColumnReadOnly(range(4, 8), not self.previous_state)
 
+        for c0back in get_widgets_from_tab(
+            self.titration_tabs, CustomSpinBox, "c0back"
+        ):
+            c0back.setEnabled(self.state)
+
+        for ctback in get_widgets_from_tab(
+            self.titration_tabs, CustomSpinBox, "ctback"
+        ):
+            ctback.setEnabled(self.state)
+
+        for c0back_label in get_widgets_from_tab(
+            self.titration_tabs, QLabel, "c0back_label"
+        ):
+            c0back_label.setEnabled(self.state)
+
+        for ctback_label in get_widgets_from_tab(
+            self.titration_tabs, QLabel, "ctback_label"
+        ):
+            ctback_label.setEnabled(self.state)
+
         self.field.blockSignals(True)
         self.field.setCurrentIndex(self.previous_index)
         self.field.blockSignals(False)
 
     def redo(self) -> None:
+        from ui.widgets import CustomSpinBox
+
         for field in self.affected_fields:
             field.setEnabled(self.state)
 
         for model in self.affected_models:
             model.setColumnReadOnly(range(4, 8), not self.state)
+
+        for c0back in get_widgets_from_tab(
+            self.titration_tabs, CustomSpinBox, "c0back"
+        ):
+            c0back.setEnabled(self.state)
+
+        for ctback in get_widgets_from_tab(
+            self.titration_tabs, CustomSpinBox, "ctback"
+        ):
+            ctback.setEnabled(self.state)
+
+        for c0back_label in get_widgets_from_tab(
+            self.titration_tabs, QLabel, "c0back_label"
+        ):
+            c0back_label.setEnabled(self.state)
+
+        for ctback_label in get_widgets_from_tab(
+            self.titration_tabs, QLabel, "ctback_label"
+        ):
+            ctback_label.setEnabled(self.state)
 
         self.field.blockSignals(True)
         self.field.setCurrentIndex(self.index)

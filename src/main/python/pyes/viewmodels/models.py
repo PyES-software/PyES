@@ -4,15 +4,167 @@
 import re
 import string
 from itertools import permutations
+from typing import Any
 
 import pandas as pd
 from commands import ComponentsCellEdit, SpeciesCellEdit
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
-from PySide6.QtGui import QColorConstants, QPalette, QUndoStack
+from PySide6.QtGui import QBrush, QColor, QColorConstants, QPalette, QUndoStack
+from PySide6.QtWidgets import QMessageBox
 from utils_func import getName
 
 
-class GenericModel(QAbstractTableModel):
+class TitrationModel(QAbstractTableModel):
+    def __init__(self):
+        super().__init__()
+        self._data = pd.DataFrame(
+            [[False, 0.0, 0.0, 0.0, 0.0]], columns=[str(i) for i in range(5)]
+        )
+        self.readonly_columns = set()
+        self.readonly_rows = set()
+
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
+        if not index.isValid():
+            return False
+
+        row, col = index.row(), index.column()
+
+        if role == Qt.ItemDataRole.DisplayRole:
+            value = self._data.iloc[row, col]
+
+            if col == 0:
+                return bool(value)
+            else:
+                return str(value)
+
+        if role == Qt.ItemDataRole.CheckStateRole and col == 0:
+            return Qt.Checked if self._data.iloc[row, col] else Qt.Unchecked
+
+    def setData(self, index, value, role):
+        if not index.isValid():
+            return False
+
+        row, col = index.row(), index.column()
+
+        if col == 0:
+            self._data.iloc[row, col] = value
+            self.dataChanged.emit(index, index)
+            return True
+
+        return False
+
+    def flags(self, index):
+        if not index.isValid():
+            return Qt.NoItemFlags
+
+        flags = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
+        if index.column() == 0:
+            flags = Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
+
+        return flags
+
+    def headerData(self, section, orientation, role):
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                if section == 0:
+                    return "Ignore"
+                elif section == 1:
+                    return "Volume (mL)"
+                elif section == 2:
+                    return "Potential (V)"
+                elif section == 3:
+                    return "Weight"
+                elif section == 4:
+                    return "pX"
+
+            if orientation == Qt.Vertical:
+                return str(self._data.index[section])
+
+    def rowCount(self, index=QModelIndex()):
+        return self._data.shape[0]
+
+    def columnCount(self, index=QModelIndex()):
+        return self._data.shape[1]
+
+    def columnReadOnly(self, column):
+        return column in self.readonly_columns
+
+    def setColumnReadOnly(self, columns, readonly=True):
+        for column in columns:
+            if readonly:
+                self.readonly_columns.add(column)
+                self.layoutChanged.emit()
+            else:
+                self.readonly_columns.discard(column)
+                self.layoutChanged.emit()
+
+    def use_all(self):
+        self._data.iloc[:, 0] = False
+        self.layoutChanged.emit()
+
+    def use_even(self):
+        self._data.iloc[::2, 0] = False
+        self._data.iloc[1::2, 0] = True
+        self.layoutChanged.emit()
+
+    def use_odd(self):
+        self._data.iloc[::2, 0] = True
+        self._data.iloc[1::2, 0] = False
+        self.layoutChanged.emit()
+
+    def update_pX(self, e0, slope):
+        # faraday_constant = 9.64853321233100184e4
+        potential = self._data.iloc[:, 2].astype(float).to_numpy()
+        # rtzf = (8.31446261815324 * 298.15) / (z * faraday_constant)
+        if slope == 0:
+            new_pX = 0.0
+        else:
+            new_pX = (potential - e0) / -slope
+        self._data.iloc[:, 4] = new_pX
+        self._data.iloc[:, 4] = self._data.iloc[:, 4].round(2)
+        self.layoutChanged.emit()
+
+
+# TODO: Think if this can be integrated in the generic model as well
+class PreviewModel(QAbstractTableModel):
+    def __init__(self):
+        super().__init__()
+        self._data = pd.DataFrame([[0, 0, 0]])
+        self.blue_colored = 0
+        self.red_colored = 0
+        self.green_colored = 0
+
+    def data(self, index, role):
+        if role == Qt.ItemDataRole.DisplayRole:
+            value = self._data.iloc[index.row(), index.column()]
+            return str(value)
+
+        if role == Qt.ItemDataRole.BackgroundRole:
+            if index.column() == self.red_colored:
+                return QBrush(QColor("red"))
+            elif index.column() == self.blue_colored:
+                return QBrush(QColor("blue"))
+            elif index.column() == self.green_colored:
+                return QBrush(QColor("green"))
+            else:
+                return False
+
+    def headerData(self, section, orientation, role):
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return str(self._data.columns[section])
+
+            if orientation == Qt.Vertical:
+                return str(self._data.index[section])
+
+    def rowCount(self, index=QModelIndex()):
+        return self._data.shape[0]
+
+    def columnCount(self, index=QModelIndex()):
+        return self._data.shape[1]
+
+
+class _GenericModel(QAbstractTableModel):
     def __init__(
         self, data: pd.DataFrame | None = None, undo_stack: QUndoStack | None = None
     ) -> None:
@@ -22,6 +174,9 @@ class GenericModel(QAbstractTableModel):
 
         self.readonly_columns = set()
         self.readonly_rows = set()
+
+    def getColumn(self, column: int) -> list:
+        return self._data.iloc[:, column].to_list()
 
     def insertRows(
         self, empty_rows: pd.DataFrame, position: int, rows: int, index=QModelIndex()
@@ -70,16 +225,6 @@ class GenericModel(QAbstractTableModel):
             if orientation == Qt.Orientation.Vertical:
                 return str(self._data.index[section])
 
-    def updateFlags(self, flags: Qt.ItemFlag, index: QModelIndex):
-        if self.columnReadOnly(index.column()):
-            flags &= ~Qt.ItemFlag.ItemIsEditable
-            flags &= ~Qt.ItemFlag.ItemIsEnabled
-        if self.rowReadOnly(index.row()):
-            flags &= ~Qt.ItemFlag.ItemIsEditable
-            flags &= ~Qt.ItemFlag.ItemIsEnabled
-
-        return flags
-
     def columnReadOnly(self, column):
         return column in self.readonly_columns
 
@@ -126,9 +271,15 @@ class GenericModel(QAbstractTableModel):
     def columnCount(self, index=QModelIndex()):
         return self._data.columns.size
 
+    def data(self, index, role: Qt.ItemDataRole = Qt.ItemDataRole.DisplayRole):
+        raise NotImplementedError()
 
-class ConcentrationsModel(GenericModel):
-    def __init__(self, data: pd.DataFrame, undo_stack: QUndoStack):
+    def setData(self, index: QModelIndex, value: Any, role) -> bool:
+        raise NotImplementedError
+
+
+class ConcentrationsModel(_GenericModel):
+    def __init__(self, data: pd.DataFrame, undo_stack: QUndoStack = None):
         super().__init__(data, undo_stack)
         self.previous_ind_comp = 0
 
@@ -151,13 +302,13 @@ class ConcentrationsModel(GenericModel):
             | Qt.ItemFlag.ItemIsEnabled
             | Qt.ItemFlag.ItemIsSelectable
         )
-        return self.updateFlags(flags, index)
+        return flags
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:
             try:
                 self.undostack.push(ComponentsCellEdit(self, index, float(value)))
-            except:
+            except Exception:
                 return False
             self.dataChanged.emit(index, index)
             return True
@@ -175,7 +326,7 @@ class ConcentrationsModel(GenericModel):
         self.previous_ind_comp = index
 
 
-class ComponentsModel(GenericModel):
+class ComponentsModel(_GenericModel):
     def __init__(self, data: pd.DataFrame, undo_stack: QUndoStack):
         self.default_names = set(
             "".join(x) for x in permutations(string.ascii_uppercase, 2)
@@ -187,39 +338,59 @@ class ComponentsModel(GenericModel):
         super().__init__(data, undo_stack)
 
     def data(self, index, role: Qt.ItemDataRole = Qt.ItemDataRole.DisplayRole):
-        if role == Qt.ItemDataRole.DisplayRole:
+        if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole):
             value = self._data.iloc[index.row(), index.column()]
-            return str(value)
+            return str(value) if role == Qt.ItemDataRole.DisplayRole else value
 
         if role == Qt.ItemDataRole.UserRole:
             value = self._data.iloc[index.row(), index.column()]
             return value
 
+        return None
+
     def flags(self, index):
-        flags = (
+        if not index.isValid():
+            return Qt.ItemFlag.NoItemFlags
+
+        return (
             Qt.ItemFlag.ItemIsEditable
             | Qt.ItemFlag.ItemIsEnabled
             | Qt.ItemFlag.ItemIsSelectable
         )
 
-        return self.updateFlags(flags, index)
-
     def setData(self, index, value, role):
-        if role == Qt.ItemDataRole.EditRole:
-            # First column must contain non-empty strings
-            if index.column() == 0:
-                if re.match(r"^\S+$", value):
-                    self.undostack.push(ComponentsCellEdit(self, index, value))
-                else:
-                    return False
-            # The other column can accept only int values
-            else:
-                try:
-                    self.undostack.push(ComponentsCellEdit(self, index, int(value)))
-                except:
-                    return False
+        if role != Qt.ItemDataRole.EditRole:
+            return False
+
+        if index.column() == 0:  # Name column
+            old_value = self._data.iloc[index.row(), index.column()]
+            if value == old_value:
+                return False  # No change
+
+            if not re.match(r"^\S+$", value):
+                return False
+
+            if value in self._data["Name"].to_list():
+                QMessageBox.warning(
+                    None,
+                    "Duplicate Name",
+                    f"The name '{value}' already exists. Please choose a different name.",
+                )
+                return False
+
+            # Success: apply change via undo command
+            self.undostack.push(ComponentsCellEdit(self, index, value))
             self.dataChanged.emit(index, index)
-        return True
+            return True
+
+        else:  # Charge column
+            try:
+                new_charge = int(value)
+                self.undostack.push(ComponentsCellEdit(self, index, new_charge))
+                self.dataChanged.emit(index, index)
+                return True
+            except ValueError:
+                return False
 
     def insertRows(self, position, rows=1, index=QModelIndex()) -> bool:
         """Insert a row into the model."""
@@ -242,7 +413,7 @@ class ComponentsModel(GenericModel):
         super().insertRows(empty_rows, position, rows, index)
 
 
-class GenericSpeciesModel(GenericModel):
+class GenericSpeciesModel(_GenericModel):
     def __init__(
         self, data: pd.DataFrame, undo_stack: QUndoStack, template_header: list[str]
     ):
@@ -274,7 +445,7 @@ class GenericSpeciesModel(GenericModel):
                 return False
 
     def updateCompName(self, new_comp: list[str]):
-        if self._data["Ref. Comp."].isin(new_comp).all() == False:
+        if not self._data["Ref. Comp."].isin(new_comp).all():
             self._data["Ref. Comp."] = self._data["Ref. Comp."].where(
                 self._data["Ref. Comp."].isin(new_comp),
                 new_comp[0],
@@ -300,7 +471,7 @@ class GenericSpeciesModel(GenericModel):
             flags = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
         else:
             value = self._data.iloc[index.row(), 0]
-            if value == False:
+            if not value:
                 if index.column() == self.columnCount() - 1:
                     flags = Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
                 else:
@@ -312,16 +483,16 @@ class GenericSpeciesModel(GenericModel):
             else:
                 flags = Qt.ItemFlag.NoItemFlags
 
-        return self.updateFlags(flags, index)
+        return flags
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:
-            # The frist column holds the ignore flag
+            # The first column holds the ignore flag
             if index.column() == 0:
                 try:
                     self.undostack.push(SpeciesCellEdit(self, index, value))
                     self.layoutChanged.emit()
-                except:
+                except Exception:
                     return False
             # The second column holds the species name as a string
             elif index.column() == 1:
@@ -330,7 +501,7 @@ class GenericSpeciesModel(GenericModel):
             elif index.column() < 8:
                 try:
                     self.undostack.push(SpeciesCellEdit(self, index, float(value)))
-                except:
+                except Exception:
                     return False
             # Last column always stores the info relative to % calculations
             elif index.column() == self.columnCount() - 1:
@@ -339,7 +510,7 @@ class GenericSpeciesModel(GenericModel):
             else:
                 try:
                     self.undostack.push(SpeciesCellEdit(self, index, int(value)))
-                except:
+                except Exception:
                     return False
             self.dataChanged.emit(index, index)
         return True
