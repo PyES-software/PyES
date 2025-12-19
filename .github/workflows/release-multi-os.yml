@@ -5,6 +5,9 @@ on:
 
 name: Release Multi Platform
 
+permissions:
+  contents: write
+
 jobs:
   create-release:
     name: Create Release
@@ -13,7 +16,7 @@ jobs:
       is_beta: ${{ steps.release_type.outputs.is_beta }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Determine Release Type
         id: release_type
@@ -39,25 +42,39 @@ jobs:
   build-linux:
     name: Build Ubuntu
     needs: create-release
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/base.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install fpm
         run: |
-          sudo apt-get install ruby ruby-dev rubygems build-essential
+          sudo apt-get update
+          sudo apt-get install -y ruby ruby-dev rubygems build-essential
           sudo gem install --no-document --minimal-deps fpm
           fpm --version
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
+
       - name: Install Python dependencies
         run: pip install -r requirements/base.txt
+
       - name: Run ppg
         run: |
           ppg freeze
           ppg installer
+
       - name: Upload to Release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -70,20 +87,32 @@ jobs:
   build-macos:
     name: Build macOS
     needs: create-release
-    runs-on: macos-13
+    runs-on: macos-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/base.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
+
       - name: Install Python dependencies
         run: pip install -r requirements/base.txt
+
       - name: Run ppg
         run: |
           ppg freeze
           ppg installer
+
       - name: Upload to Release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -99,17 +128,32 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/base.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
+
+      - name: Install NSIS
+        run: choco install nsis --yes
+
       - name: Install Python dependencies
         run: pip install -r requirements/base.txt
+
       - name: Run ppg
         run: |
           ppg freeze
           ppg installer
+
       - name: Upload to Release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -127,6 +171,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Rollback
         uses: author/action-rollback@1.0.4
         with:
