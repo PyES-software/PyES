@@ -88,24 +88,6 @@ jobs:
           ppg freeze
           ppg installer
 
-      - name: Rename installer to clean version name
-        run: |
-          cd target
-          for file in PyES*; do
-            if [[ -f "$file" && ("$file" == *.deb || "$file" == *.dmg) ]]; then
-              # Remove any " Beta" or ".Beta" part (with or without space/dot)
-              base="${file% Beta*}"
-              base="${base%.Beta*}"
-              # Extract extension
-              ext=".${file##*.}"
-              # New clean name
-              new_name="${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}$ext"
-              mv "$file" "$new_name"
-              echo "Renamed '$file' → '$new_name'"
-            fi
-          done
-          cd ..
-
       - name: Debug - List target contents
         run: ls -la target/
 
@@ -147,24 +129,6 @@ jobs:
         run: |
           ppg freeze
           ppg installer
-
-      - name: Rename installer to clean version name
-        run: |
-          cd target
-          for file in PyES*; do
-            if [[ -f "$file" && ("$file" == *.deb || "$file" == *.dmg) ]]; then
-              # Remove any " Beta" or ".Beta" part (with or without space/dot)
-              base="${file% Beta*}"
-              base="${base%.Beta*}"
-              # Extract extension
-              ext=".${file##*.}"
-              # New clean name
-              new_name="${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}$ext"
-              mv "$file" "$new_name"
-              echo "Renamed '$file' → '$new_name'"
-            fi
-          done
-          cd ..
 
       - name: Debug - List target contents
         run: ls -la target/
@@ -219,21 +183,6 @@ jobs:
         run: |
           ppg freeze
           ppg installer
-
-      - name: Rename installer to clean version name
-        shell: powershell
-        run: |
-          cd target
-          Get-ChildItem -Path . -Filter "PyES*Setup.exe" | ForEach-Object {
-            $old_name = $_.Name
-            # Remove " Beta" or ".Beta" (with space or dot)
-            $base = $old_name -replace ' Beta','' -replace '\.Beta',''
-            $ext = $_.Extension
-            $new_name = "${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}$ext"
-            Rename-Item $old_name $new_name
-            Write-Output "Renamed '$old_name' → '$new_name'"
-          }
-          cd ..
 
       - name: Debug - List target contents
         shell: powershell
