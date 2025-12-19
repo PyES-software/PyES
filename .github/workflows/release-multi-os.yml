@@ -99,6 +99,7 @@ jobs:
           asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.deb
           tag: ${{ github.ref }}
           overwrite: true
+          file_glob: true
 
   build-macos:
     name: Build macOS
@@ -140,6 +141,7 @@ jobs:
           asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.dmg
           tag: ${{ github.ref }}
           overwrite: true
+          file_glob: true
 
   build-windows:
     name: Build Windows
@@ -195,3 +197,6 @@ jobs:
           asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.exe
           tag: ${{ github.ref }}
           overwrite: true
+          file_glob: true
+
+
