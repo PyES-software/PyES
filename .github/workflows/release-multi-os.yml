@@ -95,7 +95,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/${{ needs.create-release.outputs.app_name }}*.deb
+          file: target/*${{ needs.create-release.outputs.app_name }}*.deb
           asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.deb
           tag: ${{ github.ref }}
           overwrite: true
@@ -137,7 +137,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/${{ needs.create-release.outputs.app_name }}*.dmg
+          file: target/*${{ needs.create-release.outputs.app_name }}*.dmg
           asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.dmg
           tag: ${{ github.ref }}
           overwrite: true
@@ -193,7 +193,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/${{ needs.create-release.outputs.app_name }}*Setup.exe
+          file: target/*${{ needs.create-release.outputs.app_name }}*Setup.exe
           asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.exe
           tag: ${{ github.ref }}
           overwrite: true
