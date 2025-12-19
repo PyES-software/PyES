@@ -13,6 +13,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     outputs:
+      is_alpha: ${{ steps.release_type.outputs.is_alpha }}
       is_beta: ${{ steps.release_type.outputs.is_beta }}
       app_name: ${{ steps.app_info.outputs.app_name }}
       version: ${{ steps.app_info.outputs.version }}
@@ -23,15 +24,22 @@ jobs:
       - name: Determine Release Type
         id: release_type
         run: |
-          if [[ "${GITHUB_REF##*/}" == *beta* ]]; then
+          TAG="${GITHUB_REF##*/}"
+          if [[ "$TAG" == *alpha* || "$TAG" == *Alpha* || "$TAG" == *ALPHA* ]]; then
+            echo "is_alpha=true" >> $GITHUB_OUTPUT
+            echo "is_beta=false" >> $GITHUB_OUTPUT
+          elif [[ "$TAG" == *beta* || "$TAG" == *Beta* || "$TAG" == *BETA* ]]; then
+            echo "is_alpha=false" >> $GITHUB_OUTPUT
             echo "is_beta=true" >> $GITHUB_OUTPUT
           else
+            echo "is_alpha=false" >> $GITHUB_OUTPUT
             echo "is_beta=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Extract App Info from base.json
         id: app_info
         run: |
+          jq --version || sudo apt-get update && sudo apt-get install -y jq
           APP_NAME=$(jq -r '.app_name' src/build/settings/base.json)
           VERSION=$(jq -r '.version' src/build/settings/base.json)
           echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
@@ -39,13 +47,13 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@v1
         with:
           tag: ${{ github.ref }}
           name: Release ${{ github.ref_name }}
           bodyFile: release_text.md
           draft: false
-          prerelease: ${{ steps.release_type.outputs.is_beta }}
+          prerelease: ${{ steps.release_type.outputs.is_alpha || steps.release_type.outputs.is_beta }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -68,7 +76,7 @@ jobs:
       - name: Install fpm
         run: |
           sudo apt-get update
-          sudo apt-get install -y ruby ruby-dev rubygems build-essential
+          sudo apt-get install -y ruby ruby-dev rubygems build-essential jq
           sudo gem install --no-document --minimal-deps fpm
           fpm --version
 
@@ -92,11 +100,10 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}.deb
-          asset_name: ${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}-${{ needs.create-release.outputs.version }}.deb
+          file: target/${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_alpha == 'true' || needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}.deb
+          asset_name: ${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_alpha == 'true' || needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}-${{ needs.create-release.outputs.version }}.deb
           tag: ${{ github.ref }}
           overwrite: true
-
 
   build-macos:
     name: Build macOS
@@ -134,11 +141,10 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}.dmg
-          asset_name: ${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}-${{ needs.create-release.outputs.version }}.dmg
+          file: target/${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_alpha == 'true' || needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}.dmg
+          asset_name: ${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_alpha == 'true' || needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}-${{ needs.create-release.outputs.version }}.dmg
           tag: ${{ github.ref }}
           overwrite: true
-
 
   build-windows:
     name: Build Windows
@@ -186,11 +192,10 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}Setup.exe
-          asset_name: ${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}-${{ needs.create-release.outputs.version }}.exe
+          file: target/${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_alpha == 'true' || needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}Setup.exe
+          asset_name: ${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_alpha == 'true' || needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}-${{ needs.create-release.outputs.version }}.exe
           tag: ${{ github.ref }}
           overwrite: true
-
 
   rollback-release:
     name: Rollback
