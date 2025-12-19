@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       is_beta: ${{ steps.release_type.outputs.is_beta }}
+      app_name: ${{ steps.app_info.outputs.app_name }}
+      version: ${{ steps.app_info.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,6 +28,14 @@ jobs:
           else
             echo "is_beta=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Extract App Info from base.json
+        id: app_info
+        run: |
+          APP_NAME=$(jq -r '.app_name' src/build/settings/base.json)
+          VERSION=$(jq -r '.version' src/build/settings/base.json)
+          echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
@@ -75,14 +85,18 @@ jobs:
           ppg freeze
           ppg installer
 
+      - name: Debug - List target contents
+        run: ls -R target || true
+
       - name: Upload to Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES Beta.deb' || 'target/PyES.deb' }}
-          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.deb', github.ref_name) || format('PyES-{0}.deb', github.ref_name) }}
+          file: target/${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}.deb
+          asset_name: ${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}-${{ needs.create-release.outputs.version }}.deb
           tag: ${{ github.ref }}
           overwrite: true
+
 
   build-macos:
     name: Build macOS
@@ -113,14 +127,18 @@ jobs:
           ppg freeze
           ppg installer
 
+      - name: Debug - List target contents
+        run: ls -R target || true
+
       - name: Upload to Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES Beta.dmg' || 'target/PyES.dmg' }}
-          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.dmg', github.ref_name) || format('PyES-{0}.dmg', github.ref_name) }}
+          file: target/${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}.dmg
+          asset_name: ${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}-${{ needs.create-release.outputs.version }}.dmg
           tag: ${{ github.ref }}
           overwrite: true
+
 
   build-windows:
     name: Build Windows
@@ -143,8 +161,16 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Visual C++ 2010 Redistributable
+        run: choco install vcredist2010 --yes
+
       - name: Install NSIS
-        run: choco install nsis --yes
+        shell: cmd
+        run: |
+          choco install nsis --yes
+          call RefreshEnv.cmd
+      - name: Verify makensis
+        run: makensis /VERSION
 
       - name: Install Python dependencies
         run: pip install -r requirements/base.txt
@@ -154,14 +180,18 @@ jobs:
           ppg freeze
           ppg installer
 
+      - name: Debug - List target contents
+        run: dir target /s || exit 0
+
       - name: Upload to Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ needs.create-release.outputs.is_beta == 'true' && 'target/PyES BetaSetup.exe' || 'target/PyESSetup.exe' }}
-          asset_name: ${{ needs.create-release.outputs.is_beta == 'true' && format('PyES Beta-{0}.exe', github.ref_name) || format('PyES-{0}.exe', github.ref_name) }}
+          file: target/${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}Setup.exe
+          asset_name: ${{ needs.create-release.outputs.app_name }}${{ needs.create-release.outputs.is_beta == 'true' && ' Beta' || '' }}-${{ needs.create-release.outputs.version }}.exe
           tag: ${{ github.ref }}
           overwrite: true
+
 
   rollback-release:
     name: Rollback
@@ -170,7 +200,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Rollback
         uses: author/action-rollback@1.0.4
