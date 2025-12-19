@@ -88,6 +88,18 @@ jobs:
           ppg freeze
           ppg installer
 
+      - name: Rename installer to remove Beta
+        run: |
+          cd target
+          for file in PyES*.deb PyES*.dmg; do
+            if [[ -f "$file" ]]; then
+              new_name="${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}${file##*.}"
+              mv "$file" "$new_name"
+              echo "Renamed $file to $new_name"
+            fi
+          done
+          cd ..
+
       - name: Debug - List target contents
         run: ls -la target/
 
@@ -95,7 +107,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/*${{ needs.create-release.outputs.app_name }}*.deb
+          file: target/${{ needs.create-release.outputs.app_name }}*.deb
           asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.deb
           tag: ${{ github.ref }}
           overwrite: true
@@ -130,6 +142,18 @@ jobs:
           ppg freeze
           ppg installer
 
+      - name: Rename installer to remove Beta
+        run: |
+          cd target
+          for file in PyES*.deb PyES*.dmg; do
+            if [[ -f "$file" ]]; then
+              new_name="${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}${file##*.}"
+              mv "$file" "$new_name"
+              echo "Renamed $file to $new_name"
+            fi
+          done
+          cd ..
+
       - name: Debug - List target contents
         run: ls -la target/
 
@@ -137,7 +161,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/*${{ needs.create-release.outputs.app_name }}*.dmg
+          file: target/${{ needs.create-release.outputs.app_name }}*.dmg
           asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.dmg
           tag: ${{ github.ref }}
           overwrite: true
@@ -184,6 +208,18 @@ jobs:
           ppg freeze
           ppg installer
 
+      - name: Rename installer to remove Beta
+        shell: powershell
+        run: |
+          cd target
+          Get-ChildItem -Path . -Filter "PyES*Setup.exe" | ForEach-Object {
+            $ext = $_.Extension
+            $new_name = "${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}$ext"
+            Rename-Item $_.Name $new_name
+            Write-Output "Renamed $($_.Name) to $new_name"
+          }
+          cd ..
+
       - name: Debug - List target contents
         shell: powershell
         run: Get-ChildItem -Path target -Recurse -Force
@@ -193,7 +229,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/*${{ needs.create-release.outputs.app_name }}*Setup.exe
+          file: target/${{ needs.create-release.outputs.app_name }}*Setup.exe
           asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.exe
           tag: ${{ github.ref }}
           overwrite: true
