@@ -91,12 +91,15 @@ jobs:
       - name: Rename installer to clean version name
         run: |
           cd target
-          for file in PyES*.deb PyES*.dmg; do
-            if [[ -f "$file" ]]; then
-              # Extract extension (including the dot)
-              ext="${file##*.}"
-              # Build new name: AppName-version.extension
-              new_name="${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.$ext"
+          for file in PyES*; do
+            if [[ -f "$file" && ("$file" == *.deb || "$file" == *.dmg) ]]; then
+              # Remove any " Beta" or ".Beta" part (with or without space/dot)
+              base="${file% Beta*}"
+              base="${base%.Beta*}"
+              # Extract extension
+              ext=".${file##*.}"
+              # New clean name
+              new_name="${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}$ext"
               mv "$file" "$new_name"
               echo "Renamed '$file' → '$new_name'"
             fi
@@ -148,12 +151,15 @@ jobs:
       - name: Rename installer to clean version name
         run: |
           cd target
-          for file in PyES*.deb PyES*.dmg; do
-            if [[ -f "$file" ]]; then
-              # Extract extension (including the dot)
-              ext="${file##*.}"
-              # Build new name: AppName-version.extension
-              new_name="${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.$ext"
+          for file in PyES*; do
+            if [[ -f "$file" && ("$file" == *.deb || "$file" == *.dmg) ]]; then
+              # Remove any " Beta" or ".Beta" part (with or without space/dot)
+              base="${file% Beta*}"
+              base="${base%.Beta*}"
+              # Extract extension
+              ext=".${file##*.}"
+              # New clean name
+              new_name="${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}$ext"
               mv "$file" "$new_name"
               echo "Renamed '$file' → '$new_name'"
             fi
@@ -219,10 +225,13 @@ jobs:
         run: |
           cd target
           Get-ChildItem -Path . -Filter "PyES*Setup.exe" | ForEach-Object {
-            $ext = $_.Extension  # includes the dot, e.g., ".exe"
+            $old_name = $_.Name
+            # Remove " Beta" or ".Beta" (with space or dot)
+            $base = $old_name -replace ' Beta','' -replace '\.Beta',''
+            $ext = $_.Extension
             $new_name = "${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}$ext"
-            Rename-Item $_.Name $new_name
-            Write-Output "Renamed '$($_.Name)' → '$new_name'"
+            Rename-Item $old_name $new_name
+            Write-Output "Renamed '$old_name' → '$new_name'"
           }
           cd ..
 
