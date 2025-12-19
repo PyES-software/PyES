@@ -164,13 +164,12 @@ jobs:
       - name: Install Visual C++ 2010 Redistributable
         run: choco install vcredist2010 --yes
 
-      - name: Install NSIS
+      - name: Install NSIS and verify
         shell: cmd
         run: |
           choco install nsis --yes
           call RefreshEnv.cmd
-      - name: Verify makensis
-        run: makensis /VERSION
+          makensis /VERSION
 
       - name: Install Python dependencies
         run: pip install -r requirements/base.txt
