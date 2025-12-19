@@ -13,32 +13,11 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     outputs:
-      is_alpha: ${{ steps.release_type.outputs.is_alpha }}
-      is_beta: ${{ steps.release_type.outputs.is_beta }}
-      suffix: ${{ steps.release_type.outputs.suffix }}
       app_name: ${{ steps.app_info.outputs.app_name }}
       version: ${{ steps.app_info.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Determine Release Type
-        id: release_type
-        run: |
-          TAG="${GITHUB_REF##*/}"
-          if [[ "$TAG" == *alpha* || "$TAG" == *Alpha* || "$TAG" == *ALPHA* ]]; then
-            echo "is_alpha=true" >> $GITHUB_OUTPUT
-            echo "is_beta=false" >> $GITHUB_OUTPUT
-            echo "suffix= Beta" >> $GITHUB_OUTPUT
-          elif [[ "$TAG" == *beta* || "$TAG" == *Beta* || "$TAG" == *BETA* ]]; then
-            echo "is_alpha=false" >> $GITHUB_OUTPUT
-            echo "is_beta=true" >> $GITHUB_OUTPUT
-            echo "suffix= Beta" >> $GITHUB_OUTPUT
-          else
-            echo "is_alpha=false" >> $GITHUB_OUTPUT
-            echo "is_beta=false" >> $GITHUB_OUTPUT
-            echo "suffix=" >> $GITHUB_OUTPUT
-          fi
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -51,15 +30,26 @@ jobs:
           echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Determine if Pre-release
+        id: release_type
+        run: |
+          TAG="${GITHUB_REF##*/}"
+          if [[ "$TAG" == *alpha* || "$TAG" == *Alpha* || "$TAG" == *ALPHA* || 
+                "$TAG" == *beta* || "$TAG" == *Beta* || "$TAG" == *BETA* || 
+                "$TAG" == *rc* || "$TAG" == *RC* ]]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create Release
-        id: create_release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ github.ref }}
           name: Release ${{ github.ref_name }}
           bodyFile: release_text.md
           draft: false
-          prerelease: ${{ steps.release_type.outputs.is_alpha == 'true' || steps.release_type.outputs.is_beta == 'true' }}
+          prerelease: ${{ steps.release_type.outputs.prerelease == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -99,7 +89,7 @@ jobs:
           ppg installer
 
       - name: Debug - List target contents
-        run: ls -R target || true
+        run: ls -la target/
 
       - name: Upload to Release
         uses: svenstaro/upload-release-action@v2
@@ -140,7 +130,7 @@ jobs:
           ppg installer
 
       - name: Debug - List target contents
-        run: ls -R target || true
+        run: ls -la target/
 
       - name: Upload to Release
         uses: svenstaro/upload-release-action@v2
@@ -202,22 +192,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/${{ needs.create-release.outputs.app_name }}*Setup.exe
-          asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.suffix }}-${{ needs.create-release.outputs.version }}.exe
+          asset_name: ${{ needs.create-release.outputs.app_name }}-${{ needs.create-release.outputs.version }}.exe
           tag: ${{ github.ref }}
           overwrite: true
-
-  rollback-release:
-    name: Rollback on Failure
-    if: ${{ failure() }}
-    needs: [build-linux, build-macos, build-windows]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Rollback Release
-        uses: author/action-rollback@1.0.4
-        with:
-          tag: ${{ github.ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
