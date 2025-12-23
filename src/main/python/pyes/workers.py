@@ -15,12 +15,12 @@ from libeq import (
     EqSolver,
     PotentiometryOptimizer,
     SolverData,
-    species_concentration,
+    # species_concentration,
     uncertanties,
     Flags
 )
 from libeq.excepts import DivergedIonicStrengthWarning
-from libeq.optimizers.potentiometry import ravel
+# from libeq.optimizers.potentiometry import ravel
 from libeq.solver.solids_solver import _compute_saturation_index
 from libeq.solver.solver_utils import _titration_background_ions_c
 
@@ -52,6 +52,9 @@ class optimizeWorker(QRunnable):
     def run(self):
         # If run with debug enabled create the logging istance
         def log_reporter(**kwargs):
+            """
+            Log out the result of each iteration.
+            """
             iteration = kwargs['iteration']
             damping = kwargs['damping']
             chisq = kwargs['chisq']
@@ -815,6 +818,6 @@ def component_encoder(components: list[str], reference_component: list[str]):
     return np.array([components.index(c) for c in reference_component], dtype=int)
 
 
-def compute_index_mean(data: pd.DataFrame, index_name: str):
-    # Compute the mean of the index of the dataframe
-    return data.index.get_level_values(index_name).to_numpy().mean()
+# def compute_index_mean(data: pd.DataFrame, index_name: str):
+#     # Compute the mean of the index of the dataframe
+#     return data.index.get_level_values(index_name).to_numpy().mean()
