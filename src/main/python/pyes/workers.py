@@ -19,6 +19,8 @@ from libeq import (
     uncertanties,
     Flags
 )
+
+from libeq.optimizers.potentiometry import refine_indices
 from libeq.excepts import DivergedIonicStrengthWarning
 # from libeq.optimizers.potentiometry import ravel
 from libeq.solver.solids_solver import _compute_saturation_index
@@ -47,6 +49,7 @@ class optimizeWorker(QRunnable):
         self.signals = optimizeSignal()
         self.data = data_list
         self.debug = debug
+        self.solver_data = None
 
     @Slot()
     def run(self):
@@ -87,12 +90,11 @@ class optimizeWorker(QRunnable):
 
             if kwargs['any conc refined']:
                 for n, ((c0, ct), titr) in enumerate(zip(kwargs['titration params'],
-                                                         self.data['potentiometry_data']['titrations'])):
+                                                         self.solver_data.potentiometry_opts.titrations)):
                     out(f"titr {n:<4}: ")
                     for c0v, c0f, comp in zip(c0, refine_indices(titr.c0_flags), labels):
                         if c0f:
-                            out(f"c0[{comp}] {c0v:10.4f} {next(increment):10.4f}")
-                    out('\n')
+                            out(f"\tc0[{comp}] {c0v:10.4f} {next(increment):10.4f}")
             out(80*'-')
             out('\n')
 
@@ -139,6 +141,7 @@ class optimizeWorker(QRunnable):
         try:
             # optimizer.fit(self.data)
             solver_data = SolverData.load_from_pyes(self.data)
+            self.solver_data = solver_data
         except Exception as e:
             if self.debug:
                 self.signals.aborted.emit(
@@ -319,6 +322,7 @@ class optimizeWorker(QRunnable):
 
                     solver_data.log_beta_sigma = solver_data.log_beta_sigma.copy()
                     refined = [ f == Flags.REFINE for f in solver_data.potentiometry_opts.beta_flags ]
+                    breakpoint()
                     solver_data.log_beta_sigma[refined] = b_error[:]
                     # solver_data.log_beta_sigma = np.array(
                     #     list(

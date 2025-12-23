@@ -63,6 +63,8 @@ source = { editable = "../libeq" }
 dependencies = [
     { name = "numpy" },
     { name = "pandas" },
+    { name = "pydantic" },
+    { name = "pydantic-numpy" },
 ]
 
 [package.metadata]
@@ -70,6 +72,8 @@ requires-dist = [
     { name = "numpy" },
     { name = "numpy", marker = "extra == 'dev'", specifier = ">=1.2" },
     { name = "pandas" },
+    { name = "pydantic", specifier = ">=2.12.5" },
+    { name = "pydantic-numpy", specifier = ">=8.0.1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.4" },
 ]
 provides-extras = ["dev"]
