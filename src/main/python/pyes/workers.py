@@ -59,13 +59,46 @@ class optimizeWorker(QRunnable):
             gradient_norm = kwargs['gradient_norm']
             log_beta = kwargs['log_beta']
             stoich = kwargs['stoichiometry']
+            labels = self.data['compModel']['Name'].values()
 
-            self.signals.log.emit(f"iteration #{iteration}")
-            self.signals.log.emit(f"sigma: {sigma}; chi-squared: {chisq}")
-            for a, lgb in zip(stoich, log_beta):
-                stoich_txt = "".join(f"{n:>4}" for n in a)
-                self.signals.log.emit(f"{stoich_txt}  {lgb:>10.4f}")
-            self.signals.log.emit("--" * 40 + "\n")
+            out = self.signals.log.emit
+            out(f"iteration = {kwargs['iteration']}")
+            out(f"damping = {kwargs['damping']:.4e}, chisq = {kwargs['chisq']:.4f}, "
+                f"gradient_norm = {kwargs['gradient_norm']:.4e}, rho = {kwargs['rho']:.4e}")
+            out(f"sigma: {kwargs['sigma']:.4e} ({kwargs['exit_sigma']})")
+            out(f"grad : {kwargs['exit_gradient_value']:.4e} ({kwargs['exit_gradient']})")
+            out(f"step : {kwargs['exit_step_value']:.4e} ({kwargs['exit_step']})")
+
+            if kwargs['any beta refined']:
+                txt = "   # " + "".join(f"{comp:>5}" for comp in labels) + "     logβ       change  previous"
+                out(txt)
+                lgbeta = kwargs['log_beta']
+                oldbeta = iter(kwargs['previous log beta'].tolist())
+                stoich = kwargs['stoichiometry']
+                increment = iter(kwargs['increment'].tolist())
+                refined = [f'{next(increment):10.4f}{next(oldbeta):10.4f}' \
+                           if _ else '' \
+                           for _ in self.data['potentiometry_data']['beta_refine_flags']]
+                for n, (lgb, st, rflag) in enumerate(zip(lgbeta, stoich, refined)):
+                    out(f"{n:>4} { ''.join(f'{_:>5}' for _ in st)} {lgb:10.4f} {rflag}")
+
+            if kwargs['any conc refined']:
+                for n, ((c0, ct), titr) in enumerate(zip(kwargs['titration params'],
+                                                         self.data['potentiometry_data']['titrations'])):
+                    out(f"titr {n:<4}: ")
+                    for c0v, c0f, comp in zip(c0, refine_indices(titr.c0_flags), labels):
+                        if c0f:
+                            out(f"c0[{comp}] {c0v:10.4f} {next(increment):10.4f}")
+                    out('\n')
+            out(80*'-')
+            out('\n')
+
+            # self.signals.log.emit(f"iteration #{iteration}")
+            # self.signals.log.emit(f"sigma: {sigma}; chi-squared: {chisq}")
+            # for a, lgb in zip(stoich, log_beta):
+            #     stoich_txt = "".join(f"{n:>4}" for n in a)
+            #     self.signals.log.emit(f"{stoich_txt}  {lgb:>10.4f}")
+            # self.signals.log.emit("--" * 40 + "\n")
 
         if self.debug:
             log_path = Path.home().joinpath("pyes_logs")
