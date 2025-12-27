@@ -322,7 +322,6 @@ class optimizeWorker(QRunnable):
 
                     solver_data.log_beta_sigma = solver_data.log_beta_sigma.copy()
                     refined = [ f == Flags.REFINE for f in solver_data.potentiometry_opts.beta_flags ]
-                    breakpoint()
                     solver_data.log_beta_sigma[refined] = b_error[:]
                     # solver_data.log_beta_sigma = np.array(
                     #     list(
@@ -394,24 +393,17 @@ class optimizeWorker(QRunnable):
                         "pX",
                         "Weight",
                     ]
-
-                    optimized_constants = pd.DataFrame(
-                        {
-                            "Old logB": solver_data.log_beta[self.optimized_species],
-                            "New logB": x,
-                            "Std. Err.": b_error,
-                        },
-                        index=[
-                            name
-                            for name, flag in zip(
-                                solver_data.species_names[solver_data.nc :],
-                                solver_data.potentiometry_opts.beta_flags,
-                            )
-                            if flag == Flags.REFINE
-                        ],
-                    )
-
-                    self._storeResult(optimized_constants, "optimized_constants")
+                    # breakpoint()
+                    # tmpindex = [ name for name, flag in zip( solver_data.species_names[solver_data.nc :], solver_data.potentiometry_opts.beta_flags,) if flag == Flags.REFINE ]
+                    # optimized_constants = pd.DataFrame(
+                    #     {
+                    #         "Old logB": solver_data.log_beta[self.optimized_species],
+                    #         "New logB": x,
+                    #         "Std. Err.": b_error,
+                    #     },
+                    #     index=tmpindex
+                    # )
+                    # self._storeResult(optimized_constants, "optimized_constants")
                 else:
                     (
                         result,
