@@ -322,7 +322,8 @@ class optimizeWorker(QRunnable):
 
                     solver_data.log_beta_sigma = solver_data.log_beta_sigma.copy()
                     refined = [ f == Flags.REFINE for f in solver_data.potentiometry_opts.beta_flags ]
-                    solver_data.log_beta_sigma[refined] = b_error[:]
+                    solver_data.log_beta_sigma[:] = b_error[:]
+                    #solver_data.log_beta_sigma[refined] = b_error[:]
                     # solver_data.log_beta_sigma = np.array(
                     #     list(
                     #         ravel(
