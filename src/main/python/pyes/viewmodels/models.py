@@ -305,7 +305,30 @@ class ConcentrationsModel(_GenericModel):
         return flags
 
     def setData(self, index, value, role):
-        if role == Qt.ItemDataRole.EditRole:
+        if role != Qt.ItemDataRole.EditRole:
+            return False
+
+        if index.column() == 0:  # Name column
+            old_value = self._data.iloc[index.row(), index.column()]
+            if value == old_value:
+                return False  # No change
+
+            if not re.match(r"^\S+$", value):
+                return False
+
+            if value in self._data["Name"].to_list():
+                QMessageBox.warning(
+                    None,
+                    "Duplicate Name",
+                    f"The name '{value}' already exists. Please choose a different name.",
+                )
+                return False
+
+            # Success: apply change via undo command
+            self.undostack.push(ComponentsCellEdit(self, index, value))
+            self.dataChanged.emit(index, index)
+            return True
+        else:
             try:
                 self.undostack.push(ComponentsCellEdit(self, index, float(value)))
             except Exception:
