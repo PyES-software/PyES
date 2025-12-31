@@ -19,8 +19,15 @@ name = "pyes"
 version = "2.0.17beta"
 description = ""
 
-[tool.run.ini_options]
-pythonpath = ["src/main/python/", "../libeq/src"]
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+pyinstaller = "~5"
+ppg = {git = "ssh://git@github.com/Kastakin/ppg.git", rev = "main"}
+pandas = "^1.5.0"
+openpyxl = "^3.0.9"
+pyqtgraph = "^0.13.0"
+pyside6-essentials = "~6.4.0"
+numba = "^0.58.1"
 
 [tool.uv.sources]
 libeq = { path = "../libeq", editable = true }
