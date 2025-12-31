@@ -1,33 +1,36 @@
 <RCC>
-  <qresource prefix="icons">
-    <file>table--pencil.png</file>
-    <file>ui-check-box.png</file>
-    <file>ui-check-box-uncheck.png</file>
-    <file>disk--plus.png</file>
-    <file>information-frame.png</file>
-    <file>row_down.png</file>
-    <file>row_up.png</file>
-    <file>table-insert-row-after.png</file>
-    <file>table-insert-row-before.png</file>
-    <file>table-delete-row.png</file>
-    <file>pencil-ruler.png</file>
-    <file>question-frame.png</file>
-    <file>control.png</file>
-    <file>flask.png</file>
-    <file>beaker-empty.png</file>
-    <file>application-export.png</file>
-    <file>table.png</file>
-    <file>application-import.png</file>
-    <file>document-excel.png</file>
-    <file>folder-open-document.png</file>
-    <file>document.png</file>
-    <file>disk.png</file>
-  </qresource>
-  <qresource prefix="equations">
-    <file>dh_expansion.svg</file>
-    <file>error_soluble.svg</file>
-    <file>error_precipitate.svg</file>
-    <file>error_components.svg</file>
-    <file>dh_equation.svg</file>
-  </qresource>
+    <qresource prefix="/icons">
+        <file>minus.png</file>
+        <file>table--pencil.png</file>
+        <file>ui-check-box.png</file>
+        <file>ui-check-box-uncheck.png</file>
+        <file>disk--plus.png</file>
+        <file>information-frame.png</file>
+        <file>row_down.png</file>
+        <file>row_up.png</file>
+        <file>table-insert-row-after.png</file>
+        <file>table-insert-row-before.png</file>
+        <file>table-delete-row.png</file>
+        <file>pencil-ruler.png</file>
+        <file>question-frame.png</file>
+        <file>control.png</file>
+        <file>flask.png</file>
+        <file>beaker-empty.png</file>
+        <file>application-export.png</file>
+        <file>table.png</file>
+        <file>application-import.png</file>
+        <file>document-excel.png</file>
+        <file>folder-open-document.png</file>
+        <file>document.png</file>
+        <file>plus.png</file>
+        <file>disk.png</file>
+        <file>eye.png</file>
+    </qresource>
+    <qresource prefix="/equations">
+        <file>dh_expansion.svg</file>
+        <file>error_soluble.svg</file>
+        <file>error_precipitate.svg</file>
+        <file>error_components.svg</file>
+        <file>dh_equation.svg</file>
+    </qresource>
 </RCC>

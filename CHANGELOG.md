@@ -1,3 +1,84 @@
+# Version v2.0.9beta
+
+## Fixes
+* revert to macos 13 to compile for x86 ([76461bd](https://github.com/Kastakin/PyES/commit/76461bde09348a207311bb09e37d2d86b4614949))
+
+
+# Version v2.0.8beta
+
+## Enhancements
+* Reorder exported sheets for clarity ([a141dec](https://github.com/Kastakin/PyES/commit/a141deca4d9c87816befd1a601c2f08f5549421a))
+* Improve Titration settings button location ([1665afd](https://github.com/Kastakin/PyES/commit/1665afd2e9db1d95aab1722c0cb757e13df7cdb5))
+
+## Fixes
+* Start titration numbering from 1 instead of 0 ([e639866](https://github.com/Kastakin/PyES/commit/e639866d09f53c42ac1bcfda004b4a44233695a6))
+* Include failsafe if no weights are imported ([678dea4](https://github.com/Kastakin/PyES/commit/678dea4978afe0fcee3a8829ce471874ed0cb3ca))
+* Better spinbox fields ([a59c949](https://github.com/Kastakin/PyES/commit/a59c9499081c7e4d187e94c96b76d41bc712bac3))
+* Update build requirements ([62caa21](https://github.com/Kastakin/PyES/commit/62caa216d7c40831b99d558545f4489cbc6ccdc5))
+* Consistent style across OS for delegates ([5630276](https://github.com/Kastakin/PyES/commit/5630276a811573ed7a60a3c2863fdaa76579eb11))
+
+## Others
+* Update latest libeq ([d21b4cb](https://github.com/Kastakin/PyES/commit/d21b4cbf76300e5b1d4c14cbdb38f7fd76ba9100))
+
+
+# Version v2.0.7beta
+
+## Fixes
+* Try rolling back to previous working PySide version ([de023c3](https://github.com/Kastakin/PyES/commit/de023c3f1852d9d49cdee2339e0a007a6e397095))
+
+
+# Version v2.0.6beta
+
+## Fixes
+* Shiboken version ([1f02bfc](https://github.com/Kastakin/PyES/commit/1f02bfc9cd99cbd4c319222063a099721dafbb92))
+
+
+# Version v2.0.5beta
+
+## Fixes
+* Tentative fix for W11 UI problems ([2b09dc1](https://github.com/Kastakin/PyES/commit/2b09dc1038d40472627370d9f84ba13ebc1b194b))
+
+## Others
+* Add todo tasks for final release ([86fb44b](https://github.com/Kastakin/PyES/commit/86fb44bb1758c0a6c717e95737e89d95fe2050f5))
+
+
+# Version v2.0.4beta
+
+## Fixes
+* Tentative fix in runner version (hdiutil: create failed) ([b8f1f7c](https://github.com/Kastakin/PyES/commit/b8f1f7c52a1cbf9499ddda65556cd662ddbe3604))
+
+
+# Version v2.0.3beta
+
+## Fixes
+* Do not release as draft ([9966c27](https://github.com/Kastakin/PyES/commit/9966c27e5388985a419d99e5d74dadcd3f2d3ae6))
+
+## Chores
+* Update deprecated runner ([90c9ddf](https://github.com/Kastakin/PyES/commit/90c9ddfe9eefd211da2e7d50403e3301e43fa210))
+
+
+# Version v2.0.2beta
+
+## Fixes
+* Correctly handle github ref tags ([74e2e3f](https://github.com/Kastakin/PyES/commit/74e2e3fa48ac7023c808a301e37f408642d2d4a5))
+* Correctly assign artifact names in release ([28ee8ea](https://github.com/Kastakin/PyES/commit/28ee8eaa8b9e0deb3db92d0b8c701033cab0caad))
+* correctly select work mode when importing BSTAC files ([556adbd](https://github.com/Kastakin/PyES/commit/556adbd10a331ad7c625a577d5fe767e7aca3c21))
+* Increase number of allowed decimals for titration fields ([64e7c73](https://github.com/Kastakin/PyES/commit/64e7c736ef88a1446bc0e385aea5e1c3acc84bb9))
+
+## Chores
+* Update libeq to fix bstac import ([f9ba49c](https://github.com/Kastakin/PyES/commit/f9ba49c878d28f1ac9614071ee81c09046b3f3df))
+
+
+# Version v2.0.1beta
+
+## Fixes
+* Fix regression in opening file from cli argument ([c39cf5a](https://github.com/Kastakin/PyES/commit/c39cf5a332acac2a4de465872e500d82e0e294d3))
+* Solve importing and exporting issues of titration data ([8bc5e03](https://github.com/Kastakin/PyES/commit/8bc5e03ae20c3d293fa1fcd752543d67d033f312))
+
+## Chores
+* Formatting and import sorting ([43b6bdd](https://github.com/Kastakin/PyES/commit/43b6bdda8c0871e820a0b1508eeb3c261bab2ed5))
+
+
 # Version v1.1.3
 
 ## Features

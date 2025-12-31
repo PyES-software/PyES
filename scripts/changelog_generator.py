@@ -6,7 +6,7 @@ import sys
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("current_version", help="Current project version", type=str)
-    parser.add_argument("new_version", help="Current project version", type=str)
+    parser.add_argument("new_version", help="New project version", type=str)
     args = parser.parse_args()
 
     result = subprocess.run(

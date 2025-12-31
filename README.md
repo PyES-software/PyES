@@ -5,6 +5,8 @@
 # PyES
 </p>
 
+**Article:** [PyES – An open-source software for the computation of solution and precipitation equilibria](https://doi.org/10.1016/j.chemolab.2023.104860 "PyES Article")
+
 PyES is a sotware created by the chemistry department of the University of Turin in collabration with the University of Messina and the University of Bialystok.
 
 Based on the previous work of Professor Sammartano of the University of Messina, PyES aims to empower researchers with the ability to easily compute species distribution and simulate titration curves even for complex systems containing preciptiable species.
@@ -14,10 +16,10 @@ Based on the previous work of Professor Sammartano of the University of Messina,
 ## Requirements
 * Architecture:
   * x86_64
-  * Apple Silicon (Not tested!)
+  * Apple Silicon
 * OS:
   * Windows 10+
-  * macOS 10.14+ (Not tested!)
+  * macOS 10.14+
   * Linux/X11 (Ubuntu 20.04+)
 
 ## Installation
@@ -37,9 +39,22 @@ Based on the previous work of Professor Sammartano of the University of Messina,
 
 ## Usage
 
-<p align="center">
-**COMING SOON**
-</p>
+A [User Manual](https://raw.githubusercontent.com/Kastakin/PyES/master/docs/user_manual/user_manual.pdf "PyES User Manual") containing examples and a detailed description of the interface is available in PDF format.
 
+## How to Cite
+If you use PyES in your work please cite our work as follows:
+```
+@article{CASTELLINO2023104860,
+title = {PyES – An open-source software for the computation of solution and precipitation equilibria},
+journal = {Chemometrics and Intelligent Laboratory Systems},
+volume = {239},
+pages = {104860},
+year = {2023},
+issn = {0169-7439},
+doi = {https://doi.org/10.1016/j.chemolab.2023.104860},
+url = {https://www.sciencedirect.com/science/article/pii/S0169743923001107},
+author = {Lorenzo Castellino and Eugenio Alladio and Stefano Bertinetti and Gabriele Lando and Concetta {De Stefano} and Salvador Blasco and Enrique García-España and Sofia Gama and Silvia Berto and Demetrio Milea}
+}
+```
 
 [^1]: For the time being we are not able to sign our installers, this might prompt with some security alerts on Windows and macOS. Our software does not execute any code whose purpose is other then solving solution and precipation equilibria.

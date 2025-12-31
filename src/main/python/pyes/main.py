@@ -1,3 +1,4 @@
+import json
 import sys
 
 from ppg_runtime.application_context import cached_property
@@ -11,8 +12,13 @@ class AppContext(ApplicationContext):
         a = self.app
         args = a.arguments()
         if len(args) > 1:
-            file_to_open = args[-1]
-            w.load_project_file(file_to_open)
+            input_path = args[-1]
+            with open(
+                input_path,
+                "r",
+            ) as input_file:
+                jsdata = json.load(input_file)
+            w.load_project_file(jsdata)
 
         w.show()
         return a.exec()
@@ -37,4 +43,5 @@ class AppContext(ApplicationContext):
 
 if __name__ == "__main__":
     appctxt = AppContext()
-    appctxt.run()
+    exit_code = appctxt.run()
+    sys.exit(exit_code)

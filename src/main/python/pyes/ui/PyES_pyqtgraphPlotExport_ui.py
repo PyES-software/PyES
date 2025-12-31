@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'PyES_pyqtgraphPlotExport.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.3
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -61,6 +61,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
 from ui.widgets import ColorButton
 
 
@@ -77,7 +78,9 @@ class Ui_PlotWindow(object):
         self.horizontalLayout.setContentsMargins(2, 5, 2, 2)
         self.widget = QWidget(self.centralwidget)
         self.widget.setObjectName("widget")
-        sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        sizePolicy = QSizePolicy(
+            QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
@@ -89,8 +92,9 @@ class Ui_PlotWindow(object):
         self.widget_2 = QWidget(self.widget)
         self.widget_2.setObjectName("widget_2")
         self.gridLayout = QGridLayout(self.widget_2)
-        self.gridLayout.setSpacing(2)
         self.gridLayout.setObjectName("gridLayout")
+        self.gridLayout.setHorizontalSpacing(2)
+        self.gridLayout.setVerticalSpacing(5)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.c_unit = QComboBox(self.widget_2)
         self.c_unit.addItem("")
@@ -102,8 +106,8 @@ class Ui_PlotWindow(object):
 
         self.line = QFrame(self.widget_2)
         self.line.setObjectName("line")
-        self.line.setFrameShape(QFrame.HLine)
-        self.line.setFrameShadow(QFrame.Sunken)
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.gridLayout.addWidget(self.line, 4, 0, 1, 2)
 
@@ -147,23 +151,29 @@ class Ui_PlotWindow(object):
         self.tabWidget_2 = QTabWidget(self.widget_2)
         self.tabWidget_2.setObjectName("tabWidget_2")
         self.tabWidget_2.setEnabled(True)
-        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy1 = QSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.tabWidget_2.sizePolicy().hasHeightForWidth())
         self.tabWidget_2.setSizePolicy(sizePolicy1)
+        self.tabWidget_2.setMouseTracking(False)
         self.species = QWidget()
         self.species.setObjectName("species")
         self.horizontalLayout_4 = QHBoxLayout(self.species)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.horizontalLayout_4.setContentsMargins(2, 2, 2, 2)
         self.speciesView = QTableView(self.species)
         self.speciesView.setObjectName("speciesView")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+        sizePolicy2 = QSizePolicy(
+            QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+        )
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.speciesView.sizePolicy().hasHeightForWidth())
         self.speciesView.setSizePolicy(sizePolicy2)
-        self.speciesView.setEditTriggers(QAbstractItemView.AllEditTriggers)
+        self.speciesView.setEditTriggers(QAbstractItemView.EditTrigger.AllEditTriggers)
         self.speciesView.setAlternatingRowColors(True)
         self.speciesView.horizontalHeader().setVisible(False)
 
@@ -174,11 +184,12 @@ class Ui_PlotWindow(object):
         self.solids.setObjectName("solids")
         self.horizontalLayout_3 = QHBoxLayout(self.solids)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(2, 2, 2, 2)
         self.solidsView = QTableView(self.solids)
         self.solidsView.setObjectName("solidsView")
         sizePolicy2.setHeightForWidth(self.solidsView.sizePolicy().hasHeightForWidth())
         self.solidsView.setSizePolicy(sizePolicy2)
-        self.solidsView.setEditTriggers(QAbstractItemView.AllEditTriggers)
+        self.solidsView.setEditTriggers(QAbstractItemView.EditTrigger.AllEditTriggers)
         self.solidsView.setAlternatingRowColors(True)
         self.solidsView.horizontalHeader().setVisible(False)
 
@@ -213,9 +224,14 @@ class Ui_PlotWindow(object):
         self.horizontalLayout.addWidget(self.widget)
 
         self.verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.setSpacing(2)
+        self.verticalLayout_4.setSpacing(7)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.verticalLayout_4.setContentsMargins(0, -1, -1, -1)
+        self.titrationSelector = QComboBox(self.centralwidget)
+        self.titrationSelector.setObjectName("titrationSelector")
+
+        self.verticalLayout_4.addWidget(self.titrationSelector)
+
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName("tabWidget")
         self.conc_tab = QWidget()
@@ -241,7 +257,7 @@ class Ui_PlotWindow(object):
 
         self.formLayout_2 = QFormLayout()
         self.formLayout_2.setObjectName("formLayout_2")
-        self.formLayout_2.setSizeConstraint(QLayout.SetDefaultConstraint)
+        self.formLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.componentComboBox_perc = QComboBox(self.perc_tab)
         self.componentComboBox_perc.setObjectName("componentComboBox_perc")
 
@@ -265,7 +281,9 @@ class Ui_PlotWindow(object):
         self.verticalLayout_3.setContentsMargins(1, 1, 1, 1)
         self.titration_graph = PlotWidget(self.titration_tab)
         self.titration_graph.setObjectName("titration_graph")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy3 = QSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
+        )
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(
@@ -277,7 +295,7 @@ class Ui_PlotWindow(object):
 
         self.formLayout = QFormLayout()
         self.formLayout.setObjectName("formLayout")
-        self.formLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
+        self.formLayout.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.componentLabel = QLabel(self.titration_tab)
         self.componentLabel.setObjectName("componentLabel")
 

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'PyES_main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.3
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -54,6 +54,8 @@ from PySide6.QtWidgets import (
     QHeaderView,
     QLabel,
     QLayout,
+    QListWidget,
+    QListWidgetItem,
     QMainWindow,
     QMenu,
     QMenuBar,
@@ -64,6 +66,8 @@ from PySide6.QtWidgets import (
     QStackedWidget,
     QStatusBar,
     QTableView,
+    QTableWidget,
+    QTableWidgetItem,
     QTabWidget,
     QTextEdit,
     QToolBar,
@@ -71,60 +75,77 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from ui.widgets import CustomComboBox, CustomSpinBox
+
+from ui.widgets import CustomComboBox
+from ui.widgets.spinbox import CustomSpinBox
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1283, 778)
-        MainWindow.setMinimumSize(QSize(1204, 778))
+        MainWindow.resize(1289, 809)
+        MainWindow.setMinimumSize(QSize(1289, 809))
         MainWindow.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         MainWindow.setUnifiedTitleAndToolBarOnMac(True)
         self.actionNew = QAction(MainWindow)
         self.actionNew.setObjectName("actionNew")
         self.actionNew.setEnabled(True)
         icon = QIcon()
-        icon.addFile(":/icons/document.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(
+            ":/icons/document.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
         self.actionNew.setIcon(icon)
         self.actionOpen = QAction(MainWindow)
         self.actionOpen.setObjectName("actionOpen")
         icon1 = QIcon()
         icon1.addFile(
-            ":/icons/folder-open-document.png", QSize(), QIcon.Normal, QIcon.Off
+            ":/icons/folder-open-document.png",
+            QSize(),
+            QIcon.Mode.Normal,
+            QIcon.State.Off,
         )
         self.actionOpen.setIcon(icon1)
         self.actionSave = QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
         icon2 = QIcon()
-        icon2.addFile(":/icons/disk.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon2.addFile(":/icons/disk.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.actionSave.setIcon(icon2)
         self.actionAbout = QAction(MainWindow)
         self.actionAbout.setObjectName("actionAbout")
         icon3 = QIcon()
-        icon3.addFile(":/icons/question-frame.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon3.addFile(
+            ":/icons/question-frame.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
         self.actionAbout.setIcon(icon3)
         self.actionExit = QAction(MainWindow)
         self.actionExit.setObjectName("actionExit")
+        self.actionExit.setMenuRole(QAction.MenuRole.QuitRole)
         self.actionWebsite = QAction(MainWindow)
         self.actionWebsite.setObjectName("actionWebsite")
         self.actionCalculate = QAction(MainWindow)
         self.actionCalculate.setObjectName("actionCalculate")
         icon4 = QIcon()
-        icon4.addFile(":/icons/control.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon4.addFile(
+            ":/icons/control.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
         self.actionCalculate.setIcon(icon4)
         self.actionExport_Results = QAction(MainWindow)
         self.actionExport_Results.setObjectName("actionExport_Results")
         icon5 = QIcon()
         icon5.addFile(
-            ":/icons/application-export.png", QSize(), QIcon.Normal, QIcon.Off
+            ":/icons/application-export.png",
+            QSize(),
+            QIcon.Mode.Normal,
+            QIcon.State.Off,
         )
         self.actionExport_Results.setIcon(icon5)
         self.actionPlot_Results = QAction(MainWindow)
         self.actionPlot_Results.setObjectName("actionPlot_Results")
         icon6 = QIcon()
-        icon6.addFile(":/icons/pencil-ruler.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon6.addFile(
+            ":/icons/pencil-ruler.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
         self.actionPlot_Results.setIcon(icon6)
         self.actionAbout_Qt = QAction(MainWindow)
         self.actionAbout_Qt.setObjectName("actionAbout_Qt")
@@ -138,8 +159,8 @@ class Ui_MainWindow(object):
             icon7.addFile(
                 "../../../../../../../.designer/backup",
                 QSize(),
-                QIcon.Normal,
-                QIcon.Off,
+                QIcon.Mode.Normal,
+                QIcon.State.Off,
             )
 
         self.actionUndo.setIcon(icon7)
@@ -153,16 +174,25 @@ class Ui_MainWindow(object):
             icon8.addFile(
                 "../../../../../../../.designer/backup",
                 QSize(),
-                QIcon.Normal,
-                QIcon.Off,
+                QIcon.Mode.Normal,
+                QIcon.State.Off,
             )
 
         self.actionRedo.setIcon(icon8)
         self.actionSaveAs = QAction(MainWindow)
         self.actionSaveAs.setObjectName("actionSaveAs")
         icon9 = QIcon()
-        icon9.addFile(":/icons/disk--plus.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon9.addFile(
+            ":/icons/disk--plus.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
         self.actionSaveAs.setIcon(icon9)
+        self.actionBSTAC = QAction(MainWindow)
+        self.actionBSTAC.setObjectName("actionBSTAC")
+        self.actionMonitor_Results = QAction(MainWindow)
+        self.actionMonitor_Results.setObjectName("actionMonitor_Results")
+        icon10 = QIcon()
+        icon10.addFile(":/icons/eye.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.actionMonitor_Results.setIcon(icon10)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_5 = QVBoxLayout(self.centralwidget)
@@ -171,20 +201,22 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.setContentsMargins(2, 2, 2, 2)
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName("tabWidget")
-        self.tabWidget.setTabShape(QTabWidget.Rounded)
+        self.tabWidget.setTabShape(QTabWidget.TabShape.Rounded)
         self.tabWidget.setUsesScrollButtons(False)
         self.tabWidget.setDocumentMode(False)
         self.Species = QWidget()
         self.Species.setObjectName("Species")
-        self.Species.setLayoutDirection(Qt.LeftToRight)
+        self.Species.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.horizontalLayout = QHBoxLayout(self.Species)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.horizontalLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
+        self.horizontalLayout.setSizeConstraint(
+            QLayout.SizeConstraint.SetDefaultConstraint
+        )
         self.horizontalLayout.setContentsMargins(5, 5, 5, 5)
         self.widget_7 = QWidget(self.Species)
         self.widget_7.setObjectName("widget_7")
         self.widget_7.setEnabled(True)
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget_7.sizePolicy().hasHeightForWidth())
@@ -195,7 +227,9 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.setContentsMargins(1, 0, 1, 1)
         self.sys_opt_label = QLabel(self.widget_7)
         self.sys_opt_label.setObjectName("sys_opt_label")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        sizePolicy1 = QSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum
+        )
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(
@@ -207,32 +241,38 @@ class Ui_MainWindow(object):
 
         self.frame_5 = QFrame(self.widget_7)
         self.frame_5.setObjectName("frame_5")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+        sizePolicy2 = QSizePolicy(
+            QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Maximum
+        )
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.frame_5.sizePolicy().hasHeightForWidth())
         self.frame_5.setSizePolicy(sizePolicy2)
-        self.frame_5.setFrameShape(QFrame.StyledPanel)
-        self.frame_5.setFrameShadow(QFrame.Sunken)
+        self.frame_5.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_5.setFrameShadow(QFrame.Shadow.Sunken)
         self.horizontalLayout_6 = QHBoxLayout(self.frame_5)
         self.horizontalLayout_6.setSpacing(0)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         self.horizontalLayout_6.setContentsMargins(0, 0, 0, 0)
         self.widget_8 = QWidget(self.frame_5)
         self.widget_8.setObjectName("widget_8")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.widget_8.sizePolicy().hasHeightForWidth())
         self.widget_8.setSizePolicy(sizePolicy3)
         self.formLayout_3 = QFormLayout(self.widget_8)
         self.formLayout_3.setObjectName("formLayout_3")
-        self.formLayout_3.setSizeConstraint(QLayout.SetFixedSize)
-        self.formLayout_3.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
+        self.formLayout_3.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        self.formLayout_3.setFieldGrowthPolicy(
+            QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow
+        )
         self.formLayout_3.setContentsMargins(-1, 5, -1, 5)
         self.comp_label = QLabel(self.widget_8)
         self.comp_label.setObjectName("comp_label")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        sizePolicy4 = QSizePolicy(
+            QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred
+        )
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.comp_label.sizePolicy().hasHeightForWidth())
@@ -242,7 +282,9 @@ class Ui_MainWindow(object):
 
         self.numComp = QSpinBox(self.widget_8)
         self.numComp.setObjectName("numComp")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy5 = QSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed
+        )
         sizePolicy5.setHorizontalStretch(0)
         sizePolicy5.setVerticalStretch(0)
         sizePolicy5.setHeightForWidth(self.numComp.sizePolicy().hasHeightForWidth())
@@ -291,15 +333,15 @@ class Ui_MainWindow(object):
 
         self.line_7 = QFrame(self.widget_8)
         self.line_7.setObjectName("line_7")
-        self.line_7.setFrameShape(QFrame.HLine)
-        self.line_7.setFrameShadow(QFrame.Sunken)
+        self.line_7.setFrameShape(QFrame.Shape.HLine)
+        self.line_7.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.formLayout_3.setWidget(3, QFormLayout.SpanningRole, self.line_7)
 
         self.line = QFrame(self.widget_8)
         self.line.setObjectName("line")
-        self.line.setFrameShape(QFrame.HLine)
-        self.line.setFrameShadow(QFrame.Sunken)
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.formLayout_3.setWidget(8, QFormLayout.SpanningRole, self.line)
 
@@ -307,18 +349,20 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName("gridLayout")
         self.ionic_strength_info = QToolButton(self.widget_8)
         self.ionic_strength_info.setObjectName("ionic_strength_info")
-        sizePolicy6 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        sizePolicy6 = QSizePolicy(
+            QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum
+        )
         sizePolicy6.setHorizontalStretch(0)
         sizePolicy6.setVerticalStretch(0)
         sizePolicy6.setHeightForWidth(
             self.ionic_strength_info.sizePolicy().hasHeightForWidth()
         )
         self.ionic_strength_info.setSizePolicy(sizePolicy6)
-        icon10 = QIcon()
-        icon10.addFile(
-            ":/icons/information-frame.png", QSize(), QIcon.Normal, QIcon.Off
+        icon11 = QIcon()
+        icon11.addFile(
+            ":/icons/information-frame.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
         )
-        self.ionic_strength_info.setIcon(icon10)
+        self.ionic_strength_info.setIcon(icon11)
 
         self.gridLayout.addWidget(self.ionic_strength_info, 0, 2, 1, 1)
 
@@ -495,7 +539,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.uncertainty_info = QToolButton(self.widget_8)
         self.uncertainty_info.setObjectName("uncertainty_info")
-        self.uncertainty_info.setIcon(icon10)
+        self.uncertainty_info.setIcon(icon11)
 
         self.gridLayout_2.addWidget(self.uncertainty_info, 0, 1, 1, 1)
 
@@ -516,7 +560,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addWidget(self.frame_5)
 
         self.verticalSpacer_2 = QSpacerItem(
-            20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding
+            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
 
         self.verticalLayout_6.addItem(self.verticalSpacer_2)
@@ -546,18 +590,21 @@ class Ui_MainWindow(object):
             self.horizontalFrame_2.sizePolicy().hasHeightForWidth()
         )
         self.horizontalFrame_2.setSizePolicy(sizePolicy4)
-        self.horizontalFrame_2.setFrameShape(QFrame.Box)
-        self.horizontalFrame_2.setFrameShadow(QFrame.Raised)
+        self.horizontalFrame_2.setFrameShape(QFrame.Shape.Box)
+        self.horizontalFrame_2.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_8 = QHBoxLayout(self.horizontalFrame_2)
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
         self.horizontalLayout_8.setContentsMargins(0, 2, 0, 2)
         self.insert_above_comp_button = QToolButton(self.horizontalFrame_2)
         self.insert_above_comp_button.setObjectName("insert_above_comp_button")
-        icon11 = QIcon()
-        icon11.addFile(
-            ":/icons/table-insert-row-before.png", QSize(), QIcon.Normal, QIcon.Off
+        icon12 = QIcon()
+        icon12.addFile(
+            ":/icons/table-insert-row-before.png",
+            QSize(),
+            QIcon.Mode.Normal,
+            QIcon.State.Off,
         )
-        self.insert_above_comp_button.setIcon(icon11)
+        self.insert_above_comp_button.setIcon(icon12)
         self.insert_above_comp_button.setIconSize(QSize(18, 18))
         self.insert_above_comp_button.setAutoRaise(True)
 
@@ -565,18 +612,21 @@ class Ui_MainWindow(object):
 
         self.insert_below_comp_button = QToolButton(self.horizontalFrame_2)
         self.insert_below_comp_button.setObjectName("insert_below_comp_button")
-        sizePolicy7 = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
         sizePolicy7.setHorizontalStretch(0)
         sizePolicy7.setVerticalStretch(0)
         sizePolicy7.setHeightForWidth(
             self.insert_below_comp_button.sizePolicy().hasHeightForWidth()
         )
         self.insert_below_comp_button.setSizePolicy(sizePolicy7)
-        icon12 = QIcon()
-        icon12.addFile(
-            ":/icons/table-insert-row-after.png", QSize(), QIcon.Normal, QIcon.Off
+        icon13 = QIcon()
+        icon13.addFile(
+            ":/icons/table-insert-row-after.png",
+            QSize(),
+            QIcon.Mode.Normal,
+            QIcon.State.Off,
         )
-        self.insert_below_comp_button.setIcon(icon12)
+        self.insert_below_comp_button.setIcon(icon13)
         self.insert_below_comp_button.setIconSize(QSize(18, 18))
         self.insert_below_comp_button.setAutoRaise(True)
 
@@ -584,9 +634,11 @@ class Ui_MainWindow(object):
 
         self.remove_comp_button = QToolButton(self.horizontalFrame_2)
         self.remove_comp_button.setObjectName("remove_comp_button")
-        icon13 = QIcon()
-        icon13.addFile(":/icons/table-delete-row.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.remove_comp_button.setIcon(icon13)
+        icon14 = QIcon()
+        icon14.addFile(
+            ":/icons/table-delete-row.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
+        self.remove_comp_button.setIcon(icon14)
         self.remove_comp_button.setIconSize(QSize(18, 18))
         self.remove_comp_button.setAutoRaise(True)
 
@@ -594,16 +646,18 @@ class Ui_MainWindow(object):
 
         self.line_5 = QFrame(self.horizontalFrame_2)
         self.line_5.setObjectName("line_5")
-        self.line_5.setFrameShape(QFrame.VLine)
-        self.line_5.setFrameShadow(QFrame.Sunken)
+        self.line_5.setFrameShape(QFrame.Shape.VLine)
+        self.line_5.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.horizontalLayout_8.addWidget(self.line_5)
 
         self.move_up_comp_button = QToolButton(self.horizontalFrame_2)
         self.move_up_comp_button.setObjectName("move_up_comp_button")
-        icon14 = QIcon()
-        icon14.addFile(":/icons/row_up.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.move_up_comp_button.setIcon(icon14)
+        icon15 = QIcon()
+        icon15.addFile(
+            ":/icons/row_up.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
+        self.move_up_comp_button.setIcon(icon15)
         self.move_up_comp_button.setIconSize(QSize(18, 18))
         self.move_up_comp_button.setAutoRaise(True)
 
@@ -611,16 +665,18 @@ class Ui_MainWindow(object):
 
         self.move_down_comp_button = QToolButton(self.horizontalFrame_2)
         self.move_down_comp_button.setObjectName("move_down_comp_button")
-        icon15 = QIcon()
-        icon15.addFile(":/icons/row_down.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.move_down_comp_button.setIcon(icon15)
+        icon16 = QIcon()
+        icon16.addFile(
+            ":/icons/row_down.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
+        self.move_down_comp_button.setIcon(icon16)
         self.move_down_comp_button.setIconSize(QSize(18, 18))
         self.move_down_comp_button.setAutoRaise(True)
 
         self.horizontalLayout_8.addWidget(self.move_down_comp_button)
 
         self.horizontalSpacer_2 = QSpacerItem(
-            40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum
+            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
         )
 
         self.horizontalLayout_8.addItem(self.horizontalSpacer_2)
@@ -629,18 +685,24 @@ class Ui_MainWindow(object):
 
         self.compView = QTableView(self.widget_6)
         self.compView.setObjectName("compView")
-        sizePolicy8 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+        sizePolicy8 = QSizePolicy(
+            QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+        )
         sizePolicy8.setHorizontalStretch(0)
         sizePolicy8.setVerticalStretch(0)
         sizePolicy8.setHeightForWidth(self.compView.sizePolicy().hasHeightForWidth())
         self.compView.setSizePolicy(sizePolicy8)
         self.compView.setMaximumSize(QSize(180, 16777215))
-        self.compView.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
-        self.compView.setEditTriggers(QAbstractItemView.AllEditTriggers)
+        self.compView.setSizeAdjustPolicy(
+            QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored
+        )
+        self.compView.setEditTriggers(QAbstractItemView.EditTrigger.AllEditTriggers)
         self.compView.setProperty("showDropIndicator", False)
-        self.compView.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.compView.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.compView.setTextElideMode(Qt.ElideNone)
+        self.compView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.compView.setSelectionBehavior(
+            QAbstractItemView.SelectionBehavior.SelectRows
+        )
+        self.compView.setTextElideMode(Qt.TextElideMode.ElideNone)
         self.compView.verticalHeader().setVisible(False)
 
         self.verticalLayout_8.addWidget(self.compView)
@@ -663,50 +725,57 @@ class Ui_MainWindow(object):
 
         self.horizontalFrame = QFrame(self.widget_2)
         self.horizontalFrame.setObjectName("horizontalFrame")
-        sizePolicy9 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
+        sizePolicy9 = QSizePolicy(
+            QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred
+        )
         sizePolicy9.setHorizontalStretch(0)
         sizePolicy9.setVerticalStretch(0)
         sizePolicy9.setHeightForWidth(
             self.horizontalFrame.sizePolicy().hasHeightForWidth()
         )
         self.horizontalFrame.setSizePolicy(sizePolicy9)
-        self.horizontalFrame.setFrameShape(QFrame.Box)
-        self.horizontalFrame.setFrameShadow(QFrame.Raised)
+        self.horizontalFrame.setFrameShape(QFrame.Shape.Box)
+        self.horizontalFrame.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_4 = QHBoxLayout(self.horizontalFrame)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.horizontalLayout_4.setContentsMargins(0, 2, 0, 2)
-        self.select_all_button = QToolButton(self.horizontalFrame)
-        self.select_all_button.setObjectName("select_all_button")
-        icon16 = QIcon()
-        icon16.addFile(":/icons/ui-check-box.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.select_all_button.setIcon(icon16)
-        self.select_all_button.setIconSize(QSize(18, 18))
-        self.select_all_button.setAutoRaise(True)
-
-        self.horizontalLayout_4.addWidget(self.select_all_button)
-
-        self.deselect_all_button = QToolButton(self.horizontalFrame)
-        self.deselect_all_button.setObjectName("deselect_all_button")
+        self.checkAllSpeciesButton = QToolButton(self.horizontalFrame)
+        self.checkAllSpeciesButton.setObjectName("checkAllSpeciesButton")
         icon17 = QIcon()
         icon17.addFile(
-            ":/icons/ui-check-box-uncheck.png", QSize(), QIcon.Normal, QIcon.Off
+            ":/icons/ui-check-box.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
         )
-        self.deselect_all_button.setIcon(icon17)
-        self.deselect_all_button.setIconSize(QSize(18, 18))
-        self.deselect_all_button.setAutoRaise(True)
+        self.checkAllSpeciesButton.setIcon(icon17)
+        self.checkAllSpeciesButton.setIconSize(QSize(18, 18))
+        self.checkAllSpeciesButton.setAutoRaise(True)
 
-        self.horizontalLayout_4.addWidget(self.deselect_all_button)
+        self.horizontalLayout_4.addWidget(self.checkAllSpeciesButton)
+
+        self.uncheckAllSpeciesButton = QToolButton(self.horizontalFrame)
+        self.uncheckAllSpeciesButton.setObjectName("uncheckAllSpeciesButton")
+        icon18 = QIcon()
+        icon18.addFile(
+            ":/icons/ui-check-box-uncheck.png",
+            QSize(),
+            QIcon.Mode.Normal,
+            QIcon.State.Off,
+        )
+        self.uncheckAllSpeciesButton.setIcon(icon18)
+        self.uncheckAllSpeciesButton.setIconSize(QSize(18, 18))
+        self.uncheckAllSpeciesButton.setAutoRaise(True)
+
+        self.horizontalLayout_4.addWidget(self.uncheckAllSpeciesButton)
 
         self.line_6 = QFrame(self.horizontalFrame)
         self.line_6.setObjectName("line_6")
-        self.line_6.setFrameShape(QFrame.VLine)
-        self.line_6.setFrameShadow(QFrame.Sunken)
+        self.line_6.setFrameShape(QFrame.Shape.VLine)
+        self.line_6.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.horizontalLayout_4.addWidget(self.line_6)
 
         self.insert_above_species_button = QToolButton(self.horizontalFrame)
         self.insert_above_species_button.setObjectName("insert_above_species_button")
-        self.insert_above_species_button.setIcon(icon11)
+        self.insert_above_species_button.setIcon(icon12)
         self.insert_above_species_button.setIconSize(QSize(18, 18))
         self.insert_above_species_button.setAutoRaise(True)
 
@@ -718,7 +787,7 @@ class Ui_MainWindow(object):
             self.insert_below_species_button.sizePolicy().hasHeightForWidth()
         )
         self.insert_below_species_button.setSizePolicy(sizePolicy7)
-        self.insert_below_species_button.setIcon(icon12)
+        self.insert_below_species_button.setIcon(icon13)
         self.insert_below_species_button.setIconSize(QSize(18, 18))
         self.insert_below_species_button.setAutoRaise(True)
 
@@ -726,7 +795,7 @@ class Ui_MainWindow(object):
 
         self.remove_species_button = QToolButton(self.horizontalFrame)
         self.remove_species_button.setObjectName("remove_species_button")
-        self.remove_species_button.setIcon(icon13)
+        self.remove_species_button.setIcon(icon14)
         self.remove_species_button.setIconSize(QSize(18, 18))
         self.remove_species_button.setAutoRaise(True)
 
@@ -734,14 +803,14 @@ class Ui_MainWindow(object):
 
         self.line_4 = QFrame(self.horizontalFrame)
         self.line_4.setObjectName("line_4")
-        self.line_4.setFrameShape(QFrame.VLine)
-        self.line_4.setFrameShadow(QFrame.Sunken)
+        self.line_4.setFrameShape(QFrame.Shape.VLine)
+        self.line_4.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.horizontalLayout_4.addWidget(self.line_4)
 
         self.move_up_species_button = QToolButton(self.horizontalFrame)
         self.move_up_species_button.setObjectName("move_up_species_button")
-        self.move_up_species_button.setIcon(icon14)
+        self.move_up_species_button.setIcon(icon15)
         self.move_up_species_button.setIconSize(QSize(18, 18))
         self.move_up_species_button.setAutoRaise(True)
 
@@ -749,23 +818,25 @@ class Ui_MainWindow(object):
 
         self.move_down_species_button = QToolButton(self.horizontalFrame)
         self.move_down_species_button.setObjectName("move_down_species_button")
-        self.move_down_species_button.setIcon(icon15)
+        self.move_down_species_button.setIcon(icon16)
         self.move_down_species_button.setIconSize(QSize(18, 18))
         self.move_down_species_button.setAutoRaise(True)
 
         self.horizontalLayout_4.addWidget(self.move_down_species_button)
 
         self.horizontalSpacer = QSpacerItem(
-            40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum
+            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
         )
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer)
 
         self.edit_column_button = QToolButton(self.horizontalFrame)
         self.edit_column_button.setObjectName("edit_column_button")
-        icon18 = QIcon()
-        icon18.addFile(":/icons/table--pencil.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.edit_column_button.setIcon(icon18)
+        icon19 = QIcon()
+        icon19.addFile(
+            ":/icons/table--pencil.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
+        self.edit_column_button.setIcon(icon19)
         self.edit_column_button.setIconSize(QSize(18, 18))
         self.edit_column_button.setAutoRaise(True)
 
@@ -775,8 +846,6 @@ class Ui_MainWindow(object):
 
         self.tablesTab = QTabWidget(self.widget_2)
         self.tablesTab.setObjectName("tablesTab")
-        self.tablesTab.setTabPosition(QTabWidget.North)
-        self.tablesTab.setTabShape(QTabWidget.Rounded)
         self.tablesTab.setUsesScrollButtons(False)
         self.species = QWidget()
         self.species.setObjectName("species")
@@ -786,19 +855,25 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.setContentsMargins(5, 5, 5, 5)
         self.speciesView = QTableView(self.species)
         self.speciesView.setObjectName("speciesView")
-        self.speciesView.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
-        self.speciesView.setEditTriggers(QAbstractItemView.AllEditTriggers)
+        self.speciesView.setSizeAdjustPolicy(
+            QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored
+        )
+        self.speciesView.setEditTriggers(QAbstractItemView.EditTrigger.AllEditTriggers)
         self.speciesView.setProperty("showDropIndicator", False)
-        self.speciesView.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.speciesView.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.speciesView.setTextElideMode(Qt.ElideNone)
+        self.speciesView.setSelectionMode(
+            QAbstractItemView.SelectionMode.SingleSelection
+        )
+        self.speciesView.setSelectionBehavior(
+            QAbstractItemView.SelectionBehavior.SelectRows
+        )
+        self.speciesView.setTextElideMode(Qt.TextElideMode.ElideNone)
         self.speciesView.horizontalHeader().setCascadingSectionResizes(True)
 
         self.verticalLayout_3.addWidget(self.speciesView)
 
-        icon19 = QIcon()
-        icon19.addFile(":/icons/flask.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.tablesTab.addTab(self.species, icon19, "")
+        icon20 = QIcon()
+        icon20.addFile(":/icons/flask.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.tablesTab.addTab(self.species, icon20, "")
         self.solidspecies = QWidget()
         self.solidspecies.setObjectName("solidspecies")
         self.verticalLayout_12 = QVBoxLayout(self.solidspecies)
@@ -807,18 +882,28 @@ class Ui_MainWindow(object):
         self.verticalLayout_12.setContentsMargins(5, 5, 5, 5)
         self.solidSpeciesView = QTableView(self.solidspecies)
         self.solidSpeciesView.setObjectName("solidSpeciesView")
-        self.solidSpeciesView.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
-        self.solidSpeciesView.setEditTriggers(QAbstractItemView.AllEditTriggers)
+        self.solidSpeciesView.setSizeAdjustPolicy(
+            QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored
+        )
+        self.solidSpeciesView.setEditTriggers(
+            QAbstractItemView.EditTrigger.AllEditTriggers
+        )
         self.solidSpeciesView.setProperty("showDropIndicator", False)
-        self.solidSpeciesView.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.solidSpeciesView.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.solidSpeciesView.setSelectionMode(
+            QAbstractItemView.SelectionMode.SingleSelection
+        )
+        self.solidSpeciesView.setSelectionBehavior(
+            QAbstractItemView.SelectionBehavior.SelectRows
+        )
         self.solidSpeciesView.horizontalHeader().setCascadingSectionResizes(True)
 
         self.verticalLayout_12.addWidget(self.solidSpeciesView)
 
-        icon20 = QIcon()
-        icon20.addFile(":/icons/beaker-empty.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.tablesTab.addTab(self.solidspecies, icon20, "")
+        icon21 = QIcon()
+        icon21.addFile(
+            ":/icons/beaker-empty.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off
+        )
+        self.tablesTab.addTab(self.solidspecies, icon21, "")
 
         self.verticalLayout.addWidget(self.tablesTab)
 
@@ -834,7 +919,7 @@ class Ui_MainWindow(object):
         self.Settings.setSizePolicy(sizePolicy1)
         self.verticalLayout_7 = QVBoxLayout(self.Settings)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
-        self.verticalLayout_7.setSizeConstraint(QLayout.SetMaximumSize)
+        self.verticalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
         self.verticalLayout_7.setContentsMargins(5, 5, 5, 5)
         self.dmodeSelector = QWidget(self.Settings)
         self.dmodeSelector.setObjectName("dmodeSelector")
@@ -844,6 +929,7 @@ class Ui_MainWindow(object):
         self.dmodeSelector.setSizePolicy(sizePolicy6)
         self.horizontalLayout_2 = QHBoxLayout(self.dmodeSelector)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.dmode_label = QLabel(self.dmodeSelector)
         self.dmode_label.setObjectName("dmode_label")
         sizePolicy6.setHeightForWidth(self.dmode_label.sizePolicy().hasHeightForWidth())
@@ -854,6 +940,7 @@ class Ui_MainWindow(object):
         self.dmode = CustomComboBox(self.dmodeSelector)
         self.dmode.addItem("")
         self.dmode.addItem("")
+        self.dmode.addItem("")
         self.dmode.setObjectName("dmode")
         sizePolicy7.setHeightForWidth(self.dmode.sizePolicy().hasHeightForWidth())
         self.dmode.setSizePolicy(sizePolicy7)
@@ -862,13 +949,22 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_7.addWidget(self.dmodeSelector)
 
-        self.dmode0Input = QWidget(self.Settings)
+        self.mode_views = QStackedWidget(self.Settings)
+        self.mode_views.setObjectName("mode_views")
+        self.pyes_modes = QWidget()
+        self.pyes_modes.setObjectName("pyes_modes")
+        self.horizontalLayout_7 = QHBoxLayout(self.pyes_modes)
+        self.horizontalLayout_7.setSpacing(0)
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.horizontalLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.dmode0Input = QWidget(self.pyes_modes)
         self.dmode0Input.setObjectName("dmode0Input")
         sizePolicy9.setHeightForWidth(self.dmode0Input.sizePolicy().hasHeightForWidth())
         self.dmode0Input.setSizePolicy(sizePolicy9)
         self.horizontalLayout_3 = QHBoxLayout(self.dmode0Input)
+        self.horizontalLayout_3.setSpacing(10)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_3.setContentsMargins(0, 0, 500, 0)
         self.dmode_inputs = QStackedWidget(self.dmode0Input)
         self.dmode_inputs.setObjectName("dmode_inputs")
         sizePolicy4.setHeightForWidth(
@@ -881,9 +977,12 @@ class Ui_MainWindow(object):
         self.page.setSizePolicy(sizePolicy4)
         self.horizontalLayout_9 = QHBoxLayout(self.page)
         self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.horizontalLayout_9.setContentsMargins(0, 0, 0, 0)
         self.widget_3 = QWidget(self.page)
         self.widget_3.setObjectName("widget_3")
-        sizePolicy10 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        sizePolicy10 = QSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
+        )
         sizePolicy10.setHorizontalStretch(0)
         sizePolicy10.setVerticalStretch(0)
         sizePolicy10.setHeightForWidth(self.widget_3.sizePolicy().hasHeightForWidth())
@@ -891,16 +990,21 @@ class Ui_MainWindow(object):
         self.widget_3.setMinimumSize(QSize(263, 287))
         self.verticalLayout_9 = QVBoxLayout(self.widget_3)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
-        self.verticalLayout_9.setContentsMargins(0, 15, 0, 0)
+        self.verticalLayout_9.setContentsMargins(0, 25, 0, 0)
         self.frame = QFrame(self.widget_3)
         self.frame.setObjectName("frame")
-        sizePolicy6.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
-        self.frame.setSizePolicy(sizePolicy6)
+        sizePolicy2.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
+        self.frame.setSizePolicy(sizePolicy2)
         self.frame.setMinimumSize(QSize(280, 0))
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
+        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.formLayout = QFormLayout(self.frame)
         self.formLayout.setObjectName("formLayout")
+        self.formLayout.setLabelAlignment(
+            Qt.AlignmentFlag.AlignLeading
+            | Qt.AlignmentFlag.AlignLeft
+            | Qt.AlignmentFlag.AlignVCenter
+        )
         self.formLayout.setContentsMargins(-1, 0, -1, 6)
         self.label_3 = QLabel(self.frame)
         self.label_3.setObjectName("label_3")
@@ -962,8 +1066,8 @@ class Ui_MainWindow(object):
 
         self.line_2 = QFrame(self.frame)
         self.line_2.setObjectName("line_2")
-        self.line_2.setFrameShape(QFrame.HLine)
-        self.line_2.setFrameShadow(QFrame.Sunken)
+        self.line_2.setFrameShape(QFrame.Shape.HLine)
+        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.formLayout.setWidget(5, QFormLayout.SpanningRole, self.line_2)
 
@@ -1005,7 +1109,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_9.addWidget(self.frame)
 
         self.verticalSpacer_3 = QSpacerItem(
-            20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding
+            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
 
         self.verticalLayout_9.addItem(self.verticalSpacer_3)
@@ -1019,6 +1123,7 @@ class Ui_MainWindow(object):
         self.page_2.setSizePolicy(sizePolicy4)
         self.horizontalLayout_10 = QHBoxLayout(self.page_2)
         self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+        self.horizontalLayout_10.setContentsMargins(0, 0, 0, 0)
         self.widget_11 = QWidget(self.page_2)
         self.widget_11.setObjectName("widget_11")
         sizePolicy10.setHeightForWidth(self.widget_11.sizePolicy().hasHeightForWidth())
@@ -1026,87 +1131,26 @@ class Ui_MainWindow(object):
         self.widget_11.setMinimumSize(QSize(263, 287))
         self.verticalLayout_11 = QVBoxLayout(self.widget_11)
         self.verticalLayout_11.setObjectName("verticalLayout_11")
-        self.verticalLayout_11.setContentsMargins(0, 15, 0, 0)
+        self.verticalLayout_11.setContentsMargins(0, 25, 0, 0)
         self.frame_2 = QFrame(self.widget_11)
         self.frame_2.setObjectName("frame_2")
         sizePolicy2.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
         self.frame_2.setSizePolicy(sizePolicy2)
         self.frame_2.setMinimumSize(QSize(284, 0))
-        self.frame_2.setFrameShape(QFrame.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Raised)
+        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
         self.formLayout_2 = QFormLayout(self.frame_2)
         self.formLayout_2.setObjectName("formLayout_2")
+        self.formLayout_2.setLabelAlignment(
+            Qt.AlignmentFlag.AlignLeading
+            | Qt.AlignmentFlag.AlignLeft
+            | Qt.AlignmentFlag.AlignVCenter
+        )
         self.formLayout_2.setContentsMargins(-1, 0, -1, 6)
         self.label_9 = QLabel(self.frame_2)
         self.label_9.setObjectName("label_9")
 
         self.formLayout_2.setWidget(0, QFormLayout.SpanningRole, self.label_9)
-
-        self.initialLog_label = QLabel(self.frame_2)
-        self.initialLog_label.setObjectName("initialLog_label")
-
-        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.initialLog_label)
-
-        self.initialLog = CustomSpinBox(self.frame_2)
-        self.initialLog.setObjectName("initialLog")
-        self.initialLog.setDecimals(3)
-        self.initialLog.setMaximum(900.000000000000000)
-        self.initialLog.setSingleStep(0.050000000000000)
-
-        self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.initialLog)
-
-        self.finalLog_label = QLabel(self.frame_2)
-        self.finalLog_label.setObjectName("finalLog_label")
-
-        self.formLayout_2.setWidget(3, QFormLayout.LabelRole, self.finalLog_label)
-
-        self.finalLog = CustomSpinBox(self.frame_2)
-        self.finalLog.setObjectName("finalLog")
-        self.finalLog.setDecimals(3)
-        self.finalLog.setMaximum(900.000000000000000)
-        self.finalLog.setSingleStep(0.050000000000000)
-
-        self.formLayout_2.setWidget(3, QFormLayout.FieldRole, self.finalLog)
-
-        self.logInc_label = QLabel(self.frame_2)
-        self.logInc_label.setObjectName("logInc_label")
-
-        self.formLayout_2.setWidget(4, QFormLayout.LabelRole, self.logInc_label)
-
-        self.logInc = CustomSpinBox(self.frame_2)
-        self.logInc.setObjectName("logInc")
-        self.logInc.setDecimals(3)
-        self.logInc.setMaximum(900.000000000000000)
-        self.logInc.setSingleStep(0.050000000000000)
-
-        self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.logInc)
-
-        self.line_3 = QFrame(self.frame_2)
-        self.line_3.setObjectName("line_3")
-        self.line_3.setFrameShape(QFrame.HLine)
-        self.line_3.setFrameShadow(QFrame.Sunken)
-
-        self.formLayout_2.setWidget(5, QFormLayout.SpanningRole, self.line_3)
-
-        self.label_16 = QLabel(self.frame_2)
-        self.label_16.setObjectName("label_16")
-
-        self.formLayout_2.setWidget(6, QFormLayout.SpanningRole, self.label_16)
-
-        self.cback_label = QLabel(self.frame_2)
-        self.cback_label.setObjectName("cback_label")
-        self.cback_label.setEnabled(False)
-
-        self.formLayout_2.setWidget(7, QFormLayout.LabelRole, self.cback_label)
-
-        self.cback = CustomSpinBox(self.frame_2)
-        self.cback.setObjectName("cback")
-        self.cback.setEnabled(False)
-        self.cback.setDecimals(5)
-        self.cback.setMaximum(900.000000000000000)
-        self.cback.setSingleStep(0.050000000000000)
-
-        self.formLayout_2.setWidget(7, QFormLayout.FieldRole, self.cback)
 
         self.indComp_label = QLabel(self.frame_2)
         self.indComp_label.setObjectName("indComp_label")
@@ -1118,10 +1162,85 @@ class Ui_MainWindow(object):
 
         self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.indComp)
 
+        self.initialLog_label = QLabel(self.frame_2)
+        self.initialLog_label.setObjectName("initialLog_label")
+        sizePolicy10.setHeightForWidth(
+            self.initialLog_label.sizePolicy().hasHeightForWidth()
+        )
+        self.initialLog_label.setSizePolicy(sizePolicy10)
+
+        self.formLayout_2.setWidget(3, QFormLayout.LabelRole, self.initialLog_label)
+
+        self.initialLog = CustomSpinBox(self.frame_2)
+        self.initialLog.setObjectName("initialLog")
+        self.initialLog.setDecimals(3)
+        self.initialLog.setMaximum(900.000000000000000)
+        self.initialLog.setSingleStep(0.050000000000000)
+
+        self.formLayout_2.setWidget(3, QFormLayout.FieldRole, self.initialLog)
+
+        self.finalLog_label = QLabel(self.frame_2)
+        self.finalLog_label.setObjectName("finalLog_label")
+
+        self.formLayout_2.setWidget(4, QFormLayout.LabelRole, self.finalLog_label)
+
+        self.finalLog = CustomSpinBox(self.frame_2)
+        self.finalLog.setObjectName("finalLog")
+        self.finalLog.setDecimals(3)
+        self.finalLog.setMaximum(900.000000000000000)
+        self.finalLog.setSingleStep(0.050000000000000)
+
+        self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.finalLog)
+
+        self.logInc_label = QLabel(self.frame_2)
+        self.logInc_label.setObjectName("logInc_label")
+
+        self.formLayout_2.setWidget(5, QFormLayout.LabelRole, self.logInc_label)
+
+        self.logInc = CustomSpinBox(self.frame_2)
+        self.logInc.setObjectName("logInc")
+        self.logInc.setDecimals(3)
+        self.logInc.setMaximum(900.000000000000000)
+        self.logInc.setSingleStep(0.050000000000000)
+
+        self.formLayout_2.setWidget(5, QFormLayout.FieldRole, self.logInc)
+
+        self.line_3 = QFrame(self.frame_2)
+        self.line_3.setObjectName("line_3")
+        self.line_3.setFrameShape(QFrame.Shape.HLine)
+        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.formLayout_2.setWidget(6, QFormLayout.SpanningRole, self.line_3)
+
+        self.label_16 = QLabel(self.frame_2)
+        self.label_16.setObjectName("label_16")
+
+        self.formLayout_2.setWidget(7, QFormLayout.SpanningRole, self.label_16)
+
+        self.cback_label = QLabel(self.frame_2)
+        self.cback_label.setObjectName("cback_label")
+        self.cback_label.setEnabled(False)
+
+        self.formLayout_2.setWidget(8, QFormLayout.LabelRole, self.cback_label)
+
+        self.cback = CustomSpinBox(self.frame_2)
+        self.cback.setObjectName("cback")
+        self.cback.setEnabled(False)
+        self.cback.setDecimals(5)
+        self.cback.setMaximum(900.000000000000000)
+        self.cback.setSingleStep(0.050000000000000)
+
+        self.formLayout_2.setWidget(8, QFormLayout.FieldRole, self.cback)
+
+        self.checkBox = QCheckBox(self.frame_2)
+        self.checkBox.setObjectName("checkBox")
+
+        self.formLayout_2.setWidget(2, QFormLayout.SpanningRole, self.checkBox)
+
         self.verticalLayout_11.addWidget(self.frame_2)
 
         self.verticalSpacer_6 = QSpacerItem(
-            20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding
+            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
 
         self.verticalLayout_11.addItem(self.verticalSpacer_6)
@@ -1146,13 +1265,253 @@ class Ui_MainWindow(object):
 
         self.concView = QTableView(self.widget)
         self.concView.setObjectName("concView")
-        self.concView.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.concView.setSizeAdjustPolicy(
+            QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
+        )
 
         self.verticalLayout_4.addWidget(self.concView)
 
         self.horizontalLayout_3.addWidget(self.widget)
 
-        self.verticalLayout_7.addWidget(self.dmode0Input)
+        self.horizontalLayout_7.addWidget(self.dmode0Input)
+
+        self.mode_views.addWidget(self.pyes_modes)
+        self.bstac_modes = QWidget()
+        self.bstac_modes.setObjectName("bstac_modes")
+        self.verticalLayout_10 = QVBoxLayout(self.bstac_modes)
+        self.verticalLayout_10.setSpacing(0)
+        self.verticalLayout_10.setObjectName("verticalLayout_10")
+        self.verticalLayout_10.setContentsMargins(0, 0, 0, 0)
+        self.frame_3 = QFrame(self.bstac_modes)
+        self.frame_3.setObjectName("frame_3")
+        sizePolicy1.setHeightForWidth(self.frame_3.sizePolicy().hasHeightForWidth())
+        self.frame_3.setSizePolicy(sizePolicy1)
+        self.frame_3.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_3.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_11 = QHBoxLayout(self.frame_3)
+        self.horizontalLayout_11.setObjectName("horizontalLayout_11")
+        self.add_titration = QToolButton(self.frame_3)
+        self.add_titration.setObjectName("add_titration")
+        icon22 = QIcon()
+        icon22.addFile(":/icons/plus.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.add_titration.setIcon(icon22)
+        self.add_titration.setIconSize(QSize(18, 18))
+        self.add_titration.setAutoRaise(True)
+
+        self.horizontalLayout_11.addWidget(self.add_titration)
+
+        self.remove_titration = QToolButton(self.frame_3)
+        self.remove_titration.setObjectName("remove_titration")
+        icon23 = QIcon()
+        icon23.addFile(":/icons/minus.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.remove_titration.setIcon(icon23)
+        self.remove_titration.setIconSize(QSize(18, 18))
+        self.remove_titration.setAutoRaise(True)
+
+        self.horizontalLayout_11.addWidget(self.remove_titration)
+
+        self.horizontalSpacer_4 = QSpacerItem(
+            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
+        )
+
+        self.horizontalLayout_11.addItem(self.horizontalSpacer_4)
+
+        self.verticalLayout_10.addWidget(self.frame_3)
+
+        self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setSpacing(10)
+        self.horizontalLayout_13.setObjectName("horizontalLayout_13")
+        self.verticalLayout_13 = QVBoxLayout()
+        self.verticalLayout_13.setSpacing(2)
+        self.verticalLayout_13.setObjectName("verticalLayout_13")
+        self.verticalLayout_13.setContentsMargins(-1, 0, -1, -1)
+        self.gridLayout_6 = QGridLayout()
+        self.gridLayout_6.setObjectName("gridLayout_6")
+        self.gridLayout_6.setContentsMargins(-1, 0, -1, -1)
+        self.weightsModeLabel = QLabel(self.bstac_modes)
+        self.weightsModeLabel.setObjectName("weightsModeLabel")
+
+        self.gridLayout_6.addWidget(self.weightsModeLabel, 1, 0, 1, 1)
+
+        self.optimizationOptionsLabel = QLabel(self.bstac_modes)
+        self.optimizationOptionsLabel.setObjectName("optimizationOptionsLabel")
+
+        self.gridLayout_6.addWidget(self.optimizationOptionsLabel, 0, 0, 1, 1)
+
+        self.weightsMode = CustomComboBox(self.bstac_modes)
+        self.weightsMode.addItem("")
+        self.weightsMode.addItem("")
+        self.weightsMode.addItem("")
+        self.weightsMode.setObjectName("weightsMode")
+
+        self.gridLayout_6.addWidget(self.weightsMode, 1, 1, 1, 1)
+
+        self.verticalLayout_13.addLayout(self.gridLayout_6)
+
+        self.paramstoRefineLabel = QLabel(self.bstac_modes)
+        self.paramstoRefineLabel.setObjectName("paramstoRefineLabel")
+
+        self.verticalLayout_13.addWidget(self.paramstoRefineLabel)
+
+        self.gridLayout_3 = QGridLayout()
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.gridLayout_3.setContentsMargins(-1, -1, -1, 0)
+        self.betaCheckAll = QToolButton(self.bstac_modes)
+        self.betaCheckAll.setObjectName("betaCheckAll")
+        self.betaCheckAll.setIcon(icon17)
+
+        self.gridLayout_3.addWidget(self.betaCheckAll, 0, 1, 1, 1)
+
+        self.betaToRefineLabel = QLabel(self.bstac_modes)
+        self.betaToRefineLabel.setObjectName("betaToRefineLabel")
+
+        self.gridLayout_3.addWidget(self.betaToRefineLabel, 0, 0, 1, 1)
+
+        self.betaUncheckAll = QToolButton(self.bstac_modes)
+        self.betaUncheckAll.setObjectName("betaUncheckAll")
+        self.betaUncheckAll.setIcon(icon18)
+
+        self.gridLayout_3.addWidget(self.betaUncheckAll, 0, 2, 1, 1)
+
+        self.gridLayout_3.setColumnStretch(0, 1)
+
+        self.verticalLayout_13.addLayout(self.gridLayout_3)
+
+        self.betaToRefine = QListWidget(self.bstac_modes)
+        __qlistwidgetitem = QListWidgetItem(self.betaToRefine)
+        __qlistwidgetitem.setCheckState(Qt.Unchecked)
+        __qlistwidgetitem.setFlags(
+            Qt.ItemIsDragEnabled | Qt.ItemIsUserCheckable | Qt.ItemIsEnabled
+        )
+        self.betaToRefine.setObjectName("betaToRefine")
+
+        self.verticalLayout_13.addWidget(self.betaToRefine)
+
+        self.gridLayout_4 = QGridLayout()
+        self.gridLayout_4.setObjectName("gridLayout_4")
+        self.gridLayout_4.setContentsMargins(-1, -1, -1, 0)
+        self.concUncheckAll = QToolButton(self.bstac_modes)
+        self.concUncheckAll.setObjectName("concUncheckAll")
+        self.concUncheckAll.setIcon(icon18)
+
+        self.gridLayout_4.addWidget(self.concUncheckAll, 0, 2, 1, 1)
+
+        self.concCheckAll = QToolButton(self.bstac_modes)
+        self.concCheckAll.setObjectName("concCheckAll")
+        self.concCheckAll.setIcon(icon17)
+
+        self.gridLayout_4.addWidget(self.concCheckAll, 0, 1, 1, 1)
+
+        self.conToRefineLabel = QLabel(self.bstac_modes)
+        self.conToRefineLabel.setObjectName("conToRefineLabel")
+
+        self.gridLayout_4.addWidget(self.conToRefineLabel, 0, 0, 1, 1)
+
+        self.gridLayout_4.setColumnStretch(0, 1)
+
+        self.verticalLayout_13.addLayout(self.gridLayout_4)
+
+        self.concToRefine = QTableWidget(self.bstac_modes)
+        if self.concToRefine.columnCount() < 1:
+            self.concToRefine.setColumnCount(1)
+        if self.concToRefine.rowCount() < 1:
+            self.concToRefine.setRowCount(1)
+        __qtablewidgetitem = QTableWidgetItem()
+        self.concToRefine.setVerticalHeaderItem(0, __qtablewidgetitem)
+        __qtablewidgetitem1 = QTableWidgetItem()
+        __qtablewidgetitem1.setCheckState(Qt.Unchecked)
+        self.concToRefine.setItem(0, 0, __qtablewidgetitem1)
+        self.concToRefine.setObjectName("concToRefine")
+        self.concToRefine.horizontalHeader().setCascadingSectionResizes(False)
+        self.concToRefine.horizontalHeader().setDefaultSectionSize(25)
+
+        self.verticalLayout_13.addWidget(self.concToRefine)
+
+        self.gridLayout_5 = QGridLayout()
+        self.gridLayout_5.setObjectName("gridLayout_5")
+        self.gridLayout_5.setContentsMargins(-1, -1, -1, 0)
+        self.electrodeUncheckAll = QToolButton(self.bstac_modes)
+        self.electrodeUncheckAll.setObjectName("electrodeUncheckAll")
+        self.electrodeUncheckAll.setIcon(icon18)
+
+        self.gridLayout_5.addWidget(self.electrodeUncheckAll, 0, 2, 1, 1)
+
+        self.electrodeCheckAll = QToolButton(self.bstac_modes)
+        self.electrodeCheckAll.setObjectName("electrodeCheckAll")
+        self.electrodeCheckAll.setIcon(icon17)
+
+        self.gridLayout_5.addWidget(self.electrodeCheckAll, 0, 1, 1, 1)
+
+        self.electrodeToRefineLabel = QLabel(self.bstac_modes)
+        self.electrodeToRefineLabel.setObjectName("electrodeToRefineLabel")
+
+        self.gridLayout_5.addWidget(self.electrodeToRefineLabel, 0, 0, 1, 1)
+
+        self.gridLayout_5.setColumnStretch(0, 1)
+
+        self.verticalLayout_13.addLayout(self.gridLayout_5)
+
+        self.electrodeToRefine = QTableWidget(self.bstac_modes)
+        if self.electrodeToRefine.columnCount() < 1:
+            self.electrodeToRefine.setColumnCount(1)
+        if self.electrodeToRefine.rowCount() < 5:
+            self.electrodeToRefine.setRowCount(5)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.electrodeToRefine.setVerticalHeaderItem(0, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.electrodeToRefine.setVerticalHeaderItem(1, __qtablewidgetitem3)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        self.electrodeToRefine.setVerticalHeaderItem(2, __qtablewidgetitem4)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.electrodeToRefine.setVerticalHeaderItem(3, __qtablewidgetitem5)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        __qtablewidgetitem6.setCheckState(Qt.Unchecked)
+        self.electrodeToRefine.setItem(0, 0, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        __qtablewidgetitem7.setCheckState(Qt.Unchecked)
+        self.electrodeToRefine.setItem(1, 0, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        __qtablewidgetitem8.setCheckState(Qt.Unchecked)
+        self.electrodeToRefine.setItem(2, 0, __qtablewidgetitem8)
+        __qtablewidgetitem9 = QTableWidgetItem()
+        __qtablewidgetitem9.setCheckState(Qt.Unchecked)
+        self.electrodeToRefine.setItem(3, 0, __qtablewidgetitem9)
+        self.electrodeToRefine.setObjectName("electrodeToRefine")
+        self.electrodeToRefine.setRowCount(5)
+        self.electrodeToRefine.horizontalHeader().setDefaultSectionSize(25)
+
+        self.verticalLayout_13.addWidget(self.electrodeToRefine)
+
+        self.verticalLayout_13.setStretch(3, 2)
+        self.verticalLayout_13.setStretch(5, 1)
+        self.verticalLayout_13.setStretch(7, 1)
+
+        self.horizontalLayout_13.addLayout(self.verticalLayout_13)
+
+        self.titration_tabs = QTabWidget(self.bstac_modes)
+        self.titration_tabs.setObjectName("titration_tabs")
+        self.tab = QWidget()
+        self.tab.setObjectName("tab")
+        sizePolicy11 = QSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        sizePolicy11.setHorizontalStretch(0)
+        sizePolicy11.setVerticalStretch(0)
+        sizePolicy11.setHeightForWidth(self.tab.sizePolicy().hasHeightForWidth())
+        self.tab.setSizePolicy(sizePolicy11)
+        self.horizontalLayout_12 = QHBoxLayout(self.tab)
+        self.horizontalLayout_12.setObjectName("horizontalLayout_12")
+        self.titration_tabs.addTab(self.tab, "")
+
+        self.horizontalLayout_13.addWidget(self.titration_tabs)
+
+        self.horizontalLayout_13.setStretch(1, 1)
+
+        self.verticalLayout_10.addLayout(self.horizontalLayout_13)
+
+        self.mode_views.addWidget(self.bstac_modes)
+
+        self.verticalLayout_7.addWidget(self.mode_views)
 
         self.tabWidget.addTab(self.Settings, "")
         self.Calc = QWidget()
@@ -1172,7 +1531,7 @@ class Ui_MainWindow(object):
         font.setPointSize(11)
         self.consoleOutput.setFont(font)
         self.consoleOutput.setUndoRedoEnabled(False)
-        self.consoleOutput.setLineWrapMode(QTextEdit.NoWrap)
+        self.consoleOutput.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.consoleOutput.setReadOnly(True)
 
         self.verticalLayout_2.addWidget(self.consoleOutput)
@@ -1214,13 +1573,17 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName("menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1283, 26))
+        self.menubar.setGeometry(QRect(0, 0, 1289, 43))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
+        self.menuImport_Legacy = QMenu(self.menuFile)
+        self.menuImport_Legacy.setObjectName("menuImport_Legacy")
         self.menuHelp = QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
         self.menuEdit = QMenu(self.menubar)
         self.menuEdit.setObjectName("menuEdit")
+        self.menuView = QMenu(self.menubar)
+        self.menuView.setObjectName("menuView")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -1230,24 +1593,30 @@ class Ui_MainWindow(object):
         self.toolBar.setMovable(False)
         self.toolBar.setIconSize(QSize(18, 18))
         self.toolBar.setFloatable(False)
-        MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar)
+        MainWindow.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolBar)
 
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
+        self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
+        self.menuFile.addAction(self.menuImport_Legacy.menuAction())
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionSaveAs)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
+        self.menuImport_Legacy.addAction(self.actionBSTAC)
         self.menuHelp.addAction(self.actionWebsite)
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAbout)
         self.menuHelp.addAction(self.actionAbout_Qt)
         self.menuEdit.addAction(self.actionUndo)
         self.menuEdit.addAction(self.actionRedo)
+        self.menuView.addAction(self.actionExport_Results)
+        self.menuView.addAction(self.actionPlot_Results)
+        self.menuView.addAction(self.actionMonitor_Results)
         self.toolBar.addAction(self.actionNew)
         self.toolBar.addAction(self.actionOpen)
         self.toolBar.addAction(self.actionSave)
@@ -1255,6 +1624,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionCalculate)
         self.toolBar.addAction(self.actionExport_Results)
         self.toolBar.addAction(self.actionPlot_Results)
+        self.toolBar.addAction(self.actionMonitor_Results)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionAbout)
 
@@ -1279,13 +1649,18 @@ class Ui_MainWindow(object):
         self.move_down_comp_button.clicked.connect(MainWindow.moveCompDown)
         self.uncertainty_info.clicked.connect(MainWindow.displayUncertaintyInfo)
         self.ionic_strength_info.clicked.connect(MainWindow.displayIonicStrengthInfo)
-        self.select_all_button.clicked.connect(MainWindow.checkAll)
-        self.deselect_all_button.clicked.connect(MainWindow.uncheckAll)
         self.edit_column_button.clicked.connect(MainWindow.massEditColumn)
+        self.add_titration.clicked.connect(MainWindow.addTitration)
+        self.remove_titration.clicked.connect(MainWindow.removeTitration)
+        self.checkAllSpeciesButton.clicked.connect(MainWindow.checkAllSpecies)
+        self.uncheckAllSpeciesButton.clicked.connect(MainWindow.uncheckAllSpecies)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
+        self.tablesTab.setCurrentIndex(0)
         self.dmode.setCurrentIndex(0)
+        self.mode_views.setCurrentIndex(1)
         self.dmode_inputs.setCurrentIndex(0)
+        self.titration_tabs.setCurrentIndex(0)
 
         QMetaObject.connectSlotsByName(MainWindow)
 
@@ -1333,6 +1708,11 @@ class Ui_MainWindow(object):
         )
         # endif // QT_CONFIG(shortcut)
         self.actionExit.setText(QCoreApplication.translate("MainWindow", "Exit", None))
+        # if QT_CONFIG(shortcut)
+        self.actionExit.setShortcut(
+            QCoreApplication.translate("MainWindow", "Ctrl+Q", None)
+        )
+        # endif // QT_CONFIG(shortcut)
         self.actionWebsite.setText(
             QCoreApplication.translate("MainWindow", "Website", None)
         )
@@ -1391,6 +1771,17 @@ class Ui_MainWindow(object):
         # if QT_CONFIG(shortcut)
         self.actionSaveAs.setShortcut(
             QCoreApplication.translate("MainWindow", "Ctrl+Shift+S", None)
+        )
+        # endif // QT_CONFIG(shortcut)
+        self.actionBSTAC.setText(
+            QCoreApplication.translate("MainWindow", "BSTAC", None)
+        )
+        self.actionMonitor_Results.setText(
+            QCoreApplication.translate("MainWindow", "Monitor Results", None)
+        )
+        # if QT_CONFIG(shortcut)
+        self.actionMonitor_Results.setShortcut(
+            QCoreApplication.translate("MainWindow", "Ctrl+M", None)
         )
         # endif // QT_CONFIG(shortcut)
         self.sys_opt_label.setText(
@@ -1598,26 +1989,26 @@ class Ui_MainWindow(object):
             )
         )
         # if QT_CONFIG(tooltip)
-        self.select_all_button.setToolTip(
+        self.checkAllSpeciesButton.setToolTip(
             QCoreApplication.translate("MainWindow", "Ignore all species", None)
         )
         # endif // QT_CONFIG(tooltip)
         # if QT_CONFIG(statustip)
-        self.select_all_button.setStatusTip(
+        self.checkAllSpeciesButton.setStatusTip(
             QCoreApplication.translate("MainWindow", "Ignore all species", None)
         )
         # endif // QT_CONFIG(statustip)
         # if QT_CONFIG(tooltip)
-        self.deselect_all_button.setToolTip(
+        self.uncheckAllSpeciesButton.setToolTip(
             QCoreApplication.translate("MainWindow", "Consider all species", None)
         )
         # endif // QT_CONFIG(tooltip)
         # if QT_CONFIG(statustip)
-        self.deselect_all_button.setStatusTip(
+        self.uncheckAllSpeciesButton.setStatusTip(
             QCoreApplication.translate("MainWindow", "Consider all species", None)
         )
         # endif // QT_CONFIG(statustip)
-        self.deselect_all_button.setText("")
+        self.uncheckAllSpeciesButton.setText("")
         # if QT_CONFIG(tooltip)
         self.insert_above_species_button.setToolTip(
             QCoreApplication.translate("MainWindow", "Add Species Above", None)
@@ -1708,6 +2099,9 @@ class Ui_MainWindow(object):
         )
         self.dmode.setItemText(
             1, QCoreApplication.translate("MainWindow", "Distribution", None)
+        )
+        self.dmode.setItemText(
+            2, QCoreApplication.translate("MainWindow", "Refine Potentiometric", None)
         )
 
         # if QT_CONFIG(statustip)
@@ -1804,6 +2198,16 @@ class Ui_MainWindow(object):
                 None,
             )
         )
+        self.indComp_label.setText(
+            QCoreApplication.translate("MainWindow", "Indipendent Comp:", None)
+        )
+        # if QT_CONFIG(statustip)
+        self.indComp.setStatusTip(
+            QCoreApplication.translate(
+                "MainWindow", "Component to be considered indipendent.", None
+            )
+        )
+        # endif // QT_CONFIG(statustip)
         self.initialLog_label.setText(
             QCoreApplication.translate("MainWindow", "Initial -log[A]:", None)
         )
@@ -1865,22 +2269,91 @@ class Ui_MainWindow(object):
         )
         # endif // QT_CONFIG(statustip)
         self.cback.setSuffix(QCoreApplication.translate("MainWindow", " mol/l", None))
-        self.indComp_label.setText(
-            QCoreApplication.translate("MainWindow", "Indipendent Comp:", None)
+        self.checkBox.setText(
+            QCoreApplication.translate("MainWindow", "Total Concentration Mode", None)
         )
-        # if QT_CONFIG(statustip)
-        self.indComp.setStatusTip(
-            QCoreApplication.translate(
-                "MainWindow", "Component to be considered indipendent.", None
-            )
-        )
-        # endif // QT_CONFIG(statustip)
         self.label_2.setText(
             QCoreApplication.translate(
                 "MainWindow",
                 '<html><head/><body><p><span style=" font-weight:600;">Analytical Concentrations:</span></p></body></html>',
                 None,
             )
+        )
+        self.add_titration.setText("")
+        self.remove_titration.setText("")
+        self.weightsModeLabel.setText(
+            QCoreApplication.translate("MainWindow", "Weights", None)
+        )
+        self.optimizationOptionsLabel.setText(
+            QCoreApplication.translate(
+                "MainWindow",
+                '<html><head/><body><p><span style=" font-weight:700;">Optimization Options:</span></p></body></html>',
+                None,
+            )
+        )
+        self.weightsMode.setItemText(
+            0, QCoreApplication.translate("MainWindow", "Constants", None)
+        )
+        self.weightsMode.setItemText(
+            1, QCoreApplication.translate("MainWindow", "Calculated", None)
+        )
+        self.weightsMode.setItemText(
+            2, QCoreApplication.translate("MainWindow", "Given", None)
+        )
+
+        self.paramstoRefineLabel.setText(
+            QCoreApplication.translate(
+                "MainWindow",
+                '<html><head/><body><p><span style=" font-weight:700;">Parameters to refine</span></p></body></html>',
+                None,
+            )
+        )
+        self.betaCheckAll.setText("")
+        self.betaToRefineLabel.setText(
+            QCoreApplication.translate("MainWindow", "Constants", None)
+        )
+
+        __sortingEnabled = self.betaToRefine.isSortingEnabled()
+        self.betaToRefine.setSortingEnabled(False)
+        self.betaToRefine.setSortingEnabled(__sortingEnabled)
+
+        self.concCheckAll.setText("")
+        self.conToRefineLabel.setText(
+            QCoreApplication.translate("MainWindow", "Concentrations", None)
+        )
+        ___qtablewidgetitem = self.concToRefine.verticalHeaderItem(0)
+        ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", "A", None))
+        __sortingEnabled1 = self.concToRefine.isSortingEnabled()
+        self.concToRefine.setSortingEnabled(False)
+        self.concToRefine.setSortingEnabled(__sortingEnabled1)
+
+        self.electrodeCheckAll.setText("")
+        self.electrodeToRefineLabel.setText(
+            QCoreApplication.translate("MainWindow", "Electrode", None)
+        )
+        ___qtablewidgetitem1 = self.electrodeToRefine.verticalHeaderItem(0)
+        ___qtablewidgetitem1.setText(
+            QCoreApplication.translate("MainWindow", "E0", None)
+        )
+        ___qtablewidgetitem2 = self.electrodeToRefine.verticalHeaderItem(1)
+        ___qtablewidgetitem2.setText(
+            QCoreApplication.translate("MainWindow", "Ja", None)
+        )
+        ___qtablewidgetitem3 = self.electrodeToRefine.verticalHeaderItem(2)
+        ___qtablewidgetitem3.setText(
+            QCoreApplication.translate("MainWindow", "Jb", None)
+        )
+        ___qtablewidgetitem4 = self.electrodeToRefine.verticalHeaderItem(3)
+        ___qtablewidgetitem4.setText(
+            QCoreApplication.translate("MainWindow", "Slope", None)
+        )
+        __sortingEnabled2 = self.electrodeToRefine.isSortingEnabled()
+        self.electrodeToRefine.setSortingEnabled(False)
+        self.electrodeToRefine.setSortingEnabled(__sortingEnabled2)
+
+        self.titration_tabs.setTabText(
+            self.titration_tabs.indexOf(self.tab),
+            QCoreApplication.translate("MainWindow", "1", None),
         )
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.Settings),
@@ -1931,8 +2404,12 @@ class Ui_MainWindow(object):
             QCoreApplication.translate("MainWindow", "Calculate", None),
         )
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
+        self.menuImport_Legacy.setTitle(
+            QCoreApplication.translate("MainWindow", "Import Legacy", None)
+        )
         self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", "?", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", "Edit", None))
+        self.menuView.setTitle(QCoreApplication.translate("MainWindow", "View", None))
         self.toolBar.setWindowTitle(
             QCoreApplication.translate("MainWindow", "toolBar", None)
         )

@@ -2,7 +2,7 @@
 # github_url = "https://github.com/<user or organization>/<project>/"
 
 [version]
-current = "1.1.3"
+current = "2.0.15beta"
 
 # Example of a semver regexp.
 # Make sure this matches current_version before
@@ -13,6 +13,7 @@ regex = '''
   (?P<minor>\d+)
   \.
   (?P<patch>\d+)
+  (?:beta)?
   '''
 
 [git]
@@ -35,8 +36,14 @@ src = "src/main/python/pyes/ui/PyES_about.ui"
 search = "PyES Version {current_version}"
 
 [[file]]
+version_template = "{major}.{minor}.{patch}"
 src = "src/build/settings/base.json"
 
 [[before_commit]]
 name = "Update Changelog"
-cmd = "poetry run python scripts/changelog_generator.py v{current_version} v{new_version}"
+cmd = '(! grep -q "beta" <<< "2.0.0"  && poetry run python scripts/changelog_generator.py v{current_version} v{new_version} )|| true'
+
+[[before_commit]]
+name = "Update Beta Status"
+cmd = './scripts/beta_renamer.sh {new_version}'
+
