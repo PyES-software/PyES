@@ -58,12 +58,12 @@ class optimizeWorker(QRunnable):
             """
             Log out the result of each iteration.
             """
-            iteration = kwargs['iteration']
-            damping = kwargs['damping']
-            chisq = kwargs['chisq']
-            sigma = kwargs['sigma']
-            gradient_norm = kwargs['gradient_norm']
-            log_beta = kwargs['log_beta']
+            # iteration = kwargs['iteration']
+            # damping = kwargs['damping']
+            # chisq = kwargs['chisq']
+            # sigma = kwargs['sigma']
+            # gradient_norm = kwargs['gradient_norm']
+            # log_beta = kwargs['log_beta']
             stoich = kwargs['stoichiometry']
             labels = self.data['compModel']['Name'].values()
 
@@ -233,7 +233,7 @@ class optimizeWorker(QRunnable):
         self.signals.log.emit(r"DATA LOADED!")
 
         if mode == "titration":
-            means_to_report = ["I"]
+            # means_to_report = ["I"]
             self.result_index = np.arange(solver_data.titration_opts.n_add) * (
                 solver_data.titration_opts.v_increment
             )
@@ -252,7 +252,7 @@ class optimizeWorker(QRunnable):
                 r"Calculating species concentration for the simulated titration..."
             )
         elif mode == "distribution":
-            means_to_report = ["I"]
+            # means_to_report = ["I"]
             self.result_index = np.arange(
                 solver_data.distribution_opts.initial_log,
                 (
@@ -276,7 +276,7 @@ class optimizeWorker(QRunnable):
             self.signals.log.emit(r"Calculating distribution of the species...")
 
         elif mode == "potentiometry":
-            means_to_report = ["I", "Residual [V]"]
+            # means_to_report = ["I", "Residual [V]"]
             self.signals.log.emit(
                 r"Optimizing stability constants from potentiometric data..."
             )
@@ -303,12 +303,14 @@ class optimizeWorker(QRunnable):
                     #     return_extra,
                     # ) = PotentiometryOptimizer(solver_data, reporter=log_reporter)
                     fit_result = PotentiometryOptimizer(solver_data, reporter=log_reporter)
-                    x = fit_result['final variables']
+                    ## never used
+                    # x = fit_result['final variables']
                     concentrations = fit_result['free concentration']
                     log_beta = fit_result['final log beta']
                     b_error = fit_result['error log beta']
-                    cor_matrix = fit_result['correlation']
-                    cov_matrix = fit_result['covariance']
+                    ## never used
+                    # cor_matrix = fit_result['correlation']
+                    # cov_matrix = fit_result['covariance']
 
                     # Calculate elapsed time between start to finish
                     elapsed_time = round((time.time() - start_time), 5)
@@ -316,12 +318,14 @@ class optimizeWorker(QRunnable):
                     slices = fit_result['slices']
                     #idx_to_keep = return_extra["idx_to_keep"]
 
-                    idx_to_keep = [tuple(n for n, f in enumerate(t.ignored) if not f) for t in solver_data.potentiometry_opts.titrations]
+                    ## never used
+                    # idx_to_keep = [tuple(n for n, f in enumerate(t.ignored) if not f) for t in solver_data.potentiometry_opts.titrations]
 
                     total_concentration = fit_result["total concentration"]
 
                     solver_data.log_beta_sigma = solver_data.log_beta_sigma.copy()
-                    refined = [ f == Flags.REFINE for f in solver_data.potentiometry_opts.beta_flags ]
+                    ## never used
+                    # refined = [ f == Flags.REFINE for f in solver_data.potentiometry_opts.beta_flags ]
                     solver_data.log_beta_sigma[:] = b_error[:]
                     #solver_data.log_beta_sigma[refined] = b_error[:]
                     # solver_data.log_beta_sigma = np.array(
@@ -535,8 +539,15 @@ class optimizeWorker(QRunnable):
             )
         ).rename_axis(columns="Solubility Product")
 
-        self.signals.log.emit(repr(soluble_concentration))
-        self.signals.log.emit(repr(solids_concentration))
+        for n, s in enumerate(slices):
+            self.signals.log.emit(f"titration #{n}")
+            self.signals.log.emit(repr(soluble_concentration[s]))
+            self.signals.log.emit("\n")
+
+        if not solids_concentration.empty:
+            self.signals.log.emit(repr(solids_concentration))
+        else:
+            self.signals.log.emit("No solid specied to print\n")
 
         # self._storeResult(
         #     soluble_concentration,
