@@ -15,14 +15,12 @@ from libeq import (
     EqSolver,
     PotentiometryOptimizer,
     SolverData,
-    # species_concentration,
     uncertanties,
     Flags
 )
 
 from libeq.optimizers.potentiometry import refine_indices
 from libeq.excepts import DivergedIonicStrengthWarning
-# from libeq.optimizers.potentiometry import ravel
 from libeq.solver.solids_solver import _compute_saturation_index
 from libeq.solver.solver_utils import _titration_background_ions_c
 
@@ -58,12 +56,6 @@ class optimizeWorker(QRunnable):
             """
             Log out the result of each iteration.
             """
-            # iteration = kwargs['iteration']
-            # damping = kwargs['damping']
-            # chisq = kwargs['chisq']
-            # sigma = kwargs['sigma']
-            # gradient_norm = kwargs['gradient_norm']
-            # log_beta = kwargs['log_beta']
             stoich = kwargs['stoichiometry']
             labels = self.data['compModel']['Name'].values()
 
@@ -96,13 +88,6 @@ class optimizeWorker(QRunnable):
                         if c0f:
                             out(f"\tc0[{comp}] {c0v:10.4f} {next(increment):10.4f}")
             out(80*'-')
-
-            # self.signals.log.emit(f"iteration #{iteration}")
-            # self.signals.log.emit(f"sigma: {sigma}; chi-squared: {chisq}")
-            # for a, lgb in zip(stoich, log_beta):
-            #     stoich_txt = "".join(f"{n:>4}" for n in a)
-            #     self.signals.log.emit(f"{stoich_txt}  {lgb:>10.4f}")
-            # self.signals.log.emit("--" * 40 + "\n")
 
         if self.debug:
             log_path = Path.home().joinpath("pyes_logs")
