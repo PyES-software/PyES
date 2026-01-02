@@ -96,7 +96,6 @@ class optimizeWorker(QRunnable):
                         if c0f:
                             out(f"\tc0[{comp}] {c0v:10.4f} {next(increment):10.4f}")
             out(80*'-')
-            out('\n')
 
             # self.signals.log.emit(f"iteration #{iteration}")
             # self.signals.log.emit(f"sigma: {sigma}; chi-squared: {chisq}")
@@ -278,7 +277,7 @@ class optimizeWorker(QRunnable):
         elif mode == "potentiometry":
             # means_to_report = ["I", "Residual [V]"]
             self.signals.log.emit(
-                r"Optimizing stability constants from potentiometric data..."
+                r"Optimizing stability constants from potentiometric data...\n"
             )
 
             self.index_name = "V Add. [mL]"
@@ -539,28 +538,8 @@ class optimizeWorker(QRunnable):
             )
         ).rename_axis(columns="Solubility Product")
 
-        for n, s in enumerate(slices):
-            self.signals.log.emit(f"titration #{n}")
-            self.signals.log.emit(repr(soluble_concentration[s]))
-            self.signals.log.emit("\n")
-
-        if not solids_concentration.empty:
-            self.signals.log.emit(repr(solids_concentration))
-        else:
-            self.signals.log.emit("No solid specied to print\n")
-
-        # self._storeResult(
-        #     soluble_concentration,
-        #     "species_concentrations",
-        #     slices=slices,
-        #     extra=means_to_report,
-        # )
-        # self._storeResult(
-        #     solids_concentration,
-        #     "solids_concentrations",
-        #     slices=slices,
-        #     extra=means_to_report,
-        # )
+        _print_titration(slices, soluble_concentration, self.signals.log.emit, "soluble species")
+        _print_titration(slices, solids_concentration, self.signals.log.emit, "solid species")
 
         ref_percentage_soluble = solver_data.components + list(
             self.data["speciesModel"]["Ref. Comp."].values()
@@ -622,29 +601,14 @@ class optimizeWorker(QRunnable):
             columns=[solver_data.solids_names, ref_poercentage_solids],
         ).rename_axis(columns=["Solids", r"% relative to comp."])
 
-        self.signals.log.emit(repr(soluble_percentages))
-        self.signals.log.emit(repr(solids_percentages))
-        self.signals.log.emit(repr(formation_constants))
-        self.signals.log.emit(repr(solubility_products))
+        _print_titration(slices, soluble_percentages, self.signals.log.emit, "percent soluble species")
+        _print_titration(slices, solids_percentages, self.signals.log.emit, "percent solids species")
 
-        # Print and store species percentages
-        # self._storeResult(
-        #     soluble_percentages,
-        #     "soluble_percentages",
-        #     slices=slices,
-        #     extra=means_to_report,
-        # )
-        # Print and store solid species percentages
-        # self._storeResult(
-        #     solids_percentages,
-        #     "solids_percentages",
-        #     slices=slices,
-        #     extra=means_to_report,
-        # )
+        if not formation_constants.empty:
+            self.signals.log.emit(repr(formation_constants))
 
-        # If working at variable ionic strength print and store formation constants/solubility products aswell
-        # self._storeResult(formation_constants, "formation_constants", slices=slices)
-        # self._storeResult(solubility_products, "solubility_products", slices=slices)
+        if not solubility_products.empty:
+            self.signals.log.emit(repr(solubility_products))
 
         if self.data["emode"] is True:
             soluble_sigma_np, solids_sigma_np = uncertanties(
@@ -829,3 +793,15 @@ def component_encoder(components: list[str], reference_component: list[str]):
 # def compute_index_mean(data: pd.DataFrame, index_name: str):
 #     # Compute the mean of the index of the dataframe
 #     return data.index.get_level_values(index_name).to_numpy().mean()
+
+
+def _print_titration(slices, dataset, emitter, title: str = "data"):
+    if dataset.empty:
+        emitter(f"No {title} data to print")
+        return
+
+    for n, s in enumerate(slices):
+        emitter(f"titration #{n}")
+        emitter((13+len(str(n)))*"-")
+        emitter(repr(dataset[s]))
+        emitter("\n")
