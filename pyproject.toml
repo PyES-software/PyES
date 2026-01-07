@@ -14,9 +14,12 @@ dependencies = [
     "pyside6>=6.8.3",
     "numpy>2.0",
     "pydantic-numpy>=8.0",
+    "pytest-qt>=4.5.0",
+    "pytest-xvfb>=3.1.1",
+    "hypothesis>=6.149.0",
 ]
 name = "pyes"
-version = "2.0.17beta"
+version = "2.1alpha14"
 description = ""
 
 [tool.poetry.dependencies]
@@ -34,9 +37,12 @@ libeq = { path = "../libeq", editable = true }
 
 [tool.pytest.ini_options]
 testpaths = "tests"
-pythonpath = ["src/main/python/"]
+pythonpath = ["src/main/python/pyes/"]
 addopts = "--cov=src/main/python/pyes --cov-report=html --cov-config=.coveragerc"
 qt_api = "pyside6"
+env = [
+    "QT_QPA_PLATFORM=offscreen"
+]
 
 [tool.ruff.format]
 # Enable preview style formatting.

@@ -10,8 +10,54 @@ from PySide6.QtWidgets import QFileDialog, QWidget
 from ui.PyES_dataExport import Ui_ExportWindow
 from utils_func import resultToCSV, resultToExcel
 
+"""
+pyes.windows.export
+
+GUI window that allows the user to export computed project results to Excel
+(.xlsx) or to multiple CSV files.
+
+This module contains:
+- check_table_presence: a small helper for detecting whether a result table
+  (often a pandas.DataFrame) is present and non-empty.
+- ExportWindow: a QWidget subclass that renders the export dialog and performs
+  the actual writing of Excel and CSV files based on which checkboxes the user
+  has selected.
+
+Note: The module intentionally keeps logic minimal and delegates file writing
+to the utility functions `resultToExcel` and `resultToCSV`.
+"""
 
 def check_table_presence(result: dict[str, Any], field: str) -> bool:
+    """
+    Determine whether a given field is present in the result dict and contains
+    data that should be exported.
+
+    The function treats a value as present if:
+    - The field exists in `result` and the value is a non-empty pandas.DataFrame.
+    - The field exists and the value is a non-empty list.
+
+    Parameters
+    ----------
+    result : dict[str, Any]
+        The results dictionary produced by the model. Commonly contains
+        pandas.DataFrame objects keyed by field name.
+    field : str
+        The key to test in `result`.
+
+    Returns
+    -------
+    bool
+        True if the field exists and appears to contain data worth exporting,
+        False otherwise.
+
+    Notes
+    -----
+    - The implementation intentionally uses a conservative default for
+      missing keys (pd.DataFrame()) so that code using `.get()` will not raise.
+    - If other types (e.g., numpy arrays, tuples) must be supported, consider
+      extending the type checks to use pandas.api.types.is_list_like or checking
+      for length via `len(value)` where appropriate.
+    """
     value = result.get(field, pd.DataFrame())
     if isinstance(value, list) or not value.empty:
         return True
@@ -20,7 +66,53 @@ def check_table_presence(result: dict[str, Any], field: str) -> bool:
 
 
 class ExportWindow(QWidget, Ui_ExportWindow):
+    """
+    Window for exporting PyES results to Excel and CSV.
+
+    This class is a QWidget that is constructed with a `parent` window which is
+    expected to have two attributes:
+    - result: dict[str, Any] containing the computed result tables
+    - project_path: Optional[str] path to the project file (used to derive the
+      project name for exported files)
+
+    The UI contains checkboxes mapped to the kinds of results that can be
+    exported (input/model info, optimized constants, distributions, percentages,
+    adjusted log-beta / formation constants, and errors). The class exposes
+    two methods that perform the exports when the user requests them:
+    - ExcelExport(): export selected tables to a single .xlsx workbook.
+    - CsvExport(): export selected tables to separate .csv files.
+
+    Attributes
+    ----------
+    result : dict[str, Any]
+        The results dictionary taken from the parent.
+    path : str | None
+        The project path (may be None).
+    project_name : str
+        A safe basename used to name exported files.
+    errors_present : bool
+        Whether species error/sd information is present.
+    formation_constants_present : bool
+        Whether formation constants data is present.
+    solids_present : bool
+        Whether solid-phase related data is present.
+    optimized_present : bool
+        Whether optimized constants are present.
+    """
     def __init__(self, parent):
+        """
+        Initialize the export dialog.
+
+        The constructor wires the UI (Ui_ExportWindow), sets the dialog to stay
+        on top, reads the `result` and `project_path` from `parent`, computes a
+        human-friendly project name, and disables checkboxes corresponding to
+        data that is not present in `result`.
+
+        Parameters
+        ----------
+        parent : QWidget-like
+            Parent widget which must provide `result` and `project_path`.
+        """
         super().__init__()
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
@@ -66,7 +158,26 @@ class ExportWindow(QWidget, Ui_ExportWindow):
 
     def ExcelExport(self):
         """
-        Export results to an excel file.
+        Export selected results to a single Excel workbook (.xlsx).
+
+        Behavior
+        --------
+        - Prompts the user to pick a save path with a QFileDialog.
+        - Builds an .xlsx workbook and writes selected pandas.DataFrame tables
+          to named sheets via the helper `resultToExcel(writer, dataframe, sheet)`.
+        - Adds a "Model Info" top-left block with the project name and current
+          date.
+        - Uses simple heuristics to arrange tables horizontally on the
+          "Model Info" sheet by incrementing `startcol` (skip_cols).
+
+        Notes
+        -----
+        - This method assumes that `resultToExcel` knows how to accept the
+          arguments used here (writer, DataFrame, sheet name, optional
+          `startrow`, `startcol`, and `float_format`).
+        - No explicit error dialogs are shown on exceptions; consider adding
+          user-visible error handling (QMessageBox) if write operations can
+          fail due to permissions or other IO issues.
         """
         output_path, _ = QFileDialog.getSaveFileName(
             self, "Pick a Path", "", "Excel 2007-365 (*.xlsx)"
@@ -181,7 +292,24 @@ class ExportWindow(QWidget, Ui_ExportWindow):
 
     def CsvExport(self):
         """
-        Export results as csv files.
+        Export selected results as separate CSV files.
+
+        Behavior
+        --------
+        - Prompts the user to choose an output directory with QFileDialog.
+        - Writes one or more CSV files, prefixed with the project name, using
+          the helper `resultToCSV(dataframe, filename_base)`.
+        - The function appends different suffixes to the base name to
+          distinguish exports (e.g., 'species', 'components', 'solids', etc.).
+
+        Notes
+        -----
+        - This function currently constructs file paths using string
+          concatenation; using pathlib.Path is recommended for cross-platform
+          safety and readability.
+        - Several `base_name + ""` uses are present; ensure `resultToCSV`
+          appends/handles extensions correctly, otherwise supply explicit
+          suffixes.
         """
         folder_path = QFileDialog.getExistingDirectory(self, "Select a Folder")
 
