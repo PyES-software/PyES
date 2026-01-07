@@ -469,8 +469,7 @@ class optimizeWorker(QRunnable):
 
         ok, errs = solver_data.distribution_ready
         if not ok:
-            print(errs)
-            raise ValueError
+            raise ValueError, errs
 
         (
             result,
@@ -484,7 +483,6 @@ class optimizeWorker(QRunnable):
         concentrations = species_concentration(
             result, log_beta, solver_data.stoichiometry, full=True
         )
-        breakpoint()
         return result
 
     @Slot()
