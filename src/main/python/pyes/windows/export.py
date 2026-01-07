@@ -59,10 +59,11 @@ def check_table_presence(result: dict[str, Any], field: str) -> bool:
       for length via `len(value)` where appropriate.
     """
     value = result.get(field, pd.DataFrame())
-    if isinstance(value, list) or not value.empty:
-        return True
-    else:
-        return False
+    # if isinstance(value, list) or not value.empty:
+    #     return True
+    # else:
+    #     return False
+    return isinstance(value, list) or not value.empty
 
 
 class ExportWindow(QWidget, Ui_ExportWindow):
@@ -138,23 +139,31 @@ class ExportWindow(QWidget, Ui_ExportWindow):
             result=self.result, field="optimized_constants"
         )
 
-        if not self.errors_present:
+        if not any((self.errors_present,
+                    self.formation_constants_present,
+                    self.optimized_present)):
             self.errors_check_excel.setChecked(False)
             self.errors_check_excel.setEnabled(False)
             self.errors_check_csv.setChecked(False)
             self.errors_check_csv.setEnabled(False)
 
-        if not self.formation_constants_present:
-            self.adjlogb_check_excel.setChecked(False)
-            self.adjlogb_check_excel.setEnabled(False)
-            self.adjlogb_check_csv.setChecked(False)
-            self.adjlogb_check_csv.setEnabled(False)
+        # if not self.errors_present:
+        #     self.errors_check_excel.setChecked(False)
+        #     self.errors_check_excel.setEnabled(False)
+        #     self.errors_check_csv.setChecked(False)
+        #     self.errors_check_csv.setEnabled(False)
 
-        if not self.optimized_present:
-            self.optimized_check_excel.setChecked(False)
-            self.optimized_check_excel.setEnabled(False)
-            self.optimized_check_csv.setChecked(False)
-            self.optimized_check_csv.setEnabled(False)
+        # if not self.formation_constants_present:
+        #     self.adjlogb_check_excel.setChecked(False)
+        #     self.adjlogb_check_excel.setEnabled(False)
+        #     self.adjlogb_check_csv.setChecked(False)
+        #     self.adjlogb_check_csv.setEnabled(False)
+
+        # if not self.optimized_present:
+        #     self.optimized_check_excel.setChecked(False)
+        #     self.optimized_check_excel.setEnabled(False)
+        #     self.optimized_check_csv.setChecked(False)
+        #     self.optimized_check_csv.setEnabled(False)
 
     def ExcelExport(self):
         """
