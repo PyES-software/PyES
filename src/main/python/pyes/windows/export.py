@@ -191,113 +191,114 @@ class ExportWindow(QWidget, Ui_ExportWindow):
         output_path, _ = QFileDialog.getSaveFileName(
             self, "Pick a Path", "", "Excel 2007-365 (*.xlsx)"
         )
+        if not output_path:
+            return
 
-        if output_path:
-            file_name = Path(output_path).parents[0]
-            file_name = file_name.joinpath(Path(output_path).stem)
-            file_name = file_name.with_suffix(".xlsx")
+        file_name = Path(output_path).parents[0]
+        file_name = file_name.joinpath(Path(output_path).stem)
+        file_name = file_name.with_suffix(".xlsx")
 
-            with ExcelWriter(file_name, engine="openpyxl") as writer:
-                wb = writer.book
+        with ExcelWriter(file_name, engine="openpyxl") as writer:
+            wb = writer.book
 
-                if self.input_check_excel.isChecked():
-                    skip_cols = 0
+            if self.input_check_excel.isChecked():
+                skip_cols = 0
 
+                resultToExcel(
+                    writer,
+                    self.result["species_info"],
+                    "Model Info",
+                    startrow=3,
+                    startcol=skip_cols,
+                )
+
+                skip_cols += self.result["species_info"].shape[1]
+
+                if self.solids_present:
                     resultToExcel(
                         writer,
-                        self.result["species_info"],
-                        "Model Info",
-                        startrow=3,
-                        startcol=skip_cols,
-                    )
-
-                    skip_cols += self.result["species_info"].shape[1]
-
-                    if self.solids_present:
-                        resultToExcel(
-                            writer,
-                            self.result["solids_info"],
-                            "Model Info",
-                            startrow=3,
-                            startcol=skip_cols + 2,
-                        )
-                        skip_cols += self.result["solids_info"].shape[1] + 2
-
-                    resultToExcel(
-                        writer,
-                        self.result["comp_info"],
+                        self.result["solids_info"],
                         "Model Info",
                         startrow=3,
                         startcol=skip_cols + 2,
                     )
+                    skip_cols += self.result["solids_info"].shape[1] + 2
 
-                    ws = wb["Model Info"]
-                    ws["A1"] = "File:"
-                    ws["A2"] = "Date:"
-                    ws.merge_cells("B1:D1")
-                    ws.merge_cells("B2:D2")
-                    ws["B1"] = self.project_name
-                    ws["B2"] = datetime.now()
+                resultToExcel(
+                    writer,
+                    self.result["comp_info"],
+                    "Model Info",
+                    startrow=3,
+                    startcol=skip_cols + 2,
+                )
 
-                if self.optimized_check_excel.isChecked():
+                ws = wb["Model Info"]
+                ws["A1"] = "File:"
+                ws["A2"] = "Date:"
+                ws.merge_cells("B1:D1")
+                ws.merge_cells("B2:D2")
+                ws["B1"] = self.project_name
+                ws["B2"] = datetime.now()
+
+            if self.optimized_check_excel.isChecked():
+                resultToExcel(
+                    writer,
+                    self.result["optimized_constants"],
+                    "Optimized Parameters",
+                )
+
+            if self.distribution_check_excel.isChecked():
+                resultToExcel(
+                    writer,
+                    self.result["species_concentrations"],
+                    "Species Distribution",
+                )
+
+                if self.errors_check_excel.isChecked():
                     resultToExcel(
-                        writer,
-                        self.result["optimized_constants"],
-                        "Optimized Parameters",
+                        writer, self.result["species_sigma"], "Species SD"
                     )
 
-                if self.distribution_check_excel.isChecked():
+                if self.solids_present:
                     resultToExcel(
                         writer,
-                        self.result["species_concentrations"],
-                        "Species Distribution",
+                        self.result["solids_percentages"],
+                        "Solid Distribution",
                     )
 
                     if self.errors_check_excel.isChecked():
                         resultToExcel(
-                            writer, self.result["species_sigma"], "Species SD"
+                            writer, self.result["solid_sigma"], "Solid SD"
                         )
 
-                    if self.solids_present:
-                        resultToExcel(
-                            writer,
-                            self.result["solids_percentages"],
-                            "Solid Distribution",
-                        )
+            if self.perc_check_excel.isChecked():
+                resultToExcel(
+                    writer,
+                    self.result["soluble_percentages"],
+                    "Soluble Percentages",
+                )
 
-                        if self.errors_check_excel.isChecked():
-                            resultToExcel(
-                                writer, self.result["solid_sigma"], "Solid SD"
-                            )
-
-                if self.perc_check_excel.isChecked():
+                if self.solids_present:
                     resultToExcel(
                         writer,
-                        self.result["soluble_percentages"],
-                        "Soluble Percentages",
+                        self.result["solids_percentages"],
+                        "Solid Percentages",
                     )
 
-                    if self.solids_present:
-                        resultToExcel(
-                            writer,
-                            self.result["solids_percentages"],
-                            "Solid Percentages",
-                        )
+            if self.adjlogb_check_excel.isChecked():
+                resultToExcel(
+                    writer,
+                    self.result["formation_constants"],
+                    "Log Beta",
+                )
 
-                if self.adjlogb_check_excel.isChecked():
+                if self.solids_present:
                     resultToExcel(
                         writer,
-                        self.result["formation_constants"],
-                        "Log Beta",
+                        self.result["solubility_products"],
+                        "Log Ks",
+                        float_format="%.3f",
                     )
-
-                    if self.solids_present:
-                        resultToExcel(
-                            writer,
-                            self.result["solubility_products"],
-                            "Log Ks",
-                            float_format="%.3f",
-                        )
 
     def CsvExport(self):
         """
@@ -322,46 +323,48 @@ class ExportWindow(QWidget, Ui_ExportWindow):
         """
         folder_path = QFileDialog.getExistingDirectory(self, "Select a Folder")
 
-        if folder_path:
-            base_name = folder_path + "/" + self.project_name + "_"
-            if self.input_check_csv.isChecked():
-                resultToCSV(self.result["species_info"], base_name + "species")
-                resultToCSV(self.result["comp_info"], base_name + "components")
+        if not folder_path:
+            return
 
-                if "solids_info" in self.result:
-                    resultToCSV(self.result["solids_info"], base_name + "solids")
+        base_name = folder_path + "/" + self.project_name + "_"
+        if self.input_check_csv.isChecked():
+            resultToCSV(self.result["species_info"], base_name + "species")
+            resultToCSV(self.result["comp_info"], base_name + "components")
 
-            if self.optimized_check_csv.isChecked():
-                resultToCSV(self.result["optimized_constants"], base_name + "optimized")
+            if "solids_info" in self.result:
+                resultToCSV(self.result["solids_info"], base_name + "solids")
 
-            if self.distribution_check_csv.isChecked():
+        if self.optimized_check_csv.isChecked():
+            resultToCSV(self.result["optimized_constants"], base_name + "optimized")
+
+        if self.distribution_check_csv.isChecked():
+            resultToCSV(
+                self.result["species_concentrations"], base_name + "species"
+            )
+
+            if self.solids_present:
+                resultToCSV(self.result["solids_percentages"], base_name + "solids")
+
+        if self.perc_check_csv.isChecked():
+            resultToCSV(
+                self.result["soluble_percentages"],
+                base_name + "soluble_percentages",
+            )
+
+            if self.solids_present:
                 resultToCSV(
-                    self.result["species_concentrations"], base_name + "species"
+                    self.result["solids_percentages"],
+                    base_name + "solid_percentages",
                 )
 
-                if self.solids_present:
-                    resultToCSV(self.result["solids_percentages"], base_name + "solids")
+        if self.adjlogb_check_csv.isChecked():
+            resultToCSV(self.result["formation_constants"], base_name + "")
 
-            if self.perc_check_csv.isChecked():
-                resultToCSV(
-                    self.result["soluble_percentages"],
-                    base_name + "soluble_percentages",
-                )
+            if self.solids_present:
+                resultToCSV(self.result["solubility_products"], base_name + "")
 
-                if self.solids_present:
-                    resultToCSV(
-                        self.result["solids_percentages"],
-                        base_name + "solid_percentages",
-                    )
+        if self.errors_check_csv.isChecked():
+            resultToCSV(self.result["species_sigma"], base_name + "")
 
-            if self.adjlogb_check_csv.isChecked():
-                resultToCSV(self.result["formation_constants"], base_name + "")
-
-                if self.solids_present:
-                    resultToCSV(self.result["solubility_products"], base_name + "")
-
-            if self.errors_check_csv.isChecked():
-                resultToCSV(self.result["species_sigma"], base_name + "")
-
-                if self.solids_present:
-                    resultToCSV(self.result["solid_sigma"], base_name + "")
+            if self.solids_present:
+                resultToCSV(self.result["solid_sigma"], base_name + "")
