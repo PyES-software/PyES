@@ -38,7 +38,7 @@ class optimizeSignal(QObject):
     log = Signal(str)
     aborted = Signal(str)
     finished = Signal()
-    result = Signal(object, str)
+    result = Signal(dict)
 
 
 class optimizeWorker(QRunnable):
@@ -189,30 +189,30 @@ class optimizeWorker(QRunnable):
         species_info, solids_info = _species_info(solver_data, mode, self.data["emode"])
         comp_info = _comp_info(solver_data, mode, self.data["emode"])
 
-        self._storeResult(species_info, "species_info")
-        self._storeResult(solids_info, "solids_info")
-        self._storeResult(comp_info, "comp_info")
+        # self._storeResult(species_info, "species_info")
+        # self._storeResult(solids_info, "solids_info")
+        # self._storeResult(comp_info, "comp_info")
 
-        self._storeResult(
-            pd.DataFrame(
-                np.clip(
-                    np.hstack((np.eye(solver_data.nc), solver_data.stoichiometry)),
-                    1,
-                    np.inf,
-                ),
-                columns=solver_data.species_names,
-            ),
-            "stoichiometry",
-            print_out=False,
-        )
-        self._storeResult(
-            pd.DataFrame(
-                np.clip(solver_data.solid_stoichiometry, 1, np.inf),
-                columns=[name + "_(s)" for name in solver_data.solids_names],
-            ),
-            "solid_stoichiometry",
-            print_out=False,
-        )
+        # self._storeResult(
+        #     pd.DataFrame(
+        #         np.clip(
+        #             np.hstack((np.eye(solver_data.nc), solver_data.stoichiometry)),
+        #             1,
+        #             np.inf,
+        #         ),
+        #         columns=solver_data.species_names,
+        #     ),
+        #     "stoichiometry",
+        #     print_out=False,
+        # )
+        # self._storeResult(
+        #     pd.DataFrame(
+        #         np.clip(solver_data.solid_stoichiometry, 1, np.inf),
+        #         columns=[name + "_(s)" for name in solver_data.solids_names],
+        #     ),
+        #     "solid_stoichiometry",
+        #     print_out=False,
+        # )
 
         self.signals.log.emit(r"DATA LOADED!")
 
@@ -656,19 +656,20 @@ class optimizeWorker(QRunnable):
                 columns=solver_data.solids_names,
             )
 
-            self._storeResult(soluble_sigma, "species_sigma", slices=slices)
-            self._storeResult(solids_sigma, "solid_sigma", slices=slices)
+            # self._storeResult(soluble_sigma, "species_sigma", slices=slices)
+            # self._storeResult(solids_sigma, "solid_sigma", slices=slices)
 
-            self._storeResult(
-                soluble_percentages_sigma, "soluble_percentages_sigma", slices=slices
-            )
-            self._storeResult(
-                solids_percentages_sigma, "solids_percentages_sigma", slices=slices
-            )
+            # self._storeResult(
+            #     soluble_percentages_sigma, "soluble_percentages_sigma", slices=slices
+            # )
+            # self._storeResult(
+            #     solids_percentages_sigma, "solids_percentages_sigma", slices=slices
+            # )
 
         self.signals.log.emit("Elapsed Time: %s s" % elapsed_time)
 
         self.signals.log.emit("### FINISHED ###")
+        self.signals.result.emit(fit_result)
         self.signals.finished.emit()
 
         return None

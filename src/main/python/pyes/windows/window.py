@@ -1559,17 +1559,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.MonitorWindow.hide()
 
-    def storeResults(self, data, name):
-        """
-        Store result for exporting.
-        """
-        if name in self.result:
-            if isinstance(self.result[name], list):
-                self.result[name].append(data)
-            else:
-                self.result[name] = [self.result[name], data]
-        else:
-            self.result[name] = data
+    def storeResults(self, result: dict) -> None:
+        self.result = result
+
+    # def storeResults(self, data, name):
+    #     """
+    #     Store result for exporting.
+    #     """
+    #     if name in self.result:
+    #         if isinstance(self.result[name], list):
+    #             self.result[name].append(data)
+    #         else:
+    #             self.result[name] = [self.result[name], data]
+    #     else:
+    #         self.result[name] = data
 
     def plotDist(self, data):
         """
