@@ -392,11 +392,7 @@ class optimizeWorker(QRunnable):
                 solver_data.log_beta_sigma,
                 solver_data.log_ks_sigma,
                 self.conc_sigma,
-                (
-                    solver_data.distribution_opts.independent_component
-                    if mode == "distribution"
-                    else None
-                ),
+                None
             )
 
             soluble_sigma = self._create_df_result(
@@ -569,11 +565,165 @@ class optimizeWorker(QRunnable):
             )
         ).rename_axis(columns="Solubility Product")
 
-        # breakpoint()
-        _print_titration(slices, soluble_concentration, self.signals.log.emit, "soluble species")
-        _print_titration(slices, solids_concentration, self.signals.log.emit, "solid species")
+        ref_percentage_soluble = solver_data.components + list(
+            self.data["speciesModel"]["Ref. Comp."].values()
+        )
+        ref_percentage_soluble_ix = component_encoder(
+            solver_data.components, ref_percentage_soluble
+        )
 
-        return result
+        ref_tot_conc_soluble = total_concentration[:, ref_percentage_soluble_ix]
+
+        adjust_factor_soluble = np.clip(
+            np.concatenate(
+                (
+                    np.eye(solver_data.nc, dtype=int),
+                    solver_data.stoichiometry,
+                ),
+                axis=1,
+            )[ref_percentage_soluble_ix, range(ref_percentage_soluble_ix.size)],
+            1,
+            np.inf,
+        )
+
+        ref_poercentage_solids = list(
+            self.data["solidSpeciesModel"]["Ref. Comp."].values()
+        )
+
+        ref_percentage_solids_ix = component_encoder(
+            solver_data.components,
+            ref_poercentage_solids,
+        )
+
+        ref_tot_conc_solids = total_concentration[:, ref_percentage_solids_ix]
+
+        adjust_factor_solids = np.clip(
+            solver_data.solid_stoichiometry[
+                ref_percentage_solids_ix, range(ref_percentage_solids_ix.size)
+            ],
+            1,
+            np.inf,
+        )
+
+        soluble_percentages_np = (
+            (soluble_concentration.to_numpy() * adjust_factor_soluble)
+            / ref_tot_conc_soluble
+        ) * 100
+
+        soluble_percentages = self._create_df_result(
+            (soluble_percentages_np).round(2),
+            columns=[solver_data.species_names, ref_percentage_soluble],
+        ).rename_axis(columns=["Species", r"% relative to comp."])
+
+        soluble_percentages = self._create_df_result(
+            (soluble_percentages_np).round(2),
+            columns=[solver_data.species_names, ref_percentage_soluble],
+        ).rename_axis(columns=["Species", r"% relative to comp."])
+
+        solids_percentage_np = (
+            (solids_concentration_only.to_numpy() * adjust_factor_solids)
+            / ref_tot_conc_solids
+        ) * 100
+
+        solids_percentages = self._create_df_result(
+            (solids_percentage_np).round(2),
+            columns=[solver_data.solids_names, ref_poercentage_solids],
+        ).rename_axis(columns=["Solids", r"% relative to comp."])
+
+        self.signals.log.emit(r"Calculating distribution of the species...")
+        self.signals.log.emit(r"Soluble species concentrations")
+        self.signals.log.emit(repr(soluble_concentration))
+        self.signals.log.emit(r"Solid species concentrations")
+        self.signals.log.emit(repr(solids_concentration))
+
+        if not formation_constants.empty:
+            self.signals.log.emit(repr(formation_constants))
+
+        if not solubility_products.empty:
+            self.signals.log.emit(repr(solubility_products))
+
+        retval = {
+            'species_concentrations': soluble_concentration,
+            'solids_concentrations': solids_concentration,
+            'soluble_percentages': soluble_percentages,
+            'solids_percentages': solids_percentages
+        }
+
+        if self.data["emode"] is True:
+            soluble_sigma_np, solids_sigma_np = uncertanties(
+                concentrations,
+                solver_data.stoichiometry,
+                solver_data.solid_stoichiometry,
+                log_beta,
+                log_ks,
+                solver_data.log_beta_sigma,
+                solver_data.log_ks_sigma,
+                self.conc_sigma, 
+                solver_data.distribution_opts.independent_component,
+            )
+
+            soluble_sigma = self._create_df_result(
+                soluble_sigma_np,
+                columns=solver_data.species_names,
+            )
+
+            solids_sigma = self._create_df_result(
+                solids_sigma_np,
+                columns=solver_data.solids_names,
+            )
+
+            sigma_ref_tot_conc_soluble = np.array([
+                self.conc_sigma[:, ix] for ix in ref_percentage_soluble_ix
+            ]).T
+
+            sigma_ref_tot_conc_solids = np.array([
+                self.conc_sigma[:, ix] for ix in ref_percentage_solids_ix
+            ]).T
+
+            soluble_percentages_sigma = self._create_df_result(
+                soluble_percentages_np
+                * np.sqrt(
+                    (
+                        soluble_sigma_np
+                        / (soluble_concentration.to_numpy() * adjust_factor_soluble)
+                    )
+                    ** 2
+                    + (sigma_ref_tot_conc_soluble / ref_tot_conc_soluble) ** 2
+                ),
+                columns=solver_data.species_names,
+            )
+
+            solids_percentages_sigma = self._create_df_result(
+                solids_percentage_np
+                * np.sqrt(
+                    (
+                        solids_sigma_np
+                        / (solids_concentration_only.to_numpy() * adjust_factor_solids)
+                    )
+                    ** 2
+                    + (sigma_ref_tot_conc_solids / ref_tot_conc_solids) ** 2
+                ),
+                columns=solver_data.solids_names,
+            )
+
+            retval.update({'soluble_percentages': soluble_percentages_sigma,
+                           'solids_percentages': solids_percentages_sigma,
+                           'species_sigma': soluble_sigma,
+                           'solid_sigma': solids_sigma})
+
+            self.signals.log.emit(repr(soluble_sigma))
+            self.signals.log.emit(repr(solids_sigma))
+            # self._storeResult(soluble_sigma, "species_sigma", slices=slices)
+            # self._storeResult(solids_sigma, "solid_sigma", slices=slices)
+
+            # self._storeResult(
+            #     soluble_percentages_sigma, "soluble_percentages_sigma", slices=slices
+            # )
+            # self._storeResult(
+            #     solids_percentages_sigma, "solids_percentages_sigma", slices=slices
+            # )
+
+        return retval
 
     @Slot()
     def run(self):
@@ -675,7 +825,9 @@ class optimizeWorker(QRunnable):
 
         # Store input info
         species_info, solids_info = _species_info(solver_data, mode, self.data["emode"])
-        # comp_info = _comp_info(solver_data, mode, self.data["emode"])
+        comp_info = _comp_info(solver_data, mode, self.data["emode"])
+
+        retinfo = {'species_info': species_info, 'solids_info': solids_info, 'comp_info': comp_info}
 
         # self._storeResult(species_info, "species_info")
         # self._storeResult(solids_info, "solids_info")
@@ -1164,6 +1316,10 @@ class optimizeWorker(QRunnable):
         #     # self._storeResult(
         #     #     solids_percentages_sigma, "solids_percentages_sigma", slices=slices
         #     # )
+
+        retval.update(retinfo)
+        retval.update({'stoichiometry': solver_data.stoichiometry,
+                       'solid_stoichiometry': solver_data.solid_stoichiometry})
 
         elapsed_time = round((time.time() - start_time), 5)
         self.signals.log.emit("Elapsed Time: %s s" % elapsed_time)
