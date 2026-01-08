@@ -1321,9 +1321,9 @@ class optimizeWorker(QRunnable):
                        'solid_stoichiometry': solver_data.solid_stoichiometry})
 
         elapsed_time = round((time.time() - start_time), 5)
-        self.signals.log.emit("Elapsed Time: %s s" % elapsed_time)
+        self.signals.log.emit(f"\nElapsed Time: {elapsed_time} s")
 
-        self.signals.log.emit("### FINISHED ###")
+        self.signals.log.emit("\n### FINISHED ###")
         self.signals.result.emit(retval)
         self.signals.finished.emit()
 
