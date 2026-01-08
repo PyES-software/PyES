@@ -467,10 +467,6 @@ class optimizeWorker(QRunnable):
 
         self.signals.log.emit(r"Calculating distribution of the species...")
 
-        ok, errs = solver_data.distribution_ready
-        if not ok:
-            raise ValueError, errs
-
         (
             result,
             log_beta,
@@ -478,11 +474,105 @@ class optimizeWorker(QRunnable):
             saturation_index,
             total_concentration,
         ) = EqSolver(solver_data, mode="distribution")
-        slices = [0, result.shape[0]]
+        slices = [slice(0, result.shape[0])]
         # Calculate elapsed time between start to finish
         concentrations = species_concentration(
             result, log_beta, solver_data.stoichiometry, full=True
         )
+
+        soluble_concentration = concentrations[
+            :,
+            np.r_[
+                0 : solver_data.nc,
+                (solver_data.nc + solver_data.nf) : (
+                    solver_data.nc + solver_data.nf + solver_data.ns
+                ),
+            ],
+        ]
+
+        self.ionic_strength_dependence = solver_data.ionic_strength_dependence
+        self.ionic_strength = 0.5 * (
+            (
+                soluble_concentration
+                * (
+                    np.concatenate([solver_data.charges, solver_data.species_charges])
+                    ** 2
+                )
+            ).sum(axis=1, keepdims=True)
+            + self.background_ions_concentration
+        )
+
+        soluble_concentration = self._create_df_result(
+            soluble_concentration,
+            columns=solver_data.species_names,
+        ).rename_axis(columns="Species Conc. [mol/L]")
+
+        solids_concentration_only = pd.DataFrame(
+            concentrations[:, solver_data.nc : (solver_data.nc + solver_data.nf)],
+            index=self.result_index,
+            columns=solver_data.solids_names,
+        ).rename_axis(columns="Solid Conc. [mol/L]")
+
+        saturation_index = pd.DataFrame(
+            _compute_saturation_index(
+                concentrations[:, : solver_data.nc], log_ks, solver_data.solid_stoichiometry
+            ),
+            index=self.result_index,
+            columns=["SI" + name for name in solver_data.solids_names],
+        )
+
+        precipitate_check = (
+            (solids_concentration_only > 0)
+            .replace({True: "*", False: ""})
+            .set_axis(
+                ["Prec." + name for name in solids_concentration_only.columns], axis=1
+            )
+        )
+
+        solids_concentration = self._create_df_result(
+            pd.concat(
+                (solids_concentration_only, precipitate_check, saturation_index),
+                axis=1,
+                sort=True,
+            )
+        )
+
+        solids_concentration = solids_concentration[
+            sum(
+                [
+                    [check_col, si_col, solid_col]
+                    for check_col, si_col, solid_col in zip(
+                        precipitate_check.columns,
+                        saturation_index.columns,
+                        solids_concentration_only.columns,
+                    )
+                ],
+                [],
+            )
+        ]
+
+        formation_constants = (
+            pd.DataFrame()
+            if not solver_data.ionic_strength_dependence
+            else self._create_df_result(
+                log_beta,
+                columns=solver_data.species_names[solver_data.nc :],
+            )
+        ).rename_axis(columns="Formation Constant")
+
+        solubility_products = (
+            pd.DataFrame()
+            if not solver_data.ionic_strength_dependence
+            else self._create_df_result(
+                log_ks,
+                columns=solver_data.solids_names,
+            )
+        ).rename_axis(columns="Solubility Product")
+
+        # breakpoint()
+        _print_titration(slices, soluble_concentration, self.signals.log.emit, "soluble species")
+        _print_titration(slices, solids_concentration, self.signals.log.emit, "solid species")
+
         return result
 
     @Slot()
@@ -585,7 +675,7 @@ class optimizeWorker(QRunnable):
 
         # Store input info
         species_info, solids_info = _species_info(solver_data, mode, self.data["emode"])
-        comp_info = _comp_info(solver_data, mode, self.data["emode"])
+        # comp_info = _comp_info(solver_data, mode, self.data["emode"])
 
         # self._storeResult(species_info, "species_info")
         # self._storeResult(solids_info, "solids_info")
