@@ -630,9 +630,9 @@ class optimizeWorker(QRunnable):
             columns=[solver_data.solids_names, ref_poercentage_solids],
         ).rename_axis(columns=["Solids", r"% relative to comp."])
 
-        self.signals.log.emit(r"Soluble species concentrations")
+        self.signals.log.emit("\nSoluble species concentrations")
         self.signals.log.emit(repr(soluble_concentration))
-        self.signals.log.emit(r"Solid species concentrations")
+        self.signals.log.emit("\nSolid species concentrations")
         self.signals.log.emit(repr(solids_concentration))
 
         if not formation_constants.empty:
@@ -746,8 +746,8 @@ class optimizeWorker(QRunnable):
         # Start timer to time entire process
         start_time = time.time()
 
-        self.signals.log.emit(r"### Beginning Calculation ###")
-        self.signals.log.emit(r"Loading data...")
+        self.signals.log.emit("### Beginning Calculation ###\n")
+        self.signals.log.emit("Loading data...\n")
 
         self.data, ignored_soluble, ignored_solids = self._simplify_problem(self.data)
         if ignored_soluble:
@@ -853,7 +853,7 @@ class optimizeWorker(QRunnable):
         #     print_out=False,
         # )
 
-        self.signals.log.emit(r"DATA LOADED!")
+        self.signals.log.emit("DATA LOADED!\n")
 
         if mode == "titration":
             raise NotImplementedError
