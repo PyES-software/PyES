@@ -630,7 +630,6 @@ class optimizeWorker(QRunnable):
             columns=[solver_data.solids_names, ref_poercentage_solids],
         ).rename_axis(columns=["Solids", r"% relative to comp."])
 
-        self.signals.log.emit(r"Calculating distribution of the species...")
         self.signals.log.emit(r"Soluble species concentrations")
         self.signals.log.emit(repr(soluble_concentration))
         self.signals.log.emit(r"Solid species concentrations")
