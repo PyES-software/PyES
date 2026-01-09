@@ -990,7 +990,8 @@ class Ui_MainWindow(object):
         self.initialLog = CustomSpinBox(self.frame_2)
         self.initialLog.setObjectName(u"initialLog")
         self.initialLog.setDecimals(3)
-        self.initialLog.setMaximum(900.000000000000000)
+        self.initialLog.setMinimum(-50.000000000000000)
+        self.initialLog.setMaximum(50.000000000000000)
         self.initialLog.setSingleStep(0.050000000000000)
 
         self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.initialLog)
@@ -1435,7 +1436,7 @@ class Ui_MainWindow(object):
         self.checkAllSpeciesButton.clicked.connect(MainWindow.checkAllSpecies)
         self.uncheckAllSpeciesButton.clicked.connect(MainWindow.uncheckAllSpecies)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         self.tablesTab.setCurrentIndex(0)
         self.dmode.setCurrentIndex(0)
         self.mode_views.setCurrentIndex(1)
@@ -1704,7 +1705,7 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(statustip)
         self.ctback.setSuffix(QCoreApplication.translate("MainWindow", u" mol/l", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Indipendent Component Settings:</span></p></body></html>", None))
-        self.indComp_label.setText(QCoreApplication.translate("MainWindow", u"Indipendent Comp:", None))
+        self.indComp_label.setText(QCoreApplication.translate("MainWindow", u"Independent Comp:", None))
 #if QT_CONFIG(statustip)
         self.indComp.setStatusTip(QCoreApplication.translate("MainWindow", u"Component to be considered indipendent.", None))
 #endif // QT_CONFIG(statustip)

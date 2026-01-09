@@ -48,7 +48,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="usesScrollButtons">
        <bool>false</bool>
@@ -1865,7 +1865,7 @@
                          <item row="1" column="0">
                           <widget class="QLabel" name="indComp_label">
                            <property name="text">
-                            <string>Indipendent Comp:</string>
+                            <string>Independent Comp:</string>
                            </property>
                           </widget>
                          </item>
@@ -1897,8 +1897,11 @@
                            <property name="decimals">
                             <number>3</number>
                            </property>
+                           <property name="minimum">
+                            <double>-50.000000000000000</double>
+                           </property>
                            <property name="maximum">
-                            <double>900.000000000000000</double>
+                            <double>50.000000000000000</double>
                            </property>
                            <property name="singleStep">
                             <double>0.050000000000000</double>

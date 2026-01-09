@@ -816,10 +816,12 @@ class optimizeWorker(QRunnable):
 
         if mode == "titration":
             retval = self._run_titration(solver_data)
-        if mode == "distribution":
+        elif mode == "distribution":
             retval = self._run_distribution(solver_data)
-        if mode == "potentiometry":
+        elif mode == "potentiometry":
             retval = self._run_potentiometry(solver_data)
+        else:
+            raise ValueError(f"mode unknown. {mode=}")
 
         # if mode == "titration":
         #     # means_to_report = ["I"]
