@@ -1,10 +1,9 @@
-import logging
-import os
+# import logging
+# import os
 import time
 import traceback
-import warnings
-from datetime import datetime
-from pathlib import Path
+# import warnings
+# from datetime import datetime
 from typing import Any
 
 import numpy as np
@@ -20,7 +19,7 @@ from libeq import (
 )
 
 from libeq.optimizers.potentiometry import refine_indices
-from libeq.excepts import DivergedIonicStrengthWarning
+# from libeq.excepts import DivergedIonicStrengthWarning
 from libeq.solver.solids_solver import _compute_saturation_index
 from libeq.solver.solver_utils import _titration_background_ions_c
 from libeq.utils import species_concentration
@@ -492,7 +491,7 @@ class optimizeWorker(QRunnable):
             saturation_index,
             total_concentration,
         ) = EqSolver(solver_data, mode=mode)
-        slices = [slice(0, result.shape[0])]
+        # slices = [slice(0, result.shape[0])]
         # Calculate elapsed time between start to finish
         concentrations = species_concentration(
             result, log_beta, solver_data.stoichiometry, full=True
