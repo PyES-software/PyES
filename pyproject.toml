@@ -52,3 +52,6 @@ preview = true
 dev = [
     "ruff>=0.14.4",
 ]
+
+[tool.mypy]
+ignore_missing_imports = true
