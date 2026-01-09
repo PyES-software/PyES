@@ -47,9 +47,10 @@ class optimizeWorker(QRunnable):
         self.signals = optimizeSignal()
         self.data = data_list
         self.debug = debug
-        self.solver_data = None
+        # self.solver_data = None
+        self.index_name: str | list[str]
 
-    def _run_potentiometry(self, solver_data):
+    def _run_potentiometry(self, solver_data: SolverData):
         # If run with debug enabled create the logging istance
         def log_reporter(**kwargs):
             """
@@ -81,7 +82,7 @@ class optimizeWorker(QRunnable):
 
             if kwargs['any conc refined']:
                 for n, ((c0, ct), titr) in enumerate(zip(kwargs['titration params'],
-                                                         self.solver_data.potentiometry_opts.titrations)):
+                                                         solver_data.potentiometry_opts.titrations)):
                     out(f"titr {n:<4}: ")
                     for c0v, c0f, comp in zip(c0, refine_indices(titr.c0_flags), labels):
                         if c0f:
@@ -440,7 +441,7 @@ class optimizeWorker(QRunnable):
             # )
         return fit_result
 
-    def _run_titration(self, solver_data):
+    def _run_titration(self, solver_data: SolverData):
         self.result_index = np.arange(solver_data.titration_opts.n_add) * (
             solver_data.titration_opts.v_increment
         )
@@ -458,7 +459,7 @@ class optimizeWorker(QRunnable):
         self.signals.log.emit(r"Calculating titration of the species...")
         return self._simulation_common(solver_data, mode='titration')
 
-    def _run_distribution(self, solver_data):
+    def _run_distribution(self, solver_data: SolverData):
         self.result_index = np.arange(
             solver_data.distribution_opts.initial_log,
             (
@@ -483,7 +484,7 @@ class optimizeWorker(QRunnable):
         self.signals.log.emit(r"Calculating distribution of the species...")
         return self._simulation_common(solver_data, mode='distribution')
 
-    def _simulation_common(self, solver_data, mode):
+    def _simulation_common(self, solver_data: SolverData, mode: str):
         (
             result,
             log_beta,
@@ -764,8 +765,8 @@ class optimizeWorker(QRunnable):
 
         # load the data into the optimizer, catch errors that might invalidate the output
         try:
-            solver_data = SolverData.load_from_pyes(self.data)
-            self.solver_data = solver_data
+            solver_data: SolverData = SolverData.load_from_pyes(self.data)
+            # self.solver_data = solver_data
         except Exception as e:
             if self.debug:
                 self.signals.aborted.emit(
