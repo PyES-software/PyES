@@ -441,6 +441,24 @@ class optimizeWorker(QRunnable):
             )
         return fit_result
 
+    def _run_titration(self, solver_data):
+        self.result_index = np.arange(solver_data.titration_opts.n_add) * (
+            solver_data.titration_opts.v_increment
+        )
+        self.index_name = "V Add. [mL]"
+        self.conc_sigma = np.tile(
+            solver_data.titration_opts.c0_sigma, [self.result_index.size, 1]
+        ) + (
+            np.tile(self.result_index, [solver_data.nc, 1]).T
+            * 1e-3
+            * solver_data.titration_opts.ct_sigma
+        )
+        self.background_ions_concentration = _titration_background_ions_c(
+            solver_data.titration_opts
+        )
+        self.signals.log.emit(r"Calculating titration of the species...")
+        return self._simulation_common(solver_data, mode='titration')
+
     def _run_distribution(self, solver_data):
         self.result_index = np.arange(
             solver_data.distribution_opts.initial_log,
@@ -457,20 +475,23 @@ class optimizeWorker(QRunnable):
             ]
             + "]"
         )
+
         self.conc_sigma = np.tile(
             solver_data.distribution_opts.c0_sigma, [self.result_index.size, 1]
         )
         self.background_ions_concentration = solver_data.distribution_opts.cback
 
         self.signals.log.emit(r"Calculating distribution of the species...")
+        return self._simulation_common(solver_data, mode='distribution')
 
+    def _simulation_common(self, solver_data, mode):
         (
             result,
             log_beta,
             log_ks,
             saturation_index,
             total_concentration,
-        ) = EqSolver(solver_data, mode="distribution")
+        ) = EqSolver(solver_data, mode=mode)
         slices = [slice(0, result.shape[0])]
         # Calculate elapsed time between start to finish
         concentrations = species_concentration(
@@ -792,31 +813,10 @@ class optimizeWorker(QRunnable):
             columns=[name + "_(s)" for name in solver_data.solids_names],
         )
 
-        # self._storeResult(
-        #     pd.DataFrame(
-        #         np.clip(
-        #             np.hstack((np.eye(solver_data.nc), solver_data.stoichiometry)),
-        #             1,
-        #             np.inf,
-        #         ),
-        #         columns=solver_data.species_names,
-        #     ),
-        #     "stoichiometry",
-        #     print_out=False,
-        # )
-        # self._storeResult(
-        #     pd.DataFrame(
-        #         np.clip(solver_data.solid_stoichiometry, 1, np.inf),
-        #         columns=[name + "_(s)" for name in solver_data.solids_names],
-        #     ),
-        #     "solid_stoichiometry",
-        #     print_out=False,
-        # )
-
         self.signals.log.emit("DATA LOADED!\n")
 
         if mode == "titration":
-            raise NotImplementedError
+            retval = self._run_titration(solver_data)
         if mode == "distribution":
             retval = self._run_distribution(solver_data)
         if mode == "potentiometry":
