@@ -727,22 +727,22 @@ class optimizeWorker(QRunnable):
 
     @Slot()
     def run(self):
-        if self.debug:
-            log_path = Path.home().joinpath("pyes_logs")
-            os.makedirs(log_path, exist_ok=True)
-            date_time = datetime.now()
-            log_file = log_path.joinpath(
-                "pyes_" + date_time.strftime("%d_%m_%Y-%H:%M:%S") + ".log"
-            )
-            filehandler = logging.FileHandler(log_file)
-            formatter = logging.Formatter("%(levelname)s:%(message)s")
-            filehandler.setFormatter(formatter)
-            log = logging.getLogger()  # root logger - Good to get it only once.
-            for hdlr in log.handlers[:]:  # remove the existing file handlers
-                if isinstance(hdlr, logging.FileHandler):
-                    log.removeHandler(hdlr)
-            log.addHandler(filehandler)
-            log.setLevel(logging.DEBUG)
+        # if self.debug:
+        #     log_path = Path.home().joinpath("pyes_logs")
+        #     os.makedirs(log_path, exist_ok=True)
+        #     date_time = datetime.now()
+        #     log_file = log_path.joinpath(
+        #         "pyes_" + date_time.strftime("%d_%m_%Y-%H:%M:%S") + ".log"
+        #     )
+        #     filehandler = logging.FileHandler(log_file)
+        #     formatter = logging.Formatter("%(levelname)s:%(message)s")
+        #     filehandler.setFormatter(formatter)
+        #     log = logging.getLogger()  # root logger - Good to get it only once.
+        #     for hdlr in log.handlers[:]:  # remove the existing file handlers
+        #         if isinstance(hdlr, logging.FileHandler):
+        #             log.removeHandler(hdlr)
+        #     log.addHandler(filehandler)
+        #     log.setLevel(logging.DEBUG)
 
         # Start timer to time entire process
         start_time = time.time()
