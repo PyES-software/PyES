@@ -103,101 +103,6 @@ class optimizeWorker(QRunnable):
 
         try:
             fit_result = PotentiometryOptimizer(solver_data, reporter=log_reporter)
-            ## never used
-            # x = fit_result['final variables']
-            concentrations = fit_result['free concentration']
-            log_beta = fit_result['final log beta']
-            b_error = fit_result['error log beta']
-            ## never used
-            # cor_matrix = fit_result['correlation']
-            # cov_matrix = fit_result['covariance']
-
-            # Calculate elapsed time between start to finish
-            # elapsed_time = round((time.time() - start_time), 5)
-
-            slices = fit_result['slices']
-            #idx_to_keep = return_extra["idx_to_keep"]
-
-            ## never used
-            # idx_to_keep = [tuple(n for n, f in enumerate(t.ignored) if not f) for t in solver_data.potentiometry_opts.titrations]
-
-            total_concentration = fit_result["total concentration"]
-
-            solver_data.log_beta_sigma = solver_data.log_beta_sigma.copy()
-            ## never used
-            # refined = [ f == Flags.REFINE for f in solver_data.potentiometry_opts.beta_flags ]
-            solver_data.log_beta_sigma[:] = b_error[:]
-            #solver_data.log_beta_sigma[refined] = b_error[:]
-            # solver_data.log_beta_sigma = np.array(
-            #     list(
-            #         ravel(
-            #             solver_data.log_beta_sigma,
-            #             b_error,
-            #             solver_data.potentiometry_opts.beta_flags,
-            #         )
-            #     )
-            # )
-
-            log_ks = np.tile(
-                solver_data.log_ks, (total_concentration.shape[0], 1)
-            )
-
-            read_potential = fit_result["read emf"]
-            residuals = fit_result["residuals"]
-            calculated_potential = read_potential - residuals
-
-            px = -np.log10(fit_result['eactive'])
-            # px = np.concatenate([
-            #     (return_extra["calculated_potential"][i] - t.e0) / -t.slope
-            #     for i, t in enumerate(solver_data.potentiometry_opts.titrations)
-            # ])
-
-            self.result_index = np.concatenate([
-                 t.v_add[~t.ignored]
-                 for t in solver_data.potentiometry_opts.titrations
-            ])
-            # self.result_index = np.concatenate([
-            #     t.v_add[idx_to_keep[i]]
-            #     for i, t in enumerate(solver_data.potentiometry_opts.titrations)
-            # ])
-
-            self.result_index = [
-                self.result_index,
-                read_potential,
-                calculated_potential,
-                residuals,
-                px,
-                fit_result["weights"]
-                #np.diag(return_extra["weights"]),
-            ]
-
-            conc_sigma = []
-            # background_ions_conc = []
-            for i, t in enumerate(solver_data.potentiometry_opts.titrations):
-                v_aux = t.v_add[~t.ignored]
-                conc_sigma.append(
-                    np.tile(t.c0_sigma, [v_aux.size, 1])
-                    + (
-                        np.tile(v_aux, [solver_data.nc, 1]).T
-                        * 1e-3
-                        * t.ct_sigma
-                    )
-                )
-                # background_ions_conc.append(
-                #     _titration_background_ions_c(t, idx_to_keep[i])
-                # )
-            self.conc_sigma = np.concatenate(conc_sigma)
-            # self.background_ions_concentration = np.vstack(background_ions_conc)
-            self.background_ions_concentration = fit_result['background ion concentration']
-
-            self.index_name = [
-                "V Add. [mL]",
-                "Read Potential [V]",
-                "Calculated Potential [V]",
-                "Residual [V]",
-                "pX",
-                "Weight",
-            ]
         except Exception as e:
             if self.debug:
                 msg = "".join(
@@ -216,6 +121,102 @@ class optimizeWorker(QRunnable):
                 self.signals.aborted.emit(msg)
 
             return None
+
+        ## never used
+        # x = fit_result['final variables']
+        concentrations = fit_result['free concentration']
+        log_beta = fit_result['final log beta']
+        b_error = fit_result['error log beta']
+        ## never used
+        # cor_matrix = fit_result['correlation']
+        # cov_matrix = fit_result['covariance']
+
+        # Calculate elapsed time between start to finish
+        # elapsed_time = round((time.time() - start_time), 5)
+
+        slices = fit_result['slices']
+        #idx_to_keep = return_extra["idx_to_keep"]
+
+        ## never used
+        # idx_to_keep = [tuple(n for n, f in enumerate(t.ignored) if not f) for t in solver_data.potentiometry_opts.titrations]
+
+        total_concentration = fit_result["total concentration"]
+
+        solver_data.log_beta_sigma = solver_data.log_beta_sigma.copy()
+        ## never used
+        # refined = [ f == Flags.REFINE for f in solver_data.potentiometry_opts.beta_flags ]
+        solver_data.log_beta_sigma[:] = b_error[:]
+        #solver_data.log_beta_sigma[refined] = b_error[:]
+        # solver_data.log_beta_sigma = np.array(
+        #     list(
+        #         ravel(
+        #             solver_data.log_beta_sigma,
+        #             b_error,
+        #             solver_data.potentiometry_opts.beta_flags,
+        #         )
+        #     )
+        # )
+
+        log_ks = np.tile(
+            solver_data.log_ks, (total_concentration.shape[0], 1)
+        )
+
+        read_potential = fit_result["read emf"]
+        residuals = fit_result["residuals"]
+        calculated_potential = read_potential - residuals
+
+        px = -np.log10(fit_result['eactive'])
+        # px = np.concatenate([
+        #     (return_extra["calculated_potential"][i] - t.e0) / -t.slope
+        #     for i, t in enumerate(solver_data.potentiometry_opts.titrations)
+        # ])
+
+        self.result_index = np.concatenate([
+             t.v_add[~t.ignored]
+             for t in solver_data.potentiometry_opts.titrations
+        ])
+        # self.result_index = np.concatenate([
+        #     t.v_add[idx_to_keep[i]]
+        #     for i, t in enumerate(solver_data.potentiometry_opts.titrations)
+        # ])
+
+        self.result_index = [
+            self.result_index,
+            read_potential,
+            calculated_potential,
+            residuals,
+            px,
+            fit_result["weights"]
+            #np.diag(return_extra["weights"]),
+        ]
+
+        conc_sigma = []
+        # background_ions_conc = []
+        for i, t in enumerate(solver_data.potentiometry_opts.titrations):
+            v_aux = t.v_add[~t.ignored]
+            conc_sigma.append(
+                np.tile(t.c0_sigma, [v_aux.size, 1])
+                + (
+                    np.tile(v_aux, [solver_data.nc, 1]).T
+                    * 1e-3
+                    * t.ct_sigma
+                )
+            )
+            # background_ions_conc.append(
+            #     _titration_background_ions_c(t, idx_to_keep[i])
+            # )
+        self.conc_sigma = np.concatenate(conc_sigma)
+        # self.background_ions_concentration = np.vstack(background_ions_conc)
+        self.background_ions_concentration = fit_result['background ion concentration']
+
+        self.index_name = [
+            "V Add. [mL]",
+            "Read Potential [V]",
+            "Calculated Potential [V]",
+            "Residual [V]",
+            "pX",
+            "Weight",
+        ]
 
         # concentrations = species_concentration(
         #     result, log_beta, solver_data.stoichiometry, full=True
