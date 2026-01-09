@@ -395,49 +395,49 @@ class optimizeWorker(QRunnable):
                 None
             )
 
-            soluble_sigma = self._create_df_result(
-                soluble_sigma_np,
-                columns=solver_data.species_names,
-            )
+            # soluble_sigma = self._create_df_result(
+            #     soluble_sigma_np,
+            #     columns=solver_data.species_names,
+            # )
 
-            solids_sigma = self._create_df_result(
-                solids_sigma_np,
-                columns=solver_data.solids_names,
-            )
+            # solids_sigma = self._create_df_result(
+            #     solids_sigma_np,
+            #     columns=solver_data.solids_names,
+            # )
 
-            sigma_ref_tot_conc_soluble = np.array([
-                self.conc_sigma[:, ix] for ix in ref_percentage_soluble_ix
-            ]).T
+            # sigma_ref_tot_conc_soluble = np.array([
+            #     self.conc_sigma[:, ix] for ix in ref_percentage_soluble_ix
+            # ]).T
 
-            sigma_ref_tot_conc_solids = np.array([
-                self.conc_sigma[:, ix] for ix in ref_percentage_solids_ix
-            ]).T
+            # sigma_ref_tot_conc_solids = np.array([
+            #     self.conc_sigma[:, ix] for ix in ref_percentage_solids_ix
+            # ]).T
 
-            soluble_percentages_sigma = self._create_df_result(
-                soluble_percentages_np
-                * np.sqrt(
-                    (
-                        soluble_sigma_np
-                        / (soluble_concentration.to_numpy() * adjust_factor_soluble)
-                    )
-                    ** 2
-                    + (sigma_ref_tot_conc_soluble / ref_tot_conc_soluble) ** 2
-                ),
-                columns=solver_data.species_names,
-            )
+            # soluble_percentages_sigma = self._create_df_result(
+            #     soluble_percentages_np
+            #     * np.sqrt(
+            #         (
+            #             soluble_sigma_np
+            #             / (soluble_concentration.to_numpy() * adjust_factor_soluble)
+            #         )
+            #         ** 2
+            #         + (sigma_ref_tot_conc_soluble / ref_tot_conc_soluble) ** 2
+            #     ),
+            #     columns=solver_data.species_names,
+            # )
 
-            solids_percentages_sigma = self._create_df_result(
-                solids_percentage_np
-                * np.sqrt(
-                    (
-                        solids_sigma_np
-                        / (solids_concentration_only.to_numpy() * adjust_factor_solids)
-                    )
-                    ** 2
-                    + (sigma_ref_tot_conc_solids / ref_tot_conc_solids) ** 2
-                ),
-                columns=solver_data.solids_names,
-            )
+            # solids_percentages_sigma = self._create_df_result(
+            #     solids_percentage_np
+            #     * np.sqrt(
+            #         (
+            #             solids_sigma_np
+            #             / (solids_concentration_only.to_numpy() * adjust_factor_solids)
+            #         )
+            #         ** 2
+            #         + (sigma_ref_tot_conc_solids / ref_tot_conc_solids) ** 2
+            #     ),
+            #     columns=solver_data.solids_names,
+            # )
         return fit_result
 
     def _run_titration(self, solver_data):
