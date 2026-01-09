@@ -1298,48 +1298,48 @@ class optimizeWorker(QRunnable):
         )
         self.signals.log.emit(extra_df.to_string())
 
-    def _storeResult(
-        self,
-        data: pd.DataFrame,
-        name: str,
-        slices: list[int] = [],
-        extra: list[str] = [],
-        print_out: bool = True,
-    ):
-        multiple_items = len(slices) > 2
-        if multiple_items:
-            # Ensure slices does not include data.shape[0] as its last element
-            if slices[-1] == data.shape[0]:
-                slices = slices[:-1]
+    # def _storeResult(
+    #     self,
+    #     data: pd.DataFrame,
+    #     name: str,
+    #     slices: list[int] = [],
+    #     extra: list[str] = [],
+    #     print_out: bool = True,
+    # ):
+    #     multiple_items = len(slices) > 2
+    #     if multiple_items:
+    #         # Ensure slices does not include data.shape[0] as its last element
+    #         if slices[-1] == data.shape[0]:
+    #             slices = slices[:-1]
 
-            # Create the list of tuples representing the intervals
-            ix_ranges = [(slices[i], slices[i + 1]) for i in range(len(slices) - 1)] + [
-                (slices[-1], data.shape[0])
-            ]
-            result = []
-            for counter, (i1, i2) in enumerate(ix_ranges):
-                df = data.iloc[i1:i2, :]
-                result.append(df)
-                self.signals.result.emit(df, name)
-                if not df.empty and print_out:
-                    if i1 == 0:
-                        self.signals.log.emit(
-                            "\t\t" + name.replace("_", " ").upper() + "\n"
-                        )
-                    self.signals.log.emit(f"\t\t\t Titration {counter + 1}")
-                    self.signals.log.emit(df.to_string())
-                    if extra:
-                        self._reportData(df, extra)
-                    self.signals.log.emit("\n\n")
-                    self.signals.log.emit("--" * 40)
-        else:
-            self.signals.result.emit(data, name)
-            if not data.empty and print_out:
-                self.signals.log.emit("\t\t" + name.replace("_", " ").upper() + "\n")
-                self.signals.log.emit(data.to_string())
-                if extra:
-                    self._reportData(data, extra)
-                self.signals.log.emit("--" * 40)
+    #         # Create the list of tuples representing the intervals
+    #         ix_ranges = [(slices[i], slices[i + 1]) for i in range(len(slices) - 1)] + [
+    #             (slices[-1], data.shape[0])
+    #         ]
+    #         result = []
+    #         for counter, (i1, i2) in enumerate(ix_ranges):
+    #             df = data.iloc[i1:i2, :]
+    #             result.append(df)
+    #             self.signals.result.emit(df, name)
+    #             if not df.empty and print_out:
+    #                 if i1 == 0:
+    #                     self.signals.log.emit(
+    #                         "\t\t" + name.replace("_", " ").upper() + "\n"
+    #                     )
+    #                 self.signals.log.emit(f"\t\t\t Titration {counter + 1}")
+    #                 self.signals.log.emit(df.to_string())
+    #                 if extra:
+    #                     self._reportData(df, extra)
+    #                 self.signals.log.emit("\n\n")
+    #                 self.signals.log.emit("--" * 40)
+    #     else:
+    #         self.signals.result.emit(data, name)
+    #         if not data.empty and print_out:
+    #             self.signals.log.emit("\t\t" + name.replace("_", " ").upper() + "\n")
+    #             self.signals.log.emit(data.to_string())
+    #             if extra:
+    #                 self._reportData(data, extra)
+    #             self.signals.log.emit("--" * 40)
 
     def _check_ready(self, solver_data):
         """
