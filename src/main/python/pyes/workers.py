@@ -727,23 +727,6 @@ class optimizeWorker(QRunnable):
 
     @Slot()
     def run(self):
-        # if self.debug:
-        #     log_path = Path.home().joinpath("pyes_logs")
-        #     os.makedirs(log_path, exist_ok=True)
-        #     date_time = datetime.now()
-        #     log_file = log_path.joinpath(
-        #         "pyes_" + date_time.strftime("%d_%m_%Y-%H:%M:%S") + ".log"
-        #     )
-        #     filehandler = logging.FileHandler(log_file)
-        #     formatter = logging.Formatter("%(levelname)s:%(message)s")
-        #     filehandler.setFormatter(formatter)
-        #     log = logging.getLogger()  # root logger - Good to get it only once.
-        #     for hdlr in log.handlers[:]:  # remove the existing file handlers
-        #         if isinstance(hdlr, logging.FileHandler):
-        #             log.removeHandler(hdlr)
-        #     log.addHandler(filehandler)
-        #     log.setLevel(logging.DEBUG)
-
         # Start timer to time entire process
         start_time = time.time()
 
@@ -761,7 +744,6 @@ class optimizeWorker(QRunnable):
 
         # load the data into the optimizer, catch errors that might invalidate the output
         try:
-            # optimizer.fit(self.data)
             solver_data = SolverData.load_from_pyes(self.data)
             self.solver_data = solver_data
         except Exception as e:
@@ -771,7 +753,7 @@ class optimizeWorker(QRunnable):
                 )
             else:
                 self.signals.aborted.emit(str(e))
-            return None
+            return
 
         ok, errors = solver_data.model_ready
         if not ok:
@@ -784,54 +766,31 @@ class optimizeWorker(QRunnable):
             )
             return None
 
+        ready = self._check_ready(solver_data)
+        if not ready:
+            return
+
         # store mode of operation as selected in the software
-        match self.data["dmode"]:
-            case 0:
-                ok, errors = solver_data.titration_ready
-                if not ok:
-                    error_messages = "\n".join([
-                        f"  {field}: {msg}" for field, msg in errors.items()
-                    ])
-                    self.signals.aborted.emit(
-                        "Titration data not complete, please check the errors and try again:\n"
-                        + error_messages
-                    )
-                    return None
-                mode = "titration"
-            case 1:
-                ok, errors = solver_data.distribution_ready
-                if not ok:
-                    error_messages = "\n".join([
-                        f"  {field}: {msg}" for field, msg in errors.items()
-                    ])
-                    self.signals.aborted.emit(
-                        "Distribution data not complete, please check the errors and try again:\n"
-                        + error_messages
-                    )
-                    return None
-                mode = "distribution"
-            case 2:
-                ok, errors = solver_data.potentiometry_ready
-                if not ok:
-                    error_messages = "\n".join([
-                        f"  {field}: {msg}" for field, msg in errors.items()
-                    ])
-                    self.signals.aborted.emit(
-                        "Potentiometry optimization data not complete, please check the errors and try again:\n"
-                        + error_messages
-                    )
-                    return None
-                mode = "potentiometry"
+        available_modes = ('titration', 'distribution', 'potentiometry')
+        mode = available_modes[self.data['dmode']]
 
         # Store input info
         species_info, solids_info = _species_info(solver_data, mode, self.data["emode"])
         comp_info = _comp_info(solver_data, mode, self.data["emode"])
 
         retinfo = {'species_info': species_info, 'solids_info': solids_info, 'comp_info': comp_info}
-
-        # self._storeResult(species_info, "species_info")
-        # self._storeResult(solids_info, "solids_info")
-        # self._storeResult(comp_info, "comp_info")
+        stoichiometry = pd.DataFrame(
+            np.clip(
+                np.hstack((np.eye(solver_data.nc), solver_data.stoichiometry)),
+                1,
+                np.inf,
+            ),
+            columns=solver_data.species_names,
+        )
+        solid_stoichiometry = pd.DataFrame(
+            np.clip(solver_data.solid_stoichiometry, 1, np.inf),
+            columns=[name + "_(s)" for name in solver_data.solids_names],
+        )
 
         # self._storeResult(
         #     pd.DataFrame(
@@ -1318,8 +1277,8 @@ class optimizeWorker(QRunnable):
         #     # )
 
         retval.update(retinfo)
-        retval.update({'stoichiometry': solver_data.stoichiometry,
-                       'solid_stoichiometry': solver_data.solid_stoichiometry})
+        retval.update({'stoichiometry': stoichiometry,
+                       'solid_stoichiometry': solid_stoichiometry})
 
         elapsed_time = round((time.time() - start_time), 5)
         self.signals.log.emit(f"\nElapsed Time: {elapsed_time} s")
@@ -1380,6 +1339,31 @@ class optimizeWorker(QRunnable):
                 if extra:
                     self._reportData(data, extra)
                 self.signals.log.emit("--" * 40)
+
+    def _check_ready(self, solver_data):
+        """
+        Check whether data is ready or gaps are present.
+        """
+        match self.data["dmode"]:
+            case 0:
+                ok, errors = solver_data.titration_ready
+                what = "Titration"
+            case 1:
+                ok, errors = solver_data.distribution_ready
+                what = "Distribution"
+            case 2:
+                ok, errors = solver_data.potentiometry_ready
+                what = "Potentiometry optimization"
+
+        if not ok:
+            error_messages = "\n".join([
+                f"  {field}: {msg}" for field, msg in errors.items()
+            ])
+            self.signals.aborted.emit(
+                f"{what} data not complete, please check the errors and try again:\n"
+                + error_messages
+            )
+        return ok
 
     def _create_df_result(self, data, columns: list | None = None):
         if data is None:
