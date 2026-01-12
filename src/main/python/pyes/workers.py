@@ -118,8 +118,10 @@ class optimizeWorker(QRunnable):
         concentrations = fit_result['free concentration']
         log_beta = fit_result['final log beta']
         b_error = fit_result['error log beta']
-        ## never used
+
+        ## print correlation matrix
         # cor_matrix = fit_result['correlation']
+        # self.signals.log.emit(repr(cor_matrix))
         # cov_matrix = fit_result['covariance']
 
         slices = fit_result['slices']
@@ -840,3 +842,56 @@ def _print_titration(slices, dataset, emitter, title: str = "data"):
         emitter((13+len(str(n)))*"-")
         emitter(repr(dataset[s]))
         emitter("\n")
+
+
+def _print_correlation_matrix(corr: np.ndarray, labels: list[str], emitter) -> None:
+    """
+    Pretty-print a correlation matrix.
+    
+    If matrix size <= SIZE_THRESHOLD, print full labeled matrix.
+    Otherwise, print the TOP_N largest correlations with labels.
+    """
+    SIZE_THRESHOLD = 10
+    TOP_N = 20
+
+    n = corr.shape[0]
+
+    if corr.shape[0] != corr.shape[1]:
+        raise ValueError("Correlation matrix must be square")
+
+    if len(labels) != n:
+        raise ValueError("Number of labels must match matrix size")
+
+    df = pd.DataFrame(corr, index=labels, columns=labels)
+
+    # ---- Small matrix: print everything ----
+    if n <= SIZE_THRESHOLD:
+        with pd.option_context("display.precision", 4):
+            emitter(df)
+        return
+
+    # ---- Large matrix: print strongest correlations ----
+
+    # Mask diagonal and lower triangle to avoid duplicates
+    mask = np.triu(np.ones_like(df, dtype=bool), k=1)
+    upper = df.where(mask)
+
+    # Convert to long format and drop NaNs
+    corr_pairs = (
+        upper.stack()
+             .rename("correlation")
+             .reset_index()
+             .rename(columns={"level_0": "Var 1", "level_1": "Var 2"})
+    )
+
+    # Sort by absolute correlation strength
+    corr_pairs["abs_corr"] = corr_pairs["correlation"].abs()
+    top_corrs = corr_pairs.sort_values("abs_corr", ascending=False).head(TOP_N)
+
+    # Pretty print
+    for _, row in top_corrs.iterrows():
+        emitter(
+            f"{row['Var 1']}  <->  {row['Var 2']}:  "
+            f"{row['correlation']:+.3f}"
+        )
+
