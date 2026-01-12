@@ -1,9 +1,5 @@
-# import logging
-# import os
 import time
 import traceback
-# import warnings
-# from datetime import datetime
 from typing import Any
 
 import numpy as np
@@ -19,7 +15,6 @@ from libeq import (
 )
 
 from libeq.optimizers.potentiometry import refine_indices
-# from libeq.excepts import DivergedIonicStrengthWarning
 from libeq.solver.solids_solver import _compute_saturation_index
 from libeq.solver.solver_utils import _titration_background_ions_c
 from libeq.utils import species_concentration
@@ -89,15 +84,11 @@ class optimizeWorker(QRunnable):
                             out(f"\tc0[{comp}] {c0v:10.4f} {next(increment):10.4f}")
             out(80*'-')
 
-        self.signals.log.emit(
-            r"Optimizing stability constants from potentiometric data...\n"
-        )
+        self.signals.log.emit("Optimizing stability constants from potentiometric data...\n")
 
         self.index_name = "V Add. [mL]"
 
-        self.optimized_species = (
-            np.array(solver_data.potentiometry_opts.beta_flags) == Flags.REFINE
-        )
+        self.optimized_species = (np.array(solver_data.potentiometry_opts.beta_flags) == Flags.REFINE)
 
         self.signals.log.emit("--" * 40)
 
@@ -131,35 +122,13 @@ class optimizeWorker(QRunnable):
         # cor_matrix = fit_result['correlation']
         # cov_matrix = fit_result['covariance']
 
-        # Calculate elapsed time between start to finish
-        # elapsed_time = round((time.time() - start_time), 5)
-
         slices = fit_result['slices']
-        #idx_to_keep = return_extra["idx_to_keep"]
-
-        ## never used
-        # idx_to_keep = [tuple(n for n, f in enumerate(t.ignored) if not f) for t in solver_data.potentiometry_opts.titrations]
-
         total_concentration = fit_result["total concentration"]
 
         solver_data.log_beta_sigma = solver_data.log_beta_sigma.copy()
-        ## never used
-        # refined = [ f == Flags.REFINE for f in solver_data.potentiometry_opts.beta_flags ]
         solver_data.log_beta_sigma[:] = b_error[:]
-        #solver_data.log_beta_sigma[refined] = b_error[:]
-        # solver_data.log_beta_sigma = np.array(
-        #     list(
-        #         ravel(
-        #             solver_data.log_beta_sigma,
-        #             b_error,
-        #             solver_data.potentiometry_opts.beta_flags,
-        #         )
-        #     )
-        # )
 
-        log_ks = np.tile(
-            solver_data.log_ks, (total_concentration.shape[0], 1)
-        )
+        log_ks = np.tile(solver_data.log_ks, (total_concentration.shape[0], 1))
 
         read_potential = fit_result["read emf"]
         residuals = fit_result["residuals"]
@@ -175,10 +144,6 @@ class optimizeWorker(QRunnable):
              t.v_add[~t.ignored]
              for t in solver_data.potentiometry_opts.titrations
         ])
-        # self.result_index = np.concatenate([
-        #     t.v_add[idx_to_keep[i]]
-        #     for i, t in enumerate(solver_data.potentiometry_opts.titrations)
-        # ])
 
         self.result_index = [
             self.result_index,
@@ -217,10 +182,6 @@ class optimizeWorker(QRunnable):
             "pX",
             "Weight",
         ]
-
-        # concentrations = species_concentration(
-        #     result, log_beta, solver_data.stoichiometry, full=True
-        # )
 
         soluble_concentration = concentrations[
             :,
@@ -396,49 +357,6 @@ class optimizeWorker(QRunnable):
                 None
             )
 
-            # soluble_sigma = self._create_df_result(
-            #     soluble_sigma_np,
-            #     columns=solver_data.species_names,
-            # )
-
-            # solids_sigma = self._create_df_result(
-            #     solids_sigma_np,
-            #     columns=solver_data.solids_names,
-            # )
-
-            # sigma_ref_tot_conc_soluble = np.array([
-            #     self.conc_sigma[:, ix] for ix in ref_percentage_soluble_ix
-            # ]).T
-
-            # sigma_ref_tot_conc_solids = np.array([
-            #     self.conc_sigma[:, ix] for ix in ref_percentage_solids_ix
-            # ]).T
-
-            # soluble_percentages_sigma = self._create_df_result(
-            #     soluble_percentages_np
-            #     * np.sqrt(
-            #         (
-            #             soluble_sigma_np
-            #             / (soluble_concentration.to_numpy() * adjust_factor_soluble)
-            #         )
-            #         ** 2
-            #         + (sigma_ref_tot_conc_soluble / ref_tot_conc_soluble) ** 2
-            #     ),
-            #     columns=solver_data.species_names,
-            # )
-
-            # solids_percentages_sigma = self._create_df_result(
-            #     solids_percentage_np
-            #     * np.sqrt(
-            #         (
-            #             solids_sigma_np
-            #             / (solids_concentration_only.to_numpy() * adjust_factor_solids)
-            #         )
-            #         ** 2
-            #         + (sigma_ref_tot_conc_solids / ref_tot_conc_solids) ** 2
-            #     ),
-            #     columns=solver_data.solids_names,
-            # )
         return fit_result
 
     def _run_titration(self, solver_data: SolverData):
@@ -734,15 +652,6 @@ class optimizeWorker(QRunnable):
 
             self.signals.log.emit(repr(soluble_sigma))
             self.signals.log.emit(repr(solids_sigma))
-            # self._storeResult(soluble_sigma, "species_sigma", slices=slices)
-            # self._storeResult(solids_sigma, "solid_sigma", slices=slices)
-
-            # self._storeResult(
-            #     soluble_percentages_sigma, "soluble_percentages_sigma", slices=slices
-            # )
-            # self._storeResult(
-            #     solids_percentages_sigma, "solids_percentages_sigma", slices=slices
-            # )
 
         return retval
 
@@ -824,460 +733,6 @@ class optimizeWorker(QRunnable):
         else:
             raise ValueError(f"mode unknown. {mode=}")
 
-        # if mode == "titration":
-        #     # means_to_report = ["I"]
-        #     self.result_index = np.arange(solver_data.titration_opts.n_add) * (
-        #         solver_data.titration_opts.v_increment
-        #     )
-        #     self.index_name = "V Add. [mL]"
-        #     self.conc_sigma = np.tile(
-        #         solver_data.titration_opts.c0_sigma, [self.result_index.size, 1]
-        #     ) + (
-        #         np.tile(self.result_index, [solver_data.nc, 1]).T
-        #         * 1e-3
-        #         * solver_data.titration_opts.ct_sigma
-        #     )
-        #     self.background_ions_concentration = _titration_background_ions_c(
-        #         solver_data.titration_opts
-        #     )
-        #     self.signals.log.emit(
-        #         r"Calculating species concentration for the simulated titration..."
-        #     )
-        # elif mode == "distribution":
-        #     # means_to_report = ["I"]
-        #     self.result_index = np.arange(
-        #         solver_data.distribution_opts.initial_log,
-        #         (
-        #             solver_data.distribution_opts.final_log
-        #             + solver_data.distribution_opts.log_increments
-        #         ),
-        #         solver_data.distribution_opts.log_increments,
-        #     )
-        #     self.index_name = (
-        #         "p["
-        #         + solver_data.components[
-        #             solver_data.distribution_opts.independent_component
-        #         ]
-        #         + "]"
-        #     )
-        #     self.conc_sigma = np.tile(
-        #         solver_data.distribution_opts.c0_sigma, [self.result_index.size, 1]
-        #     )
-        #     self.background_ions_concentration = solver_data.distribution_opts.cback
-
-        #     self.signals.log.emit(r"Calculating distribution of the species...")
-
-        # # elif mode == "potentiometry":
-        # #     # means_to_report = ["I", "Residual [V]"]
-        # #     self.signals.log.emit(
-        # #         r"Optimizing stability constants from potentiometric data...\n"
-        # #     )
-
-        # #     self.index_name = "V Add. [mL]"
-
-        # #     self.optimized_species = (
-        # #         np.array(solver_data.potentiometry_opts.beta_flags) == Flags.REFINE
-        # #     )
-
-        # start_time = time.time()
-        # self.signals.log.emit("--" * 40)
-
-        # with warnings.catch_warnings(record=True) as recorded_warnings:
-        #     try:
-        #         if mode == "potentiometry":
-        #             fit_result = self._run_potentiometry(solver_data)
-        #             # # (
-        #             # #     x,
-        #             # #     result,
-        #             # #     log_beta,
-        #             # #     b_error,
-        #             # #     cor_matrix,
-        #             # #     cov_matrix,
-        #             # #     return_extra,
-        #             # # ) = PotentiometryOptimizer(solver_data, reporter=log_reporter)
-        #             # fit_result = PotentiometryOptimizer(solver_data, reporter=log_reporter)
-        #             # ## never used
-        #             # # x = fit_result['final variables']
-        #             # concentrations = fit_result['free concentration']
-        #             # log_beta = fit_result['final log beta']
-        #             # b_error = fit_result['error log beta']
-        #             # ## never used
-        #             # # cor_matrix = fit_result['correlation']
-        #             # # cov_matrix = fit_result['covariance']
-
-        #             # # Calculate elapsed time between start to finish
-        #             # elapsed_time = round((time.time() - start_time), 5)
-
-        #             # slices = fit_result['slices']
-        #             # #idx_to_keep = return_extra["idx_to_keep"]
-
-        #             # ## never used
-        #             # # idx_to_keep = [tuple(n for n, f in enumerate(t.ignored) if not f) for t in solver_data.potentiometry_opts.titrations]
-
-        #             # total_concentration = fit_result["total concentration"]
-
-        #             # solver_data.log_beta_sigma = solver_data.log_beta_sigma.copy()
-        #             # ## never used
-        #             # # refined = [ f == Flags.REFINE for f in solver_data.potentiometry_opts.beta_flags ]
-        #             # solver_data.log_beta_sigma[:] = b_error[:]
-        #             # #solver_data.log_beta_sigma[refined] = b_error[:]
-        #             # # solver_data.log_beta_sigma = np.array(
-        #             # #     list(
-        #             # #         ravel(
-        #             # #             solver_data.log_beta_sigma,
-        #             # #             b_error,
-        #             # #             solver_data.potentiometry_opts.beta_flags,
-        #             # #         )
-        #             # #     )
-        #             # # )
-
-        #             # log_ks = np.tile(
-        #             #     solver_data.log_ks, (total_concentration.shape[0], 1)
-        #             # )
-
-        #             # read_potential = fit_result["read emf"]
-        #             # residuals = fit_result["residuals"]
-        #             # calculated_potential = read_potential - residuals
-
-        #             # px = -np.log10(fit_result['eactive'])
-        #             # # px = np.concatenate([
-        #             # #     (return_extra["calculated_potential"][i] - t.e0) / -t.slope
-        #             # #     for i, t in enumerate(solver_data.potentiometry_opts.titrations)
-        #             # # ])
-
-        #             # self.result_index = np.concatenate([
-        #             #      t.v_add[~t.ignored]
-        #             #      for t in solver_data.potentiometry_opts.titrations
-        #             # ])
-        #             # # self.result_index = np.concatenate([
-        #             # #     t.v_add[idx_to_keep[i]]
-        #             # #     for i, t in enumerate(solver_data.potentiometry_opts.titrations)
-        #             # # ])
-
-        #             # self.result_index = [
-        #             #     self.result_index,
-        #             #     read_potential,
-        #             #     calculated_potential,
-        #             #     residuals,
-        #             #     px,
-        #             #     fit_result["weights"]
-        #             #     #np.diag(return_extra["weights"]),
-        #             # ]
-
-        #             # conc_sigma = []
-        #             # # background_ions_conc = []
-        #             # for i, t in enumerate(solver_data.potentiometry_opts.titrations):
-        #             #     v_aux = t.v_add[~t.ignored]
-        #             #     conc_sigma.append(
-        #             #         np.tile(t.c0_sigma, [v_aux.size, 1])
-        #             #         + (
-        #             #             np.tile(v_aux, [solver_data.nc, 1]).T
-        #             #             * 1e-3
-        #             #             * t.ct_sigma
-        #             #         )
-        #             #     )
-        #             #     # background_ions_conc.append(
-        #             #     #     _titration_background_ions_c(t, idx_to_keep[i])
-        #             #     # )
-        #             # self.conc_sigma = np.concatenate(conc_sigma)
-        #             # # self.background_ions_concentration = np.vstack(background_ions_conc)
-        #             # self.background_ions_concentration = fit_result['background ion concentration']
-
-        #             # self.index_name = [
-        #             #     "V Add. [mL]",
-        #             #     "Read Potential [V]",
-        #             #     "Calculated Potential [V]",
-        #             #     "Residual [V]",
-        #             #     "pX",
-        #             #     "Weight",
-        #             # ]
-        #             # # breakpoint()
-        #             # # tmpindex = [ name for name, flag in zip( solver_data.species_names[solver_data.nc :], solver_data.potentiometry_opts.beta_flags,) if flag == Flags.REFINE ]
-        #             # # optimized_constants = pd.DataFrame(
-        #             # #     {
-        #             # #         "Old logB": solver_data.log_beta[self.optimized_species],
-        #             # #         "New logB": x,
-        #             # #         "Std. Err.": b_error,
-        #             # #     },
-        #             # #     index=tmpindex
-        #             # # )
-        #             # # self._storeResult(optimized_constants, "optimized_constants")
-        #         else:
-        #             (
-        #                 result,
-        #                 log_beta,
-        #                 log_ks,
-        #                 saturation_index,
-        #                 total_concentration,
-        #             ) = EqSolver(solver_data, mode=mode)
-        #             slices = [0, result.shape[0]]
-        #             # Calculate elapsed time between start to finish
-        #             elapsed_time = round((time.time() - start_time), 5)
-        #             concentrations = species_concentration(
-        #                 result, log_beta, solver_data.stoichiometry, full=True
-        #             )
-        #     except Exception as e:
-        #         if self.debug:
-        #             msg = "".join(
-        #                 traceback.TracebackException.from_exception(e).format()
-        #             )
-        #             if hasattr(e, "last_value"):
-        #                 msg += f"\nLast value: {e.last_value}"
-        #             self.signals.aborted.emit(msg)
-
-        #         else:
-        #             msg = str(e)
-
-        #             if hasattr(e, "last_value"):
-        #                 msg += f"\nLast value: {e.last_value}"
-
-        #             self.signals.aborted.emit(msg)
-
-        #         return None
-        #     finally:
-        #         if recorded_warnings:
-        #             self.signals.log.emit("Warnings occured during calculations:\n")
-        #             for w in recorded_warnings:
-        #                 if isinstance(w.message, DivergedIonicStrengthWarning):
-        #                     self.signals.log.emit(str(w.message))
-        #             self.signals.log.emit("\n")
-
-        # # concentrations = species_concentration(
-        # #     result, log_beta, solver_data.stoichiometry, full=True
-        # # )
-
-        # soluble_concentration = concentrations[
-        #     :,
-        #     np.r_[
-        #         0 : solver_data.nc,
-        #         (solver_data.nc + solver_data.nf) : (
-        #             solver_data.nc + solver_data.nf + solver_data.ns
-        #         ),
-        #     ],
-        # ]
-
-        # self.ionic_strength_dependence = solver_data.ionic_strength_dependence
-        # self.ionic_strength = 0.5 * (
-        #     (
-        #         soluble_concentration
-        #         * (
-        #             np.concatenate([solver_data.charges, solver_data.species_charges])
-        #             ** 2
-        #         )
-        #     ).sum(axis=1, keepdims=True)
-        #     + self.background_ions_concentration
-        # )
-
-        # soluble_concentration = self._create_df_result(
-        #     soluble_concentration,
-        #     columns=solver_data.species_names,
-        # ).rename_axis(columns="Species Conc. [mol/L]")
-
-        # solids_concentration_only = pd.DataFrame(
-        #     concentrations[:, solver_data.nc : (solver_data.nc + solver_data.nf)],
-        #     index=self.result_index,
-        #     columns=solver_data.solids_names,
-        # ).rename_axis(columns="Solid Conc. [mol/L]")
-
-        # saturation_index = pd.DataFrame(
-        #     _compute_saturation_index(
-        #         concentrations[:, : solver_data.nc], log_ks, solver_data.solid_stoichiometry
-        #     ),
-        #     index=self.result_index,
-        #     columns=["SI" + name for name in solver_data.solids_names],
-        # )
-
-        # precipitate_check = (
-        #     (solids_concentration_only > 0)
-        #     .replace({True: "*", False: ""})
-        #     .set_axis(
-        #         ["Prec." + name for name in solids_concentration_only.columns], axis=1
-        #     )
-        # )
-
-        # solids_concentration = self._create_df_result(
-        #     pd.concat(
-        #         (solids_concentration_only, precipitate_check, saturation_index),
-        #         axis=1,
-        #         sort=True,
-        #     )
-        # )
-
-        # solids_concentration = solids_concentration[
-        #     sum(
-        #         [
-        #             [check_col, si_col, solid_col]
-        #             for check_col, si_col, solid_col in zip(
-        #                 precipitate_check.columns,
-        #                 saturation_index.columns,
-        #                 solids_concentration_only.columns,
-        #             )
-        #         ],
-        #         [],
-        #     )
-        # ]
-
-        # formation_constants = (
-        #     pd.DataFrame()
-        #     if not solver_data.ionic_strength_dependence
-        #     else self._create_df_result(
-        #         log_beta,
-        #         columns=solver_data.species_names[solver_data.nc :],
-        #     )
-        # ).rename_axis(columns="Formation Constant")
-
-        # solubility_products = (
-        #     pd.DataFrame()
-        #     if not solver_data.ionic_strength_dependence
-        #     else self._create_df_result(
-        #         log_ks,
-        #         columns=solver_data.solids_names,
-        #     )
-        # ).rename_axis(columns="Solubility Product")
-
-        # _print_titration(slices, soluble_concentration, self.signals.log.emit, "soluble species")
-        # _print_titration(slices, solids_concentration, self.signals.log.emit, "solid species")
-
-        # ref_percentage_soluble = solver_data.components + list(
-        #     self.data["speciesModel"]["Ref. Comp."].values()
-        # )
-        # ref_percentage_soluble_ix = component_encoder(
-        #     solver_data.components, ref_percentage_soluble
-        # )
-
-        # ref_tot_conc_soluble = total_concentration[:, ref_percentage_soluble_ix]
-
-        # adjust_factor_soluble = np.clip(
-        #     np.concatenate(
-        #         (
-        #             np.eye(solver_data.nc, dtype=int),
-        #             solver_data.stoichiometry,
-        #         ),
-        #         axis=1,
-        #     )[ref_percentage_soluble_ix, range(ref_percentage_soluble_ix.size)],
-        #     1,
-        #     np.inf,
-        # )
-
-        # ref_poercentage_solids = list(
-        #     self.data["solidSpeciesModel"]["Ref. Comp."].values()
-        # )
-
-        # ref_percentage_solids_ix = component_encoder(
-        #     solver_data.components,
-        #     ref_poercentage_solids,
-        # )
-
-        # ref_tot_conc_solids = total_concentration[:, ref_percentage_solids_ix]
-
-        # adjust_factor_solids = np.clip(
-        #     solver_data.solid_stoichiometry[
-        #         ref_percentage_solids_ix, range(ref_percentage_solids_ix.size)
-        #     ],
-        #     1,
-        #     np.inf,
-        # )
-
-        # soluble_percentages_np = (
-        #     (soluble_concentration.to_numpy() * adjust_factor_soluble)
-        #     / ref_tot_conc_soluble
-        # ) * 100
-
-        # soluble_percentages = self._create_df_result(
-        #     (soluble_percentages_np).round(2),
-        #     columns=[solver_data.species_names, ref_percentage_soluble],
-        # ).rename_axis(columns=["Species", r"% relative to comp."])
-
-        # solids_percentage_np = (
-        #     (solids_concentration_only.to_numpy() * adjust_factor_solids)
-        #     / ref_tot_conc_solids
-        # ) * 100
-
-        # solids_percentages = self._create_df_result(
-        #     (solids_percentage_np).round(2),
-        #     columns=[solver_data.solids_names, ref_poercentage_solids],
-        # ).rename_axis(columns=["Solids", r"% relative to comp."])
-
-        # _print_titration(slices, soluble_percentages, self.signals.log.emit, "percent soluble species")
-        # _print_titration(slices, solids_percentages, self.signals.log.emit, "percent solids species")
-
-        # if not formation_constants.empty:
-        #     self.signals.log.emit(repr(formation_constants))
-
-        # if not solubility_products.empty:
-        #     self.signals.log.emit(repr(solubility_products))
-
-        # if self.data["emode"] is True:
-        #     soluble_sigma_np, solids_sigma_np = uncertanties(
-        #         concentrations,
-        #         solver_data.stoichiometry,
-        #         solver_data.solid_stoichiometry,
-        #         log_beta,
-        #         log_ks,
-        #         solver_data.log_beta_sigma,
-        #         solver_data.log_ks_sigma,
-        #         self.conc_sigma,
-        #         (
-        #             solver_data.distribution_opts.independent_component
-        #             if mode == "distribution"
-        #             else None
-        #         ),
-        #     )
-
-        #     soluble_sigma = self._create_df_result(
-        #         soluble_sigma_np,
-        #         columns=solver_data.species_names,
-        #     )
-
-        #     solids_sigma = self._create_df_result(
-        #         solids_sigma_np,
-        #         columns=solver_data.solids_names,
-        #     )
-
-        #     sigma_ref_tot_conc_soluble = np.array([
-        #         self.conc_sigma[:, ix] for ix in ref_percentage_soluble_ix
-        #     ]).T
-
-        #     sigma_ref_tot_conc_solids = np.array([
-        #         self.conc_sigma[:, ix] for ix in ref_percentage_solids_ix
-        #     ]).T
-
-        #     soluble_percentages_sigma = self._create_df_result(
-        #         soluble_percentages_np
-        #         * np.sqrt(
-        #             (
-        #                 soluble_sigma_np
-        #                 / (soluble_concentration.to_numpy() * adjust_factor_soluble)
-        #             )
-        #             ** 2
-        #             + (sigma_ref_tot_conc_soluble / ref_tot_conc_soluble) ** 2
-        #         ),
-        #         columns=solver_data.species_names,
-        #     )
-
-        #     solids_percentages_sigma = self._create_df_result(
-        #         solids_percentage_np
-        #         * np.sqrt(
-        #             (
-        #                 solids_sigma_np
-        #                 / (solids_concentration_only.to_numpy() * adjust_factor_solids)
-        #             )
-        #             ** 2
-        #             + (sigma_ref_tot_conc_solids / ref_tot_conc_solids) ** 2
-        #         ),
-        #         columns=solver_data.solids_names,
-        #     )
-
-        #     # self._storeResult(soluble_sigma, "species_sigma", slices=slices)
-        #     # self._storeResult(solids_sigma, "solid_sigma", slices=slices)
-
-        #     # self._storeResult(
-        #     #     soluble_percentages_sigma, "soluble_percentages_sigma", slices=slices
-        #     # )
-        #     # self._storeResult(
-        #     #     solids_percentages_sigma, "solids_percentages_sigma", slices=slices
-        #     # )
-
         retval.update(retinfo)
         retval.update({'stoichiometry': stoichiometry,
                        'solid_stoichiometry': solid_stoichiometry})
@@ -1298,49 +753,6 @@ class optimizeWorker(QRunnable):
             index=[f"Mean {e.replace('_', ' ').upper()}" for e in extra],
         )
         self.signals.log.emit(extra_df.to_string())
-
-    # def _storeResult(
-    #     self,
-    #     data: pd.DataFrame,
-    #     name: str,
-    #     slices: list[int] = [],
-    #     extra: list[str] = [],
-    #     print_out: bool = True,
-    # ):
-    #     multiple_items = len(slices) > 2
-    #     if multiple_items:
-    #         # Ensure slices does not include data.shape[0] as its last element
-    #         if slices[-1] == data.shape[0]:
-    #             slices = slices[:-1]
-
-    #         # Create the list of tuples representing the intervals
-    #         ix_ranges = [(slices[i], slices[i + 1]) for i in range(len(slices) - 1)] + [
-    #             (slices[-1], data.shape[0])
-    #         ]
-    #         result = []
-    #         for counter, (i1, i2) in enumerate(ix_ranges):
-    #             df = data.iloc[i1:i2, :]
-    #             result.append(df)
-    #             self.signals.result.emit(df, name)
-    #             if not df.empty and print_out:
-    #                 if i1 == 0:
-    #                     self.signals.log.emit(
-    #                         "\t\t" + name.replace("_", " ").upper() + "\n"
-    #                     )
-    #                 self.signals.log.emit(f"\t\t\t Titration {counter + 1}")
-    #                 self.signals.log.emit(df.to_string())
-    #                 if extra:
-    #                     self._reportData(df, extra)
-    #                 self.signals.log.emit("\n\n")
-    #                 self.signals.log.emit("--" * 40)
-    #     else:
-    #         self.signals.result.emit(data, name)
-    #         if not data.empty and print_out:
-    #             self.signals.log.emit("\t\t" + name.replace("_", " ").upper() + "\n")
-    #             self.signals.log.emit(data.to_string())
-    #             if extra:
-    #                 self._reportData(data, extra)
-    #             self.signals.log.emit("--" * 40)
 
     def _check_ready(self, solver_data):
         """
@@ -1416,11 +828,6 @@ def component_encoder(components: list[str], reference_component: list[str]):
     # Given the list of species names as strings and a list of the same names for each species return a list of their indexes instead.
     # This is used to calculate percentages of species concentrations
     return np.array([components.index(c) for c in reference_component], dtype=int)
-
-
-# def compute_index_mean(data: pd.DataFrame, index_name: str):
-#     # Compute the mean of the index of the dataframe
-#     return data.index.get_level_values(index_name).to_numpy().mean()
 
 
 def _print_titration(slices, dataset, emitter, title: str = "data"):
