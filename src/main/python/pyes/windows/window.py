@@ -835,6 +835,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 problems,
             ),
         )
+        self.concToRefine.setVerticalHeaderLabels(jsdata['compModel']['Name'].values())
         apply_table_map(
             self.electrodeToRefine,
             value_or_problem(
