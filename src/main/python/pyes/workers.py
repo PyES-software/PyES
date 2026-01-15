@@ -573,9 +573,16 @@ class optimizeWorker(QRunnable):
         ).rename_axis(columns=["Solids", r"% relative to comp."])
 
         self.signals.log.emit("\nSoluble species concentrations")
-        self.signals.log.emit(repr(soluble_concentration))
+        if soluble_concentration.empty:
+            self.signals.log.emit("No soluble species to print")
+        else: 
+            self.signals.log.emit(repr(soluble_concentration))
+
         self.signals.log.emit("\nSolid species concentrations")
-        self.signals.log.emit(repr(solids_concentration))
+        if solids_concentration.empty:
+            self.signals.log.emit("No solid species to print")
+        else:
+            self.signals.log.emit(repr(solids_concentration))
 
         if not formation_constants.empty:
             self.signals.log.emit(repr(formation_constants))
