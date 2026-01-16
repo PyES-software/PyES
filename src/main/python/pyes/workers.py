@@ -256,23 +256,35 @@ class optimizeWorker(QRunnable):
             )
         ]
 
-        formation_constants = (
-            pd.DataFrame()
-            if not solver_data.ionic_strength_dependence
-            else self._create_df_result(
-                log_beta,
-                columns=solver_data.species_names[solver_data.nc :],
-            )
-        ).rename_axis(columns="Formation Constant")
+        formation_constants = pd.DataFrame()
+        components_idx = pd.Index(solver_data.components)
+        formation_constants[components_idx] = solver_data.stoichiometry
+        formation_constants['log beta'] = log_beta
+        formation_constants['stdev'] = solver_data.log_beta_sigma
 
-        solubility_products = (
-            pd.DataFrame()
-            if not solver_data.ionic_strength_dependence
-            else self._create_df_result(
-                log_ks,
-                columns=solver_data.solids_names,
-            )
-        ).rename_axis(columns="Solubility Product")
+        solubility_products = pd.DataFrame()
+        if len(solver_data.log_ks):
+            solubility_products['logKs'] = solver_data.log_ks
+            solubility_products[components_idx] = solver_data.stoichiometry
+            solubility_products['stdev'] = solver_data.log_ks_sigma
+
+        # formation_constants = (
+        #     pd.DataFrame()
+        #     if not solver_data.ionic_strength_dependence
+        #     else self._create_df_result(
+        #         fit_result['conditional_logbeta'],
+        #         columns=solver_data.species_names[solver_data.nc :],
+        #     )
+        # ).rename_axis(columns="Formation Constant")
+
+        # solubility_products = (
+        #     pd.DataFrame()
+        #     if not solver_data.ionic_strength_dependence
+        #     else self._create_df_result(
+        #         fit_result['conditional_logks'],
+        #         columns=solver_data.solids_names,
+        #     )
+        # ).rename_axis(columns="Solubility Product")
 
         _print_titration(slices, soluble_concentration, self.signals.log.emit, "soluble species")
         _print_titration(slices, solids_concentration, self.signals.log.emit, "solid species")
@@ -340,10 +352,16 @@ class optimizeWorker(QRunnable):
         _print_titration(slices, soluble_percentages, self.signals.log.emit, "percent soluble species")
         _print_titration(slices, solids_percentages, self.signals.log.emit, "percent solids species")
 
-        if not formation_constants.empty:
-            self.signals.log.emit(repr(formation_constants))
+        if formation_constants.empty:
+            self.signals.log.emit('\nNo formation constants to print')
+        else:
+            self.signals.log.emit('\nFormation constants')
+            self.signals.log.emit(repr(formation_constants.fillna("")))
 
-        if not solubility_products.empty:
+        if solubility_products.empty:
+            self.signals.log.emit('\nNo formation constants to print')
+        else:
+            self.signals.log.emit('\nSolubility constants')
             self.signals.log.emit(repr(solubility_products))
 
         if self.data["emode"] is True:
