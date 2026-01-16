@@ -624,7 +624,7 @@ class optimizeWorker(QRunnable):
                 log_ks,
                 solver_data.log_beta_sigma,
                 solver_data.log_ks_sigma,
-                self.conc_sigma, 
+                self.conc_sigma,
                 solver_data.distribution_opts.independent_component,
             )
 
