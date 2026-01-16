@@ -63,7 +63,8 @@ class optimizeWorker(QRunnable):
             out(f"step : {kwargs['exit_step_value']:.4e} ({kwargs['exit_step']})")
 
             if kwargs['any beta refined']:
-                txt = "   # " + "".join(f"{comp:>5}" for comp in labels) + "     logβ       change  previous"
+                txt = "   # " + "".join(f"{comp:>5}" for comp in labels) + \
+                      "     logβ       change  previous"
                 out(txt)
                 lgbeta = kwargs['log_beta']
                 oldbeta = iter(kwargs['previous log beta'].tolist())
@@ -88,7 +89,7 @@ class optimizeWorker(QRunnable):
 
         self.index_name = "V Add. [mL]"
 
-        self.optimized_species = (np.array(solver_data.potentiometry_opts.beta_flags) == Flags.REFINE)
+        self.optimized_species = np.array(solver_data.potentiometry_opts.beta_flags) == Flags.REFINE
 
         self.signals.log.emit("--" * 40)
 
@@ -159,7 +160,7 @@ class optimizeWorker(QRunnable):
 
         conc_sigma = []
         # background_ions_conc = []
-        for i, t in enumerate(solver_data.potentiometry_opts.titrations):
+        for t in solver_data.potentiometry_opts.titrations:
             v_aux = t.v_add[~t.ignored]
             conc_sigma.append(
                 np.tile(t.c0_sigma, [v_aux.size, 1])
@@ -169,9 +170,6 @@ class optimizeWorker(QRunnable):
                     * t.ct_sigma
                 )
             )
-            # background_ions_conc.append(
-            #     _titration_background_ions_c(t, idx_to_keep[i])
-            # )
         self.conc_sigma = np.concatenate(conc_sigma)
         # self.background_ions_concentration = np.vstack(background_ions_conc)
         self.background_ions_concentration = fit_result['background ion concentration']
@@ -376,6 +374,8 @@ class optimizeWorker(QRunnable):
                 self.conc_sigma,
                 None
             )
+            fit_result['soluble_sigma'] = soluble_sigma_np
+            fit_result['solids_sigma'] = solids_sigma_np
 
         return fit_result
 
@@ -593,7 +593,7 @@ class optimizeWorker(QRunnable):
         self.signals.log.emit("\nSoluble species concentrations")
         if soluble_concentration.empty:
             self.signals.log.emit("No soluble species to print")
-        else: 
+        else:
             self.signals.log.emit(repr(soluble_concentration))
 
         self.signals.log.emit("\nSolid species concentrations")
@@ -721,7 +721,7 @@ class optimizeWorker(QRunnable):
                 "Model not ready, please check the errors and try again:\n"
                 + error_messages
             )
-            return None
+            return
 
         ready = self._check_ready(solver_data)
         if not ready:
@@ -771,7 +771,7 @@ class optimizeWorker(QRunnable):
         self.signals.result.emit(retval)
         self.signals.finished.emit()
 
-        return None
+        return
 
     def _reportData(self, data: pd.DataFrame, extra: list[str]):
         extra_df = pd.DataFrame(
@@ -809,14 +809,14 @@ class optimizeWorker(QRunnable):
     def _create_df_result(self, data, columns: list | None = None):
         if data is None:
             return pd.DataFrame()
-        else:
-            result = pd.DataFrame(
-                data, index=self.result_index, columns=columns
-            ).rename_axis(index=self.index_name)
-            result.insert(0, "I", self.ionic_strength)
-            result.set_index("I", append=True, inplace=True)
 
-            return result
+        result = pd.DataFrame(
+            data, index=self.result_index, columns=columns
+        ).rename_axis(index=self.index_name)
+        result.insert(0, "I", self.ionic_strength)
+        result.set_index("I", append=True, inplace=True)
+
+        return result
 
     def _simplify_problem(self, data: dict[str, Any]):
         def remove_ignored(model: dict[str, Any]):
@@ -852,7 +852,8 @@ class optimizeWorker(QRunnable):
 
 
 def component_encoder(components: list[str], reference_component: list[str]):
-    # Given the list of species names as strings and a list of the same names for each species return a list of their indexes instead.
+    # Given the list of species names as strings and a list of the same names for each species
+    #  return a list of their indexes instead.
     # This is used to calculate percentages of species concentrations
     return np.array([components.index(c) for c in reference_component], dtype=int)
 
@@ -919,4 +920,3 @@ def _print_correlation_matrix(corr: np.ndarray, labels: list[str], emitter) -> N
             f"{row['Var 1']}  <->  {row['Var 2']}:  "
             f"{row['correlation']:+.3f}"
         )
-
