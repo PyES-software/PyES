@@ -1,6 +1,6 @@
 import time
 import traceback
-from typing import Any
+from typing import Any, Callable
 
 import numpy as np
 import pandas as pd
@@ -266,24 +266,6 @@ class optimizeWorker(QRunnable):
             solubility_products[components_idx] = solver_data.stoichiometry
             solubility_products['stdev'] = solver_data.log_ks_sigma
 
-        # formation_constants = (
-        #     pd.DataFrame()
-        #     if not solver_data.ionic_strength_dependence
-        #     else self._create_df_result(
-        #         fit_result['conditional_logbeta'],
-        #         columns=solver_data.species_names[solver_data.nc :],
-        #     )
-        # ).rename_axis(columns="Formation Constant")
-
-        # solubility_products = (
-        #     pd.DataFrame()
-        #     if not solver_data.ionic_strength_dependence
-        #     else self._create_df_result(
-        #         fit_result['conditional_logks'],
-        #         columns=solver_data.solids_names,
-        #     )
-        # ).rename_axis(columns="Solubility Product")
-
         _print_titration(slices, soluble_concentration, self.signals.log.emit, "soluble species")
         _print_titration(slices, solids_concentration, self.signals.log.emit, "solid species")
 
@@ -350,17 +332,8 @@ class optimizeWorker(QRunnable):
         _print_titration(slices, soluble_percentages, self.signals.log.emit, "percent soluble species")
         _print_titration(slices, solids_percentages, self.signals.log.emit, "percent solids species")
 
-        if formation_constants.empty:
-            self.signals.log.emit('\nNo formation constants to print')
-        else:
-            self.signals.log.emit('\nFormation constants')
-            self.signals.log.emit(repr(formation_constants.fillna("")))
-
-        if solubility_products.empty:
-            self.signals.log.emit('\nNo formation constants to print')
-        else:
-            self.signals.log.emit('\nSolubility constants')
-            self.signals.log.emit(repr(solubility_products))
+        _emit_df(self.signals.log.emit, formation_constants, "formation constants")
+        _emit_df(self.signals.log.emit, solubility_products, "solubility products")
 
         if self.data["emode"] is True:
             soluble_sigma_np, solids_sigma_np = uncertanties(
@@ -590,23 +563,10 @@ class optimizeWorker(QRunnable):
             columns=[solver_data.solids_names, ref_poercentage_solids],
         ).rename_axis(columns=["Solids", r"% relative to comp."])
 
-        self.signals.log.emit("\nSoluble species concentrations")
-        if soluble_concentration.empty:
-            self.signals.log.emit("No soluble species to print")
-        else:
-            self.signals.log.emit(repr(soluble_concentration))
-
-        self.signals.log.emit("\nSolid species concentrations")
-        if solids_concentration.empty:
-            self.signals.log.emit("No solid species to print")
-        else:
-            self.signals.log.emit(repr(solids_concentration))
-
-        if not formation_constants.empty:
-            self.signals.log.emit(repr(formation_constants))
-
-        if not solubility_products.empty:
-            self.signals.log.emit(repr(solubility_products))
+        _emit_df(self.signals.log.emit, soluble_concentration, "soluble species concentration")
+        _emit_df(self.signals.log.emit, solids_concentration, "solid species")
+        _emit_df(self.signals.log.emit, formation_constants, "formation constants")
+        _emit_df(self.signals.log.emit, solubility_products, "solubility products")
 
         retval = {
             'species_concentrations': soluble_concentration,
@@ -856,6 +816,16 @@ def component_encoder(components: list[str], reference_component: list[str]):
     #  return a list of their indexes instead.
     # This is used to calculate percentages of species concentrations
     return np.array([components.index(c) for c in reference_component], dtype=int)
+
+
+def _emit_df(emitter: Callable[[str], None], df: pd.DataFrame, title: str | None = None) -> None:
+    """Emit a dataframe through emitter as a formatted string (title optional)."""
+    if title:
+        emitter(f"\n{title}")
+    if df.empty:
+        emitter(f"No {title} to print")
+    else:
+        emitter(df.to_string())
 
 
 def _print_titration(slices, dataset, emitter, title: str = "data"):
