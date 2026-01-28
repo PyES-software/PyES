@@ -1,12 +1,28 @@
-# Two-stage flatten (forzato):
-# Stage 1: move children from .\pyes-files\ to repo root (overwriting)
-# Stage 2: move children from .\pyes\ to repo root (overwriting)
-# If index.html already in root after Stage1, Stage2 is skipped.
+# Two-stage flatten (forza Stage2):
+# Stage1: move children from .\pyes-files\ to root (se esiste)
+# Cleanup: rimuove output "vecchio" in root (index.html + cartelle tipiche)
+# Stage2: move children from .\pyes\ to root (sovrascrivendo)
+# Final: verifica index.html in root
 
 $ErrorActionPreference = "Stop"
 
 $stage1Folder = "pyes-files"
-$stage2Folder = "pyes"     # <-- cartella del sito "vero"
+$stage2Folder = "pyes"
+
+# Cosa pulire in root PRIMA di Stage2 (aggiungi/togli se serve)
+$rootCleanup = @(
+  "index.html",
+  "404.html",
+  "sitemap.xml",
+  "robots.txt",
+  "feed.xml",
+  "assets",
+  "themes",
+  "media",
+  "authors",
+  "tags",
+  "home"
+)
 
 $repoRoot = Get-Location
 Write-Host "Repo root: $repoRoot"
@@ -20,7 +36,7 @@ function Remove-IfExists([string]$path) {
 
 function Move-ChildrenToRoot([string]$folderPath, [string]$label) {
     if (!(Test-Path $folderPath)) {
-        Write-Host "[$label] Folder not found: $folderPath"
+        Write-Host "[$label] Folder not found: $folderPath (skip)"
         return $false
     }
 
@@ -37,30 +53,42 @@ function Move-ChildrenToRoot([string]$folderPath, [string]$label) {
 }
 
 # -----------------------
-# Stage 1
+# Stage 1 (optional)
 # -----------------------
 $stage1Path = Join-Path $repoRoot $stage1Folder
 Move-ChildrenToRoot -folderPath $stage1Path -label "STAGE1" | Out-Null
 
-# If Stage1 already produced a root index.html, we are done
-$rootIndex = Join-Path $repoRoot "index.html"
-if (Test-Path $rootIndex) {
-    Write-Host "[INFO] index.html already in root after STAGE1. Skipping STAGE2."
-    exit 0
+# -----------------------
+# Cleanup root BEFORE Stage 2
+# -----------------------
+Write-Host "[CLEANUP] Removing old root output before STAGE2..."
+foreach ($item in $rootCleanup) {
+    $p = Join-Path $repoRoot $item
+    if (Test-Path $p) {
+        Write-Host "  - remove $item"
+        Remove-IfExists -path $p
+    }
 }
+Write-Host "[CLEANUP] Done."
 
 # -----------------------
 # Stage 2 (forced)
 # -----------------------
 $stage2Path = Join-Path $repoRoot $stage2Folder
 $ok2 = Move-ChildrenToRoot -folderPath $stage2Path -label "STAGE2"
-
-# Final check
-if (!(Test-Path (Join-Path $repoRoot "index.html"))) {
-    Write-Host "ERRORE: index.html non trovato in root dopo STAGE2."
-    Write-Host "Controlla cosa e' stato estratto da '$stage1Folder' (magari il sito e' in un'altra cartella, non '$stage2Folder')."
+if (-not $ok2) {
+    Write-Host "ERRORE: Non trovo la cartella '$stage2Folder' dopo STAGE1+cleanup."
+    Write-Host "Cartelle presenti in root:"
+    Get-ChildItem -LiteralPath $repoRoot -Directory | Select-Object Name
     exit 1
 }
 
-Write-Host "OK: flatten completato. Root index.html presente."
+# Final check
+$rootIndex = Join-Path $repoRoot "index.html"
+if (!(Test-Path $rootIndex)) {
+    Write-Host "ERRORE: index.html non trovato in root dopo STAGE2."
+    exit 1
+}
+
+Write-Host "OK: flatten completato. Root index.html presente (da STAGE2)."
 exit 0

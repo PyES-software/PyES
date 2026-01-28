@@ -1,3 +1,0 @@
-User-agent: *
-Disallow:
-Sitemap: https://PyES-software.github.io/PyES/sitemap.xml
