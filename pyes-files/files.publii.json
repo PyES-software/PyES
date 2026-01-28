@@ -1,0 +1,117 @@
+[
+    {
+        "path": "404.html",
+        "type": "file",
+        "md5": "f85d1258a77c3e94b1c34faf15b246ac"
+    },
+    {
+        "path": "assets",
+        "type": "directory",
+        "md5": false
+    },
+    {
+        "path": "assets/css",
+        "type": "directory",
+        "md5": false
+    },
+    {
+        "path": "/assets/css/editor.css",
+        "type": "file",
+        "md5": "4202808df745f2ac7ab250606fa0d272"
+    },
+    {
+        "path": "/assets/css/main.css",
+        "type": "file",
+        "md5": "62a2f78af0273a34c857fead405f6094"
+    },
+    {
+        "path": "/assets/css/style.css",
+        "type": "file",
+        "md5": "2110fdcc9616a96348b5f5ad11c64055"
+    },
+    {
+        "path": "assets/dynamic",
+        "type": "directory",
+        "md5": false
+    },
+    {
+        "path": "assets/js",
+        "type": "directory",
+        "md5": false
+    },
+    {
+        "path": "/assets/js/scripts.js",
+        "type": "file",
+        "md5": "e66ec016e1abd2297b17a5d038b695b7"
+    },
+    {
+        "path": "/assets/js/scripts.min.js",
+        "type": "file",
+        "md5": "d0fc1030089a37f93a2d51bf6d07565c"
+    },
+    {
+        "path": "/assets/js/svg-fix.js",
+        "type": "file",
+        "md5": "9b7d020c55e2b4f77ab40c97f88f9ff4"
+    },
+    {
+        "path": "/assets/js/svg-map.js",
+        "type": "file",
+        "md5": "ff4392540fcf4c3d3f5e03806e112816"
+    },
+    {
+        "path": "assets/svg",
+        "type": "directory",
+        "md5": false
+    },
+    {
+        "path": "/assets/svg/svg-map.svg",
+        "type": "file",
+        "md5": "cf04dfd5c3cc64e0be44692fe7d976a6"
+    },
+    {
+        "path": "authors",
+        "type": "directory",
+        "md5": false
+    },
+    {
+        "path": "feed.json",
+        "type": "file",
+        "md5": "6b21357db37444ef1edb8a39842eeed8"
+    },
+    {
+        "path": "feed.xml",
+        "type": "file",
+        "md5": "bbfef661fc927e8b6251b81f5ca9c7af"
+    },
+    {
+        "path": "index.html",
+        "type": "file",
+        "md5": "e4d610a767f79754cd124cbc13dde59c"
+    },
+    {
+        "path": "robots.txt",
+        "type": "file",
+        "md5": "dcf3118ccb1c768266265c57170c25fe"
+    },
+    {
+        "path": "sitemap.xml",
+        "type": "file",
+        "md5": "c7979bcba85cf2bb21a248ba5f9dba11"
+    },
+    {
+        "path": "sitemap.xsl",
+        "type": "file",
+        "md5": "03c2f9a7fdcc46ff05c435907614a0b8"
+    },
+    {
+        "path": "tags",
+        "type": "directory",
+        "md5": false
+    },
+    {
+        "path": "/tags/index.html",
+        "type": "file",
+        "md5": "34380b185abd4d324734ca0d7969d3c4"
+    }
+]
