@@ -75,6 +75,16 @@
         "md5": false
     },
     {
+        "path": "authors/bertinetti-stefano",
+        "type": "directory",
+        "md5": false
+    },
+    {
+        "path": "/authors/bertinetti-stefano/index.html",
+        "type": "file",
+        "md5": "4947f287cd86fd8423693ff5056fdf18"
+    },
+    {
         "path": "feed.json",
         "type": "file",
         "md5": "6b21357db37444ef1edb8a39842eeed8"
@@ -85,9 +95,29 @@
         "md5": "bbfef661fc927e8b6251b81f5ca9c7af"
     },
     {
+        "path": "home",
+        "type": "directory",
+        "md5": false
+    },
+    {
+        "path": "/home/index.html",
+        "type": "file",
+        "md5": "a237a98562e89ddc190fe4eb36ae8191"
+    },
+    {
         "path": "index.html",
         "type": "file",
         "md5": "e4d610a767f79754cd124cbc13dde59c"
+    },
+    {
+        "path": "pyes",
+        "type": "directory",
+        "md5": false
+    },
+    {
+        "path": "/pyes/index.html",
+        "type": "file",
+        "md5": "1b2e529be02691a9c82217ebba41b36d"
     },
     {
         "path": "robots.txt",
@@ -97,7 +127,7 @@
     {
         "path": "sitemap.xml",
         "type": "file",
-        "md5": "c7979bcba85cf2bb21a248ba5f9dba11"
+        "md5": "a6dd4b91f64ba037b5870d38b6458358"
     },
     {
         "path": "sitemap.xsl",
