@@ -1,4 +1,0 @@
-[run]
-omit =  src/main/python/pyes/ui/*
-        src/main/python/pyes/resources_rc.py
-        src/main/python/*/__init__.py
