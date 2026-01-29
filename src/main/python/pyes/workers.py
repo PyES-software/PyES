@@ -256,7 +256,7 @@ class optimizeWorker(QRunnable):
 
         formation_constants = pd.DataFrame()
         components_idx = pd.Index(solver_data.components)
-        formation_constants[components_idx] = solver_data.stoichiometry
+        formation_constants[components_idx] = solver_data.stoichiometry.T
         formation_constants['log beta'] = log_beta
         formation_constants['stdev'] = solver_data.log_beta_sigma
 
