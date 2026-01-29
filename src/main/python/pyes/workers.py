@@ -266,7 +266,7 @@ class optimizeWorker(QRunnable):
         formation_constants['change'] = formation_constants['log beta'] - formation_constants['initial'] 
         formation_constants['initial'] = formation_constants['initial'].mask(mask, np.nan)
         formation_constants['change'] = formation_constants['change'].mask(mask, np.nan)
-        formation_constants.fillna('', inplace=True)
+        formation_constants = formation_constants.fillna('')
 
         solubility_products = pd.DataFrame()
         if len(solver_data.log_ks):
