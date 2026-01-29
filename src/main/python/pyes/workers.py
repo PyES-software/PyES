@@ -92,6 +92,7 @@ class optimizeWorker(QRunnable):
         self.optimized_species = np.array(solver_data.potentiometry_opts.beta_flags) == Flags.REFINE
 
         self.signals.log.emit("--" * 40)
+        initial_logbeta = solver_data.log_beta.copy()
 
         try:
             fit_result = PotentiometryOptimizer(solver_data, reporter=log_reporter)
@@ -259,6 +260,12 @@ class optimizeWorker(QRunnable):
         formation_constants[components_idx] = solver_data.stoichiometry.T
         formation_constants['log beta'] = log_beta
         formation_constants['stdev'] = solver_data.log_beta_sigma
+        mask = formation_constants['stdev'].isna()
+        formation_constants['initial'] = initial_logbeta
+        formation_constants['change'] = formation_constants['log beta'] - formation_constants['initial'] 
+        formation_constants['initial'].mask(mask, np.nan, inplace=True)
+        formation_constants['change'].mask(mask, np.nan, inplace=True)
+        formation_constants.fillna('', inplace=True)
 
         solubility_products = pd.DataFrame()
         if len(solver_data.log_ks):
@@ -332,8 +339,8 @@ class optimizeWorker(QRunnable):
         _print_titration(slices, soluble_percentages, self.signals.log.emit, "percent soluble species")
         _print_titration(slices, solids_percentages, self.signals.log.emit, "percent solids species")
 
-        _emit_df(self.signals.log.emit, formation_constants, "formation constants")
-        _emit_df(self.signals.log.emit, solubility_products, "solubility products")
+        _emit_df(self.signals.log.emit, formation_constants, "Formation constants")
+        _emit_df(self.signals.log.emit, solubility_products, "Solubility products")
 
         if self.data["emode"] is True:
             soluble_sigma_np, solids_sigma_np = uncertanties(
