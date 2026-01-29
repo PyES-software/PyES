@@ -256,6 +256,7 @@ class optimizeWorker(QRunnable):
         ]
 
         formation_constants = pd.DataFrame()
+        formation_constants['species'] = solver_data.species_names[solver_data.nc:]
         components_idx = pd.Index(solver_data.components)
         formation_constants[components_idx] = solver_data.stoichiometry.T
         formation_constants['log beta'] = log_beta
@@ -263,8 +264,8 @@ class optimizeWorker(QRunnable):
         mask = formation_constants['stdev'].isna()
         formation_constants['initial'] = initial_logbeta
         formation_constants['change'] = formation_constants['log beta'] - formation_constants['initial'] 
-        formation_constants['initial'].mask(mask, np.nan, inplace=True)
-        formation_constants['change'].mask(mask, np.nan, inplace=True)
+        formation_constants['initial'] = formation_constants['initial'].mask(mask, np.nan)
+        formation_constants['change'] = formation_constants['change'].mask(mask, np.nan)
         formation_constants.fillna('', inplace=True)
 
         solubility_products = pd.DataFrame()
