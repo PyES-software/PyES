@@ -337,8 +337,8 @@ class optimizeWorker(QRunnable):
             columns=[solver_data.solids_names, ref_poercentage_solids],
         ).rename_axis(columns=["Solids", r"% relative to comp."])
 
-        _print_titration(slices, soluble_percentages, self.signals.log.emit, "percent soluble species")
-        _print_titration(slices, solids_percentages, self.signals.log.emit, "percent solids species")
+        # _print_titration(slices, soluble_percentages, self.signals.log.emit, "percent soluble species")
+        # _print_titration(slices, solids_percentages, self.signals.log.emit, "percent solids species")
 
         _emit_df(self.signals.log.emit, formation_constants, "Formation constants")
         _emit_df(self.signals.log.emit, solubility_products, "Solubility products")
