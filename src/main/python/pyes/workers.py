@@ -58,9 +58,9 @@ class optimizeWorker(QRunnable):
             out(f"iteration = {kwargs['iteration']}")
             out(f"damping = {kwargs['damping']:.4e}, chisq = {kwargs['chisq']:.4f}, "
                 f"gradient_norm = {kwargs['gradient_norm']:.4e}, rho = {kwargs['rho']:.4e}")
-            out(f"sigma: {kwargs['sigma']:.4e} ({kwargs['exit_sigma']})")
-            out(f"grad : {kwargs['exit_gradient_value']:.4e} ({kwargs['exit_gradient']})")
-            out(f"step : {kwargs['exit_step_value']:.4e} ({kwargs['exit_step']})")
+            out(f"-sigma: {kwargs['sigma']:.4e} ({kwargs['exit_sigma']})")
+            out(f"-grad : {kwargs['exit_gradient_value']:.4e} ({kwargs['exit_gradient']})")
+            out(f"-step : {kwargs['exit_step_value']:.4e} ({kwargs['exit_step']})")
 
             if kwargs['any beta refined']:
                 txt = "   # " + "".join(f"{comp:>5}" for comp in labels) + \
@@ -83,7 +83,7 @@ class optimizeWorker(QRunnable):
                     for c0v, c0f, comp in zip(c0, refine_indices(titr.c0_flags), labels):
                         if c0f:
                             out(f"\tc0[{comp}] {c0v:10.4f} {next(increment):10.4f}")
-            out(80*'-')
+            out(80*'-' + '\n')
 
         self.__print_dataset_stats(solver_data)
 
@@ -125,6 +125,8 @@ class optimizeWorker(QRunnable):
 
         ## print correlation matrix
         # cor_matrix = fit_result['correlation']
+        # _print_correlation_matrix(fit_result['correlation'], self.signals.log.emit)
+
         # self.signals.log.emit(repr(cor_matrix))
         # cov_matrix = fit_result['covariance']
 
