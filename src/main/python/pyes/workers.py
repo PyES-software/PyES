@@ -85,6 +85,8 @@ class optimizeWorker(QRunnable):
                             out(f"\tc0[{comp}] {c0v:10.4f} {next(increment):10.4f}")
             out(80*'-')
 
+        self.__print_dataset_stats(solver_data)
+
         self.signals.log.emit("Optimizing stability constants from potentiometric data...\n")
 
         self.index_name = "V Add. [mL]"
@@ -817,6 +819,18 @@ class optimizeWorker(QRunnable):
         ]
 
         return data, ignored_soluble, ignored_solids
+
+    def __print_dataset_stats(self, solver_data):
+        out = self.signals.log.emit
+        for n, tit in enumerate(solver_data.potentiometry_opts.titrations):
+            igno_points = np.count_nonzero(tit.ignored)
+            used_points = np.count_nonzero(np.logical_not(tit.ignored))
+            out(f"Titration #{n}: used {used_points} points ({igno_points} ignored)")
+            if tit.px_range:
+                ranges = "; ".join(f"{pxmin}-{pxmax}" for pxmin, pxmax in tit.px_range)
+                out(f"\tpX ranges: {ranges}")
+        out("")
+            
 
 
 def component_encoder(components: list[str], reference_component: list[str]):
