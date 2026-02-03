@@ -824,15 +824,16 @@ class optimizeWorker(QRunnable):
 
     def __print_dataset_stats(self, solver_data):
         out = self.signals.log.emit
+        totalp: int = 0
         for n, tit in enumerate(solver_data.potentiometry_opts.titrations):
             used_points = len(tit.get_emf)
+            totalp += used_points
             igno_points = len(tit.emf) - used_points
             out(f"Titration #{n}: used {used_points} points ({igno_points} ignored)")
             if tit.px_range:
                 ranges = "; ".join(f"{pxmin}-{pxmax}" for pxmin, pxmax in tit.px_range)
                 out(f"\tpX ranges: {ranges}")
-        out("")
-            
+        out(f"Total experimental points: {totalp}\n")
 
 
 def component_encoder(components: list[str], reference_component: list[str]):
