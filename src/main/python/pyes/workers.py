@@ -825,8 +825,8 @@ class optimizeWorker(QRunnable):
     def __print_dataset_stats(self, solver_data):
         out = self.signals.log.emit
         for n, tit in enumerate(solver_data.potentiometry_opts.titrations):
-            igno_points = np.count_nonzero(tit.ignored)
-            used_points = np.count_nonzero(np.logical_not(tit.ignored))
+            used_points = len(tit.get_emf)
+            igno_points = len(tit.emf) - used_points
             out(f"Titration #{n}: used {used_points} points ({igno_points} ignored)")
             if tit.px_range:
                 ranges = "; ".join(f"{pxmin}-{pxmax}" for pxmin, pxmax in tit.px_range)
