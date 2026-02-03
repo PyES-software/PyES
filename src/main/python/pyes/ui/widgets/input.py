@@ -138,7 +138,8 @@ class inputTitrationOpt(QWidget, Ui_inputTitrationOpt):
                     c.model()._data = pd.DataFrame(data[c.objectName()])
                     if c.objectName() == "titrationView":
                         c.model().setColumnReadOnly([3], True)
-                        c.model()._data["pX"] = 0.0
+                        #c.model()._data.iloc[:, 4] = 0.0
+                        #c.model()._data["pX"] = 0.0
                         c.model().update_pX(
                             e0=self.e0.value(), slope=self.slope.value()
                         )
