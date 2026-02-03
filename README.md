@@ -49,7 +49,7 @@ Pull requests are welcome.
 
 ## Usage
 
-A [User Manual](https://raw.githubusercontent.com/Kastakin/PyES/master/docs/user_manual/user_manual.pdf "PyES User Manual") containing examples and a detailed description of the interface is available in PDF format.
+A [User Manual](https://pyes-software.github.io/PyES/) containing examples and a detailed description of the interface is available in PDF format.
 
 ## How to Cite
 If you use PyES in your work please cite our work as follows:
