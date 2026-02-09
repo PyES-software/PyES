@@ -14,9 +14,10 @@ def _comp_info(
 
     if mode == "distribution":
         comp_info["Tot. C. [mol/l]"] = data.distribution_opts.c0
-        comp_info["Tot. C. [mol/l]"][
-            data.distribution_opts.independent_component
-        ] = None
+        # comp_info["Tot. C. [mol/l]"][
+        #     data.distribution_opts.independent_component
+        # ] = None
+        comp_info.loc[data.distribution_opts.independent_component,"Tot. C. [mol/l]"] = None
 
         comp_info = comp_info.set_index([data.components, data.charges]).rename_axis(
             index=["Component", "Charge"]
