@@ -44,10 +44,6 @@ PALETTE = [
 
 class PlotWindow(QMainWindow, Ui_PlotWindow):
     def __init__(self, parent: "MainWindow"):
-        # import debugpy
-
-        # debugpy.debug_this_thread()
-
         super().__init__()
         self.setupUi(self)
 
