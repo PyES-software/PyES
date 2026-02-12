@@ -621,7 +621,9 @@ class optimizeWorker(QRunnable):
             'species_concentrations': soluble_concentration,
             'solids_concentrations': solids_concentration,
             'soluble_percentages': soluble_percentages,
-            'solids_percentages': solids_percentages
+            'solids_percentages': solids_percentages,
+            'concentrations': pd.concat([soluble_concentration, solids_concentration], axis=1),
+            'percent': pd.concat([soluble_percentages, solids_percentages], axis=1)
         }
 
         if self.data["emode"] is True:

@@ -126,11 +126,11 @@ class ExportWindow(QWidget, Ui_ExportWindow):
         else:
             self.project_name = os.path.splitext(os.path.basename(self.path))[0]
 
-        self.parameters_check.setEnabled('optimized_parms' in dir(self.result))
-        self.concentration_check.setEnabled('concentrations' in dir(self.result))
-        self.percent_check.setEnabled('percent' in dir(self.result))
+        self.parameters_check.setEnabled('optimized_parms' in self.result.keys())
+        self.concentration_check.setEnabled('concentrations' in self.result.keys())
+        self.percent_check.setEnabled('percent' in self.result.keys())
 
         self.export_button.clicked.connect(self.open_export)
 
     def open_export(self):
-        print("button pressed")
+        raise NotImplementedError
