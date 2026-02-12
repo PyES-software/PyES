@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'PyES_pyqtgraphPlotExport.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -103,7 +103,7 @@ class Ui_PlotWindow(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.speciesView.sizePolicy().hasHeightForWidth())
         self.speciesView.setSizePolicy(sizePolicy2)
-        self.speciesView.setEditTriggers(QAbstractItemView.EditTrigger.AllEditTriggers)
+        self.speciesView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.speciesView.setAlternatingRowColors(True)
         self.speciesView.horizontalHeader().setVisible(False)
 
@@ -119,7 +119,7 @@ class Ui_PlotWindow(object):
         self.solidsView.setObjectName(u"solidsView")
         sizePolicy2.setHeightForWidth(self.solidsView.sizePolicy().hasHeightForWidth())
         self.solidsView.setSizePolicy(sizePolicy2)
-        self.solidsView.setEditTriggers(QAbstractItemView.EditTrigger.AllEditTriggers)
+        self.solidsView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.solidsView.setAlternatingRowColors(True)
         self.solidsView.horizontalHeader().setVisible(False)
 
@@ -168,7 +168,7 @@ class Ui_PlotWindow(object):
 
         self.line = QFrame(self.widget_2)
         self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShape(QFrame.Shape.VLine)
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.gridLayout.addWidget(self.line, 4, 0, 1, 2)
@@ -245,7 +245,7 @@ class Ui_PlotWindow(object):
 
         self.formLayout_2 = QFormLayout()
         self.formLayout_2.setObjectName(u"formLayout_2")
-        self.formLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
+        self.formLayout_2.setSizeConstraint(QLayout.SetDefaultConstraint)
         self.componentComboBox_perc = QComboBox(self.perc_tab)
         self.componentComboBox_perc.setObjectName(u"componentComboBox_perc")
 
@@ -278,7 +278,7 @@ class Ui_PlotWindow(object):
 
         self.formLayout = QFormLayout()
         self.formLayout.setObjectName(u"formLayout")
-        self.formLayout.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
+        self.formLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
         self.componentLabel = QLabel(self.titration_tab)
         self.componentLabel.setObjectName(u"componentLabel")
 
@@ -294,6 +294,9 @@ class Ui_PlotWindow(object):
 
         self.verticalLayout_3.setStretch(0, 1)
         self.tabWidget.addTab(self.titration_tab, "")
+        self.data_tab = QWidget()
+        self.data_tab.setObjectName(u"data_tab")
+        self.tabWidget.addTab(self.data_tab, "")
 
         self.verticalLayout_4.addWidget(self.tabWidget)
 
@@ -351,6 +354,7 @@ class Ui_PlotWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.perc_tab), QCoreApplication.translate("PlotWindow", u"Percentages", None))
         self.componentLabel.setText(QCoreApplication.translate("PlotWindow", u"Component:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.titration_tab), QCoreApplication.translate("PlotWindow", u"Titration Curve", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.data_tab), QCoreApplication.translate("PlotWindow", u"Experimental Data", None))
         self.exportButton.setText(QCoreApplication.translate("PlotWindow", u"Export Graph", None))
     # retranslateUi
 
