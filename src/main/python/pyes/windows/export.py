@@ -9,6 +9,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFileDialog, QWidget
 from ui.PyES_dataExport import Ui_ExportWindow
 from utils_func import resultToCSV, resultToExcel
+from PySide6 import QtWidgets
+
 
 """
 pyes.windows.export
@@ -133,4 +135,22 @@ class ExportWindow(QWidget, Ui_ExportWindow):
         self.export_button.clicked.connect(self.open_export)
 
     def open_export(self):
-        raise NotImplementedError
+        filters = ("Excel files (*.xlsx *.xls)", "CSV files (*.csv)")
+        filename, ftype = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', self.path, ";;".join(filters))
+        if not filename:
+            return
+
+        ntype = filters.index(ftype)
+        if ntype == 0:
+            self._export_excel(filename)
+        else:
+            raise NotImplementedError
+
+    def _export_excel(self, filename: str):
+        xlw = pd.ExcelWriter(filename)
+        if self.parameters_check.isChecked():
+            self.result['optimized_parms'].to_excel(xlw, sheet_name='Refined')
+        if self.concentration_check.isChecked():
+            self.result['concentrations'].to_excel(xlw, sheet_name='Concentrations')
+        if self.percent_check.isChecked():
+            self.result['percent'].to_excel(xlw, sheet_name='Percent')
