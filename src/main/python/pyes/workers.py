@@ -17,8 +17,7 @@ from libeq import (
 from libeq.optimizers.potentiometry import refine_indices
 from libeq.solver.solids_solver import _compute_saturation_index
 from libeq.solver.solver_utils import _titration_background_ions_c
-from libeq.utils import species_concentration
-
+from libeq.utils import species_concentration, percent_distribution
 from workers_utils import _comp_info, _species_info
 
 

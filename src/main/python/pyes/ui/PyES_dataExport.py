@@ -23,13 +23,13 @@ class Ui_ExportWindow(object):
     def setupUi(self, ExportWindow):
         if not ExportWindow.objectName():
             ExportWindow.setObjectName(u"ExportWindow")
-        ExportWindow.resize(300, 200)
+        ExportWindow.resize(291, 176)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(ExportWindow.sizePolicy().hasHeightForWidth())
         ExportWindow.setSizePolicy(sizePolicy)
-        ExportWindow.setMinimumSize(QSize(300, 200))
+        ExportWindow.setMinimumSize(QSize(0, 0))
         font = QFont()
         font.setFamilies([u".AppleSystemUIFont"])
         ExportWindow.setFont(font)
@@ -47,73 +47,51 @@ class Ui_ExportWindow(object):
         self.widget_2.setSizePolicy(sizePolicy1)
         self.verticalLayout = QVBoxLayout(self.widget_2)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.options_label_excel = QLabel(self.widget_2)
-        self.options_label_excel.setObjectName(u"options_label_excel")
-        sizePolicy1.setHeightForWidth(self.options_label_excel.sizePolicy().hasHeightForWidth())
-        self.options_label_excel.setSizePolicy(sizePolicy1)
+        self.options_label = QLabel(self.widget_2)
+        self.options_label.setObjectName(u"options_label")
+        sizePolicy1.setHeightForWidth(self.options_label.sizePolicy().hasHeightForWidth())
+        self.options_label.setSizePolicy(sizePolicy1)
 
-        self.verticalLayout.addWidget(self.options_label_excel)
+        self.verticalLayout.addWidget(self.options_label)
 
-        self.input_check_excel = QCheckBox(self.widget_2)
-        self.input_check_excel.setObjectName(u"input_check_excel")
-        sizePolicy1.setHeightForWidth(self.input_check_excel.sizePolicy().hasHeightForWidth())
-        self.input_check_excel.setSizePolicy(sizePolicy1)
-        self.input_check_excel.setChecked(True)
+        self.parameters_check = QCheckBox(self.widget_2)
+        self.parameters_check.setObjectName(u"parameters_check")
+        sizePolicy1.setHeightForWidth(self.parameters_check.sizePolicy().hasHeightForWidth())
+        self.parameters_check.setSizePolicy(sizePolicy1)
 
-        self.verticalLayout.addWidget(self.input_check_excel)
+        self.verticalLayout.addWidget(self.parameters_check)
 
-        self.optimized_check_excel = QCheckBox(self.widget_2)
-        self.optimized_check_excel.setObjectName(u"optimized_check_excel")
-        sizePolicy1.setHeightForWidth(self.optimized_check_excel.sizePolicy().hasHeightForWidth())
-        self.optimized_check_excel.setSizePolicy(sizePolicy1)
+        self.concentration_check = QCheckBox(self.widget_2)
+        self.concentration_check.setObjectName(u"concentration_check")
+        sizePolicy1.setHeightForWidth(self.concentration_check.sizePolicy().hasHeightForWidth())
+        self.concentration_check.setSizePolicy(sizePolicy1)
 
-        self.verticalLayout.addWidget(self.optimized_check_excel)
+        self.verticalLayout.addWidget(self.concentration_check)
 
-        self.distribution_check_excel = QCheckBox(self.widget_2)
-        self.distribution_check_excel.setObjectName(u"distribution_check_excel")
-        sizePolicy1.setHeightForWidth(self.distribution_check_excel.sizePolicy().hasHeightForWidth())
-        self.distribution_check_excel.setSizePolicy(sizePolicy1)
+        self.percent_check = QCheckBox(self.widget_2)
+        self.percent_check.setObjectName(u"percent_check")
+        sizePolicy1.setHeightForWidth(self.percent_check.sizePolicy().hasHeightForWidth())
+        self.percent_check.setSizePolicy(sizePolicy1)
 
-        self.verticalLayout.addWidget(self.distribution_check_excel)
-
-        self.errors_check_excel = QCheckBox(self.widget_2)
-        self.errors_check_excel.setObjectName(u"errors_check_excel")
-        sizePolicy1.setHeightForWidth(self.errors_check_excel.sizePolicy().hasHeightForWidth())
-        self.errors_check_excel.setSizePolicy(sizePolicy1)
-
-        self.verticalLayout.addWidget(self.errors_check_excel)
-
-        self.perc_check_excel = QCheckBox(self.widget_2)
-        self.perc_check_excel.setObjectName(u"perc_check_excel")
-        sizePolicy1.setHeightForWidth(self.perc_check_excel.sizePolicy().hasHeightForWidth())
-        self.perc_check_excel.setSizePolicy(sizePolicy1)
-
-        self.verticalLayout.addWidget(self.perc_check_excel)
-
-        self.adjlogb_check_excel = QCheckBox(self.widget_2)
-        self.adjlogb_check_excel.setObjectName(u"adjlogb_check_excel")
-        sizePolicy1.setHeightForWidth(self.adjlogb_check_excel.sizePolicy().hasHeightForWidth())
-        self.adjlogb_check_excel.setSizePolicy(sizePolicy1)
-
-        self.verticalLayout.addWidget(self.adjlogb_check_excel)
+        self.verticalLayout.addWidget(self.percent_check)
 
 
         self.verticalLayout_2.addWidget(self.widget_2)
 
-        self.export_button_excel = QPushButton(ExportWindow)
-        self.export_button_excel.setObjectName(u"export_button_excel")
-        self.export_button_excel.setEnabled(True)
-        sizePolicy1.setHeightForWidth(self.export_button_excel.sizePolicy().hasHeightForWidth())
-        self.export_button_excel.setSizePolicy(sizePolicy1)
-        self.export_button_excel.setAutoDefault(False)
-        self.export_button_excel.setFlat(False)
+        self.export_button = QPushButton(ExportWindow)
+        self.export_button.setObjectName(u"export_button")
+        self.export_button.setEnabled(True)
+        sizePolicy1.setHeightForWidth(self.export_button.sizePolicy().hasHeightForWidth())
+        self.export_button.setSizePolicy(sizePolicy1)
+        self.export_button.setAutoDefault(False)
+        self.export_button.setFlat(False)
 
-        self.verticalLayout_2.addWidget(self.export_button_excel)
+        self.verticalLayout_2.addWidget(self.export_button)
 
 
         self.retranslateUi(ExportWindow)
 
-        self.export_button_excel.setDefault(False)
+        self.export_button.setDefault(False)
 
 
         QMetaObject.connectSlotsByName(ExportWindow)
@@ -121,13 +99,10 @@ class Ui_ExportWindow(object):
 
     def retranslateUi(self, ExportWindow):
         ExportWindow.setWindowTitle(QCoreApplication.translate("ExportWindow", u"Export Results", None))
-        self.options_label_excel.setText(QCoreApplication.translate("ExportWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Options:</span></p></body></html>", None))
-        self.input_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Input info", None))
-        self.optimized_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Optimized parameters", None))
-        self.distribution_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Species distribution", None))
-        self.errors_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Std. Deviation of concentration", None))
-        self.perc_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Percentages with respect to component", None))
-        self.adjlogb_check_excel.setText(QCoreApplication.translate("ExportWindow", u"Adjusted formation constants", None))
-        self.export_button_excel.setText(QCoreApplication.translate("ExportWindow", u"Export", None))
+        self.options_label.setText(QCoreApplication.translate("ExportWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Select data you want to export:</span></p></body></html>", None))
+        self.parameters_check.setText(QCoreApplication.translate("ExportWindow", u"Optimized parameters", None))
+        self.concentration_check.setText(QCoreApplication.translate("ExportWindow", u"Concentrations in equilibrium", None))
+        self.percent_check.setText(QCoreApplication.translate("ExportWindow", u"Percent concentrations in equilibrium", None))
+        self.export_button.setText(QCoreApplication.translate("ExportWindow", u"Export", None))
     # retranslateUi
 
