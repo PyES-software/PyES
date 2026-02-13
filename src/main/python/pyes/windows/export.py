@@ -147,10 +147,10 @@ class ExportWindow(QWidget, Ui_ExportWindow):
             raise NotImplementedError
 
     def _export_excel(self, filename: str):
-        xlw = pd.ExcelWriter(filename)
-        if self.parameters_check.isChecked():
-            self.result['optimized_parms'].to_excel(xlw, sheet_name='Refined')
-        if self.concentration_check.isChecked():
-            self.result['concentrations'].to_excel(xlw, sheet_name='Concentrations')
-        if self.percent_check.isChecked():
-            self.result['percent'].to_excel(xlw, sheet_name='Percent')
+        with pd.ExcelWriter(filename, mode='w') as xlw:
+            if self.parameters_check.isChecked():
+                self.result['optimized_parms'].to_excel(xlw, sheet_name='Refined')
+            if self.concentration_check.isChecked():
+                self.result['concentrations'].to_excel(xlw, sheet_name='Concentrations')
+            if self.percent_check.isChecked():
+                self.result['percent'].to_excel(xlw, sheet_name='Percent')
