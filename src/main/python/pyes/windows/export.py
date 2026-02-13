@@ -160,6 +160,7 @@ class ExportWindow(QWidget, Ui_ExportWindow):
 
         ntype: int = filters.index(ftype)
         exported_methods[ntype](filename)
+        self.close()
 
     def _export_excel(self, filename: str):
         with pd.ExcelWriter(filename, mode='w') as xlw:
