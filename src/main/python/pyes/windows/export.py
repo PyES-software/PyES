@@ -134,23 +134,46 @@ class ExportWindow(QWidget, Ui_ExportWindow):
 
         self.export_button.clicked.connect(self.open_export)
 
+        self._what_to_export = []
+        self._section_labels = []
+
     def open_export(self):
-        filters = ("Excel files (*.xlsx *.xls)", "CSV files (*.csv)")
+        filters = ("Excel files (*.xlsx *.xls)", "CSV files (*.csv)", "Text files (*.txt)")
         filename, ftype = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', self.path, ";;".join(filters))
         if not filename:
             return
 
-        ntype = filters.index(ftype)
-        if ntype == 0:
-            self._export_excel(filename)
-        else:
-            raise NotImplementedError
+        if self.parameters_check.isChecked():
+            self._what_to_export.append(self.result['optimized_parms'])
+            self._section_labels.append('Refined')
+        if self.concentration_check.isChecked():
+            self._what_to_export.append(self.result['concentrations'])
+            self._section_labels.append('Concentrations')
+        if self.percent_check.isChecked():
+            self._what_to_export.append(self.result['percent'])
+            self._section_labels.append('Percent')
+
+        exported_methods = (
+            self._export_excel,
+            self._export_csv,
+            self._export_txt)
+
+        ntype: int = filters.index(ftype)
+        exported_methods[ntype](filename)
 
     def _export_excel(self, filename: str):
         with pd.ExcelWriter(filename, mode='w') as xlw:
-            if self.parameters_check.isChecked():
-                self.result['optimized_parms'].to_excel(xlw, sheet_name='Refined')
-            if self.concentration_check.isChecked():
-                self.result['concentrations'].to_excel(xlw, sheet_name='Concentrations')
-            if self.percent_check.isChecked():
-                self.result['percent'].to_excel(xlw, sheet_name='Percent')
+            for label, df in zip(self._section_labels, self._what_to_export):
+                df.to_excel(xlw, sheet_name=label)
+
+    def _export_csv(self, filename: str):
+        with open(filename, 'a') as fh:
+            for label, df in zip(self._section_labels, self._what_to_export):
+                fh.write(20*'=' + '\n')
+                fh.write(f'  {label}\n')
+                fh.write(20*'=' + '\n\n')
+                df.to_csv(fh, mode='a')
+                fh.write('\n')
+
+    def _export_txt(self, filename: str):
+        ...
