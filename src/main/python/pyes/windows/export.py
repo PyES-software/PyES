@@ -169,11 +169,19 @@ class ExportWindow(QWidget, Ui_ExportWindow):
     def _export_csv(self, filename: str):
         with open(filename, 'a') as fh:
             for label, df in zip(self._section_labels, self._what_to_export):
-                fh.write(20*'=' + '\n')
-                fh.write(f'  {label}\n')
-                fh.write(20*'=' + '\n\n')
+                _write_header(fh, label)
                 df.to_csv(fh, mode='a')
                 fh.write('\n')
 
     def _export_txt(self, filename: str):
-        ...
+        with open(filename, 'a') as fh:
+            for label, df in zip(self._section_labels, self._what_to_export):
+                _write_header(fh, label)
+                df.to_string(fh)
+                fh.write('\n')
+
+
+def _write_header(file, label: str) -> None:
+    file.write(20*'=' + '\n')
+    file.write(f'  {label}\n')
+    file.write(20*'=' + '\n\n')
