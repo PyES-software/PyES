@@ -180,22 +180,22 @@ class optimizeWorker(QRunnable):
         dfsoluble = pd.DataFrame(data=soluble_concentration, columns=species_index).rename_axis("Soluble species conc. [mol/L]")
         soluble = soluble.join(dfsoluble)
 
-        # self.index_name = "V Add. [mL]"
+        self.index_name = "V Add. [mL]"
 
-        # self.result_index = np.concatenate([
-        #      t.v_add[~t.ignored]
-        #      for t in solver_data.potentiometry_opts.titrations
-        # ])
+        self.result_index = np.concatenate([
+             t.v_add[~t.ignored]
+             for t in solver_data.potentiometry_opts.titrations
+        ])
 
-        # self.result_index = [
-        #     self.result_index,
-        #     read_potential,
-        #     calculated_potential,
-        #     residuals,
-        #     px,
-        #     fit_result["weights"]
-        #     #np.diag(return_extra["weights"]),
-        # ]
+        self.result_index = [
+            self.result_index,
+            read_potential,
+            calculated_potential,
+            residuals,
+            px,
+            fit_result["weights"]
+            #np.diag(return_extra["weights"]),
+        ]
 
         # conc_sigma = []
         # # background_ions_conc = []
@@ -211,92 +211,92 @@ class optimizeWorker(QRunnable):
         #     )
         # self.conc_sigma = np.concatenate(conc_sigma)
         # # self.background_ions_concentration = np.vstack(background_ions_conc)
-        # self.background_ions_concentration = fit_result['background ion concentration']
+        self.background_ions_concentration = fit_result['background ion concentration']
 
-        # self.index_name = [
-        #     "V Add. [mL]",
-        #     "Read Potential [V]",
-        #     "Calculated Potential [V]",
-        #     "Residual [V]",
-        #     "pX",
-        #     "Weight",
-        # ]
+        self.index_name = [
+            "V Add. [mL]",
+            "Read Potential [V]",
+            "Calculated Potential [V]",
+            "Residual [V]",
+            "pX",
+            "Weight",
+        ]
 
-        # soluble_concentration = concentrations[
-        #     :,
-        #     np.r_[
-        #         0 : solver_data.nc,
-        #         (solver_data.nc + solver_data.nf) : (
-        #             solver_data.nc + solver_data.nf + solver_data.ns
-        #         ),
-        #     ],
-        # ]
+        soluble_concentration = concentrations[
+            :,
+            np.r_[
+                0 : solver_data.nc,
+                (solver_data.nc + solver_data.nf) : (
+                    solver_data.nc + solver_data.nf + solver_data.ns
+                ),
+            ],
+        ]
 
-        # self.ionic_strength_dependence = solver_data.ionic_strength_dependence
-        # self.ionic_strength = 0.5 * (
-        #     (
-        #         soluble_concentration
-        #         * (
-        #             np.concatenate([solver_data.charges, solver_data.species_charges])
-        #             ** 2
-        #         )
-        #     ).sum(axis=1, keepdims=True)
-        #     + self.background_ions_concentration
-        # )
+        self.ionic_strength_dependence = solver_data.ionic_strength_dependence
+        self.ionic_strength = 0.5 * (
+            (
+                soluble_concentration
+                * (
+                    np.concatenate([solver_data.charges, solver_data.species_charges])
+                    ** 2
+                )
+            ).sum(axis=1, keepdims=True)
+            + self.background_ions_concentration
+        )
 
-        # soluble_concentration = self._create_df_result(
-        #     soluble_concentration,
-        #     columns=solver_data.species_names,
-        # ).rename_axis(columns="Species Conc. [mol/L]")
+        soluble_concentration = self._create_df_result(
+            soluble_concentration,
+            columns=solver_data.species_names,
+        ).rename_axis(columns="Species Conc. [mol/L]")
 
         if solver_data.nf:
             solids_concentration = concentrations[:, solver_data.nc:(solver_data.nc+solver_data.nf)]
             dfsolids = pd.DataFrame(data=solids_concentration, columns=[f"{s}(sld.)" for s in species_index])
             soluble = soluble.merge(dfsolids)
 
-        # solids_concentration_only = pd.DataFrame(
-        #     concentrations[:, solver_data.nc : (solver_data.nc + solver_data.nf)],
-        #     index=self.result_index,
-        #     columns=solver_data.solids_names,
-        # ).rename_axis(columns="Solid Conc. [mol/L]")
+        solids_concentration_only = pd.DataFrame(
+            concentrations[:, solver_data.nc : (solver_data.nc + solver_data.nf)],
+            index=self.result_index,
+            columns=solver_data.solids_names,
+        ).rename_axis(columns="Solid Conc. [mol/L]")
 
-        # saturation_index = pd.DataFrame(
-        #     _compute_saturation_index(
-        #         concentrations[:, : solver_data.nc], log_ks, solver_data.solid_stoichiometry
-        #     ),
-        #     index=self.result_index,
-        #     columns=["SI" + name for name in solver_data.solids_names],
-        # )
+        saturation_index = pd.DataFrame(
+            _compute_saturation_index(
+                concentrations[:, : solver_data.nc], log_ks, solver_data.solid_stoichiometry
+            ),
+            index=self.result_index,
+            columns=["SI" + name for name in solver_data.solids_names],
+        )
 
-        # precipitate_check = (
-        #     (solids_concentration_only > 0)
-        #     .replace({True: "*", False: ""})
-        #     .set_axis(
-        #         ["Prec." + name for name in solids_concentration_only.columns], axis=1
-        #     )
-        # )
+        precipitate_check = (
+            (solids_concentration_only > 0)
+            .replace({True: "*", False: ""})
+            .set_axis(
+                ["Prec." + name for name in solids_concentration_only.columns], axis=1
+            )
+        )
 
-        # solids_concentration = self._create_df_result(
-        #     pd.concat(
-        #         (solids_concentration_only, precipitate_check, saturation_index),
-        #         axis=1,
-        #         sort=True,
-        #     )
-        # )
+        solids_concentration = self._create_df_result(
+            pd.concat(
+                (solids_concentration_only, precipitate_check, saturation_index),
+                axis=1,
+                sort=True,
+            )
+        )
 
-        # solids_concentration = solids_concentration[
-        #     sum(
-        #         [
-        #             [check_col, si_col, solid_col]
-        #             for check_col, si_col, solid_col in zip(
-        #                 precipitate_check.columns,
-        #                 saturation_index.columns,
-        #                 solids_concentration_only.columns,
-        #             )
-        #         ],
-        #         [],
-        #     )
-        # ]
+        solids_concentration = solids_concentration[
+            sum(
+                [
+                    [check_col, si_col, solid_col]
+                    for check_col, si_col, solid_col in zip(
+                        precipitate_check.columns,
+                        saturation_index.columns,
+                        solids_concentration_only.columns,
+                    )
+                ],
+                [],
+            )
+        ]
         _print_titration(slices, soluble, self.signals.log.emit, "soluble species")
         # _print_titration(slices, solids_concentration, self.signals.log.emit, "solid species")
 
@@ -319,66 +319,72 @@ class optimizeWorker(QRunnable):
             solubility_products[components_idx] = solver_data.stoichiometry
             solubility_products['stdev'] = solver_data.log_ks_sigma
 
+        ref_percentage_soluble = solver_data.components + list(
+            self.data["speciesModel"]["Ref. Comp."].values()
+        )
+        ref_percentage_soluble_ix = component_encoder(
+            solver_data.components, ref_percentage_soluble
+        )
 
-        # ref_percentage_soluble = solver_data.components + list(
-        #     self.data["speciesModel"]["Ref. Comp."].values()
-        # )
-        # ref_percentage_soluble_ix = component_encoder(
-        #     solver_data.components, ref_percentage_soluble
-        # )
+        ref_tot_conc_soluble = total_concentration[:, ref_percentage_soluble_ix]
 
-        # ref_tot_conc_soluble = total_concentration[:, ref_percentage_soluble_ix]
+        adjust_factor_soluble = np.clip(
+            np.concatenate(
+                (
+                    np.eye(solver_data.nc, dtype=int),
+                    solver_data.stoichiometry,
+                ),
+                axis=1,
+            )[ref_percentage_soluble_ix, range(ref_percentage_soluble_ix.size)],
+            1,
+            np.inf,
+        )
 
-        # adjust_factor_soluble = np.clip(
-        #     np.concatenate(
-        #         (
-        #             np.eye(solver_data.nc, dtype=int),
-        #             solver_data.stoichiometry,
-        #         ),
-        #         axis=1,
-        #     )[ref_percentage_soluble_ix, range(ref_percentage_soluble_ix.size)],
-        #     1,
-        #     np.inf,
-        # )
+        ref_poercentage_solids = list(
+            self.data["solidSpeciesModel"]["Ref. Comp."].values()
+        )
 
-        # ref_poercentage_solids = list(
-        #     self.data["solidSpeciesModel"]["Ref. Comp."].values()
-        # )
+        ref_percentage_solids_ix = component_encoder(
+            solver_data.components,
+            ref_poercentage_solids,
+        )
 
-        # ref_percentage_solids_ix = component_encoder(
-        #     solver_data.components,
-        #     ref_poercentage_solids,
-        # )
+        ref_tot_conc_solids = total_concentration[:, ref_percentage_solids_ix]
 
-        # ref_tot_conc_solids = total_concentration[:, ref_percentage_solids_ix]
+        adjust_factor_solids = np.clip(
+            solver_data.solid_stoichiometry[
+                ref_percentage_solids_ix, range(ref_percentage_solids_ix.size)
+            ],
+            1,
+            np.inf,
+        )
 
-        # adjust_factor_solids = np.clip(
-        #     solver_data.solid_stoichiometry[
-        #         ref_percentage_solids_ix, range(ref_percentage_solids_ix.size)
-        #     ],
-        #     1,
-        #     np.inf,
-        # )
+        soluble_percentages_np = (
+            (soluble_concentration * adjust_factor_soluble)
+            / ref_tot_conc_soluble
+        ) * 100
 
-        # soluble_percentages_np = (
-        #     (soluble_concentration.to_numpy() * adjust_factor_soluble)
-        #     / ref_tot_conc_soluble
-        # ) * 100
-
+        soluble_percentages = pd.DataFrame(soluble_percentages_np, columns=[solver_data.species_names, ref_percentage_soluble])
         # soluble_percentages = self._create_df_result(
         #     (soluble_percentages_np).round(2),
         #     columns=[solver_data.species_names, ref_percentage_soluble],
         # ).rename_axis(columns=["Species", r"% relative to comp."])
 
-        # solids_percentage_np = (
-        #     (solids_concentration_only.to_numpy() * adjust_factor_solids)
-        #     / ref_tot_conc_solids
-        # ) * 100
+        fit_result['soluble_percentages'] = soluble_percentages
+        fit_result['soluble_percentages_np'] = soluble_percentages_np
+        fit_result['solids_concentrations'] = solids_concentration
 
-        # solids_percentages = self._create_df_result(
-        #     (solids_percentage_np).round(2),
-        #     columns=[solver_data.solids_names, ref_poercentage_solids],
-        # ).rename_axis(columns=["Solids", r"% relative to comp."])
+        solids_percentage_np = (
+            (solids_concentration_only.to_numpy() * adjust_factor_solids)
+            / ref_tot_conc_solids
+        ) * 100
+
+        solids_percentages = self._create_df_result(
+            (solids_percentage_np).round(2),
+            columns=[solver_data.solids_names, ref_poercentage_solids],
+        ).rename_axis(columns=["Solids", r"% relative to comp."])
+
+        fit_result['solids_percentages'] = solids_percentages
 
         # _print_titration(slices, soluble_percentages, self.signals.log.emit, "percent soluble species")
         # _print_titration(slices, solids_percentages, self.signals.log.emit, "percent solids species")
