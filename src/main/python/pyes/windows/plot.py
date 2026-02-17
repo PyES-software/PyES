@@ -262,13 +262,13 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
 
         # Store a reference to lines on the plot, and items in our
         # data viewer we can update rather than redraw.
-        self._data_lines = dict()
-        self._data_colors = dict()
+        self._data_lines = {}
+        self._data_colors = {}
         self._data_visible = []
 
         # Initialize a Model for species_conc
-        self.speciesModel = QStandardItemModel()
-        self.solidsModel = QStandardItemModel()
+        self.speciesModel: QStandardItemModel = QStandardItemModel()
+        self.solidsModel: QStandardItemModel = QStandardItemModel()
         self.speciesModel.setHorizontalHeaderLabels(["Species", "Color"])
         self.solidsModel.setHorizontalHeaderLabels(["Species", "Color"])
         self.speciesModel.itemChanged.connect(self._check_checked_state)
