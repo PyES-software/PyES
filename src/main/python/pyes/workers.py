@@ -82,6 +82,9 @@ class optimizeWorker(QRunnable):
                     for c0v, c0f, comp in zip(c0, refine_indices(titr.c0_flags), labels):
                         if c0f:
                             out(f"\tc0[{comp}] {c0v:10.4f} {next(increment):10.4f}")
+                    for ctv, ctf, comp in zip(ct, refine_indices(titr.ct_flags), labels):
+                        if ctf:
+                            out(f"\tcT[{comp}] {ctv:10.4f} {next(increment):10.4f}")
             out(80*'-' + '\n')
 
         self.__print_dataset_stats(solver_data)
@@ -298,7 +301,7 @@ class optimizeWorker(QRunnable):
             )
         ]
         _print_titration(slices, soluble, self.signals.log.emit, "soluble species")
-        # _print_titration(slices, solids_concentration, self.signals.log.emit, "solid species")
+        _print_titration(slices, solids_concentration, self.signals.log.emit, "solid species")
 
         formation_constants = pd.DataFrame()
         formation_constants['species'] = solver_data.species_names[solver_data.nc:]
