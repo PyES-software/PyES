@@ -364,15 +364,21 @@ class optimizeWorker(QRunnable):
             / ref_tot_conc_soluble
         ) * 100
 
-        soluble_percentages = pd.DataFrame(soluble_percentages_np, columns=[solver_data.species_names, ref_percentage_soluble])
+        #soluble_percentages = pd.DataFrame(soluble_percentages_np, columns=[solver_data.species_names, ref_percentage_soluble])
+        fit_result['soluble_percentages'] = [pd.DataFrame(soluble_percentages_np[s],
+                                                          columns=solver_data.species_names)
+                                             for s in slices]
         # soluble_percentages = self._create_df_result(
         #     (soluble_percentages_np).round(2),
         #     columns=[solver_data.species_names, ref_percentage_soluble],
         # ).rename_axis(columns=["Species", r"% relative to comp."])
 
-        fit_result['soluble_percentages'] = soluble_percentages
+        # fit_result['soluble_percentages'] = soluble_percentages
         fit_result['soluble_percentages_np'] = soluble_percentages_np
-        fit_result['solids_concentrations'] = solids_concentration
+
+        fit_result['solids_concentrations'] = [pd.DataFrame(solids_concentration[s],
+                                                            columns=solver_data.species_names)
+                                               for s in slices]
 
         solids_percentage_np = (
             (solids_concentration_only.to_numpy() * adjust_factor_solids)
@@ -384,7 +390,9 @@ class optimizeWorker(QRunnable):
             columns=[solver_data.solids_names, ref_poercentage_solids],
         ).rename_axis(columns=["Solids", r"% relative to comp."])
 
-        fit_result['solids_percentages'] = solids_percentages
+        fit_result['solids_percentages'] = [pd.DataFrame(solids_percentages[s],
+                                                         columns=solver_data.species_names)
+                                            for s in slices]
 
         # _print_titration(slices, soluble_percentages, self.signals.log.emit, "percent soluble species")
         # _print_titration(slices, solids_percentages, self.signals.log.emit, "percent solids species")
@@ -407,10 +415,13 @@ class optimizeWorker(QRunnable):
             fit_result['soluble_sigma'] = soluble_sigma_np
             fit_result['solids_sigma'] = solids_sigma_np
 
-        fit_result['species_concentrations'] = self._create_df_result(
-            fit_result['species_concentrations'],
-            columns=solver_data.species_names,
-        ).rename_axis(columns="Species Conc. [mol/L]")
+        # tmp = self._create_df_result(
+        #         fit_result['species_concentrations'],
+        #         columns=solver_data.species_names,
+        #     ).rename_axis(columns="Species Conc. [mol/L]")
+        fit_result['species_concentrations'] = self._split_titration(fit_result['species_concentrations'],
+                                                                     slices,
+                                                                     solver_data.species_names)
 
         return fit_result
 
@@ -830,7 +841,7 @@ class optimizeWorker(QRunnable):
             )
         return ok
 
-    def _create_df_result(self, data, columns: list | None = None):
+    def _create_df_result(self, data, columns: list | None = None) -> pd.DataFrame:
         if data is None:
             return pd.DataFrame()
 
@@ -841,6 +852,13 @@ class optimizeWorker(QRunnable):
         result.set_index("I", append=True, inplace=True)
 
         return result
+
+    def _split_titration(self, data: pd.DataFrame, slices: list[slice], columns: list) -> list[pd.DataFrame]:
+        tmp: pd.DataFrame = self._create_df_result(
+                data,
+                columns=pd.Index(columns),
+            ).rename_axis(columns="Species Conc. [mol/L]")
+        return [ tmp[s] for s in slices ]
 
     def _simplify_problem(self, data: dict[str, Any]):
         def remove_ignored(model: dict[str, Any]):
@@ -934,3 +952,5 @@ def _print_correlation_matrix(corr: np.ndarray, labels: list[str], emitter) -> N
     emitter(20*'-' + '\n')
     emitter(str(df.where(tfilter).fillna("")))
     emitter('\n')
+
+
