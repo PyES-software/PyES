@@ -407,6 +407,11 @@ class optimizeWorker(QRunnable):
             fit_result['soluble_sigma'] = soluble_sigma_np
             fit_result['solids_sigma'] = solids_sigma_np
 
+        fit_result['species_concentrations'] = self._create_df_result(
+            fit_result['species_concentrations'],
+            columns=solver_data.species_names,
+        ).rename_axis(columns="Species Conc. [mol/L]")
+
         return fit_result
 
     def _run_titration(self, solver_data: SolverData):
