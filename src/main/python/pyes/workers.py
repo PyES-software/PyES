@@ -401,6 +401,12 @@ class optimizeWorker(QRunnable):
         # _print_titration(slices, solids_percentages, self.signals.log.emit, "percent solids species")
 
         _emit_df(self.signals.log.emit, formation_constants, "Formation constants")
+        self.__print_titration_params(fit_result['final titration parameters'],
+                                      fit_result['error titration parameters'],
+                                      fit_result['initial titration parameters'],
+                                      solver_data.components,
+                                      self.signals.log.emit)
+
         _emit_df(self.signals.log.emit, solubility_products, "Solubility products")
 
         if self.data["emode"] is True:
@@ -907,6 +913,26 @@ class optimizeWorker(QRunnable):
                 ranges = "; ".join(f"{pxmin}-{pxmax}" for pxmin, pxmax in tit.px_range)
                 out(f"\tpX ranges: {ranges}")
         out(f"Total experimental points: {totalp}\n")
+
+    def __print_titration_params(self, params, perror, iparams, components, emiter) -> None:
+        emiter("\nRefined titrations parameters")
+        emiter("              Final values         Initial values")
+        for ntit, (ptit, etit, itit) in enumerate(zip(params, perror, iparams)):
+            # NOTE ptit should be a duple containing c0, cT; etit is the same but for errors
+            for values, errors, init, tag in zip(ptit, etit, itit, ['c0', 'cT']):
+                if not errors:      # empty list means no fitting
+                    continue
+                for name, value, error, ivalue in zip(components, values, errors, init):
+                    if not error:   # error None means no fitting
+                        continue
+                    emiter(f"{tag}[tit#{ntit},{name}] = {value:.5f} +/- {error:.5f}  {ivalue:.5f}")
+
+
+
+        # [(array([0.0005    , 0.0005    , 0.02500162]), array([ 0. ,  0. , -0.1])), (array([0.001     , 0.001     , 0.02500131]), array([ 0. ,  0. , -0.1])), (array([0.0015    , 0.0015    , 0.02499969]), array([ 0. ,  0. , -0.1])), (array([0.002    , 0.002    , 0.0250011]), array([ 0. ,  0. , -0.1]))]
+        # fit_result['final titration parameters']
+        # fit_result['error titration parameters']
+        # [[[None, None, 7.954638415427686e-07], []], [[None, None, 1.2806474786175968e-06], []], [[None, None, 1.7930556500244256e-06], []], [[None, None, 2.3073032157407483e-06], []]]
 
 
 def component_encoder(components: list[str], reference_component: list[str]):
