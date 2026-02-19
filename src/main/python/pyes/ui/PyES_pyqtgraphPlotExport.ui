@@ -459,11 +459,6 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="data_tab">
-         <attribute name="title">
-          <string>Experimental Data</string>
-         </attribute>
-        </widget>
        </widget>
       </item>
       <item>

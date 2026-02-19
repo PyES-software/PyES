@@ -294,9 +294,6 @@ class Ui_PlotWindow(object):
 
         self.verticalLayout_3.setStretch(0, 1)
         self.tabWidget.addTab(self.titration_tab, "")
-        self.data_tab = QWidget()
-        self.data_tab.setObjectName(u"data_tab")
-        self.tabWidget.addTab(self.data_tab, "")
 
         self.verticalLayout_4.addWidget(self.tabWidget)
 
@@ -354,7 +351,6 @@ class Ui_PlotWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.perc_tab), QCoreApplication.translate("PlotWindow", u"Percentages", None))
         self.componentLabel.setText(QCoreApplication.translate("PlotWindow", u"Component:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.titration_tab), QCoreApplication.translate("PlotWindow", u"Titration Curve", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.data_tab), QCoreApplication.translate("PlotWindow", u"Experimental Data", None))
         self.exportButton.setText(QCoreApplication.translate("PlotWindow", u"Export Graph", None))
     # retranslateUi
 
