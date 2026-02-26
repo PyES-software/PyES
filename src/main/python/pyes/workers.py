@@ -186,8 +186,7 @@ class optimizeWorker(QRunnable):
         self.index_name = "V Add. [mL]"
 
         self.result_index = np.concatenate([
-             t.v_add[~t.ignored]
-             for t in solver_data.potentiometry_opts.titrations
+             t.get_titre for t in solver_data.potentiometry_opts.titrations
         ])
 
         self.result_index = [
@@ -197,7 +196,6 @@ class optimizeWorker(QRunnable):
             residuals,
             px,
             fit_result["weights"]
-            #np.diag(return_extra["weights"]),
         ]
 
         # conc_sigma = []
