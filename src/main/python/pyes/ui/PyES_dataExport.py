@@ -23,7 +23,7 @@ class Ui_ExportWindow(object):
     def setupUi(self, ExportWindow):
         if not ExportWindow.objectName():
             ExportWindow.setObjectName(u"ExportWindow")
-        ExportWindow.resize(291, 176)
+        ExportWindow.resize(291, 236)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -68,12 +68,22 @@ class Ui_ExportWindow(object):
 
         self.verticalLayout.addWidget(self.concentration_check)
 
+        self.solids_concentration_check = QCheckBox(self.widget_2)
+        self.solids_concentration_check.setObjectName(u"solids_concentration_check")
+
+        self.verticalLayout.addWidget(self.solids_concentration_check)
+
         self.percent_check = QCheckBox(self.widget_2)
         self.percent_check.setObjectName(u"percent_check")
         sizePolicy1.setHeightForWidth(self.percent_check.sizePolicy().hasHeightForWidth())
         self.percent_check.setSizePolicy(sizePolicy1)
 
         self.verticalLayout.addWidget(self.percent_check)
+
+        self.solids_percent_check = QCheckBox(self.widget_2)
+        self.solids_percent_check.setObjectName(u"solids_percent_check")
+
+        self.verticalLayout.addWidget(self.solids_percent_check)
 
 
         self.verticalLayout_2.addWidget(self.widget_2)
@@ -102,7 +112,9 @@ class Ui_ExportWindow(object):
         self.options_label.setText(QCoreApplication.translate("ExportWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Select data you want to export:</span></p></body></html>", None))
         self.parameters_check.setText(QCoreApplication.translate("ExportWindow", u"Optimized parameters", None))
         self.concentration_check.setText(QCoreApplication.translate("ExportWindow", u"Concentrations in equilibrium", None))
+        self.solids_concentration_check.setText(QCoreApplication.translate("ExportWindow", u"Solids concentrations", None))
         self.percent_check.setText(QCoreApplication.translate("ExportWindow", u"Percent concentrations in equilibrium", None))
+        self.solids_percent_check.setText(QCoreApplication.translate("ExportWindow", u"Solids percent", None))
         self.export_button.setText(QCoreApplication.translate("ExportWindow", u"Export", None))
     # retranslateUi
 

@@ -1,6 +1,7 @@
 import os
 from typing import Any
 
+from numpy import isin
 import pandas as pd
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget
@@ -124,14 +125,34 @@ class ExportWindow(QWidget, Ui_ExportWindow):
         else:
             self.project_name = os.path.splitext(os.path.basename(self.path))[0]
 
+        self._checkboxes = QtWidgets.QButtonGroup()
+        self._checkboxes.addButton(self.parameters_check)
+        self._checkboxes.addButton(self.concentration_check)
+        self._checkboxes.addButton(self.solids_concentration_check)
+        self._checkboxes.addButton(self.percent_check)
+        self._checkboxes.addButton(self.solids_percent_check)
+        self._checkboxes.setExclusive(False)
+
         self.parameters_check.setEnabled('optimized_parms' in self.result.keys())
-        self.concentration_check.setEnabled('concentrations' in self.result.keys())
-        self.percent_check.setEnabled('percent' in self.result.keys())
+        self.concentration_check.setEnabled('species_concentrations' in self.result.keys())
+        self.solids_concentration_check.setEnabled('solids_concentrations' in self.result.keys())
+        self.percent_check.setEnabled('soluble_percentages' in self.result.keys())
+        self.solids_percent_check.setEnabled('solids_percentages' in self.result.keys())
+
+        self._checkboxes.buttonToggled.connect(self._check_button_state)
 
         self.export_button.clicked.connect(self.open_export)
 
         self._what_to_export = []
         self._section_labels = []
+        self._check_button_state(None, None)
+
+    def _check_button_state(self, button, check):
+        for checkbox in self._checkboxes.buttons():
+            if checkbox.checkState() == Qt.CheckState.Checked:
+                self.export_button.setEnabled(True)
+                return
+        self.export_button.setEnabled(False)
 
     def open_export(self):
         filters = ("Excel files (*.xlsx *.xls)", "CSV files (*.csv)", "Text files (*.txt)")
@@ -143,11 +164,17 @@ class ExportWindow(QWidget, Ui_ExportWindow):
             self._what_to_export.append(self.result['optimized_parms'])
             self._section_labels.append('Refined')
         if self.concentration_check.isChecked():
-            self._what_to_export.append(self.result['concentrations'])
-            self._section_labels.append('Concentrations')
+            self._what_to_export.append(self.result['species_concentrations'])
+            self._section_labels.append('Soluble Species Concentrations')
+        if self.solids_concentration_check.isChecked():
+            self._what_to_export.append(self.result['solids_concentrations'])
+            self._section_labels.append('Solids Concentrations')
         if self.percent_check.isChecked():
-            self._what_to_export.append(self.result['percent'])
-            self._section_labels.append('Percent')
+            self._what_to_export.append(self.result['soluble_percentages'])
+            self._section_labels.append('Solubles Species Percent')
+        if self.solids_percent_check.isChecked():
+            self._what_to_export.append(self.result['solids_percentages'])
+            self._section_labels.append('Solids Percent')
 
         exported_methods = (
             self._export_excel,
@@ -161,20 +188,35 @@ class ExportWindow(QWidget, Ui_ExportWindow):
     def _export_excel(self, filename: str):
         with pd.ExcelWriter(filename, mode='w') as xlw:
             for label, df in zip(self._section_labels, self._what_to_export):
-                df.to_excel(xlw, sheet_name=label)
+                if isinstance(df, list):
+                    for ntit, _df in enumerate(df):
+                        _df.to_excel(xlw, sheet_name=f"{label} titration #{ntit}")
+                else:
+                    df.to_excel(xlw, sheet_name=label)
 
     def _export_csv(self, filename: str):
         with open(filename, 'a') as fh:
             for label, df in zip(self._section_labels, self._what_to_export):
                 _write_header(fh, label)
-                df.to_csv(fh, mode='a')
+                if isinstance(df, list):
+                    for ntit, _df in enumerate(df):
+                        fh.write(f"Titration #{ntit}")
+                        _df.to_csv(fh, mode='a')
+                    fh.write('\n')
+                else:
+                    df.to_csv(fh, mode='a')
                 fh.write('\n')
 
     def _export_txt(self, filename: str):
         with open(filename, 'a') as fh:
             for label, df in zip(self._section_labels, self._what_to_export):
                 _write_header(fh, label)
-                df.to_string(fh)
+                if isinstance(df, list):
+                    for ntit, _df in enumerate(df):
+                        fh.write(f"\nTitration #{ntit}")
+                        _df.to_string(fh)
+                else:
+                    df.to_string(fh)
                 fh.write('\n')
 
 
