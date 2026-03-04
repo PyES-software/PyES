@@ -408,7 +408,7 @@ wheels = [
 
 [[package]]
 name = "pyes"
-version = "2.1b2"
+version = "2.1b3"
 source = { virtual = "." }
 dependencies = [
     { name = "hypothesis" },
