@@ -120,6 +120,7 @@ class TitrationModel(QAbstractTableModel):
             new_pX = 0.0
         else:
             new_pX = (potential - e0) / -slope
+
         self._data.iloc[:, 4] = new_pX
         self._data.iloc[:, 4] = self._data.iloc[:, 4].round(2)
         self.layoutChanged.emit()
