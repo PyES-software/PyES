@@ -61,6 +61,8 @@ class optimizeWorker(QRunnable):
             out(f"-grad : {kwargs['exit_gradient_value']:.4e} ({kwargs['exit_gradient']})")
             out(f"-step : {kwargs['exit_step_value']:.4e} ({kwargs['exit_step']})")
 
+            increment = iter(kwargs['increment'].tolist())
+
             if kwargs['any beta refined']:
                 txt = "   # " + "".join(f"{comp:>5}" for comp in labels) + \
                       "     logβ       change  previous"
@@ -68,7 +70,6 @@ class optimizeWorker(QRunnable):
                 lgbeta = kwargs['log_beta']
                 oldbeta = iter(kwargs['previous log beta'].tolist())
                 stoich = kwargs['stoichiometry']
-                increment = iter(kwargs['increment'].tolist())
                 refined = [f'{next(increment):10.4f}{next(oldbeta):10.4f}' \
                            if _ else '' \
                            for _ in self.data['potentiometry_data']['beta_refine_flags']]
@@ -124,7 +125,6 @@ class optimizeWorker(QRunnable):
         b_error = fit_result['error log beta']
 
         ## print correlation matrix
-        cor_matrix = fit_result['correlation']
         _print_correlation_matrix(fit_result['correlation'],
                                   fit_result['variable names'],
                                   self.signals.log.emit)
