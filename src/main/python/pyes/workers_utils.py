@@ -1,15 +1,45 @@
+"""Utility functions for building summary DataFrames from :class:`SolverData`.
+
+These helpers are imported by :mod:`workers` to prepare the component and
+species information that is stored alongside every calculation result.
+"""
+
 from typing import Literal
 
 import numpy as np
 import pandas as pd
-from libeq import SolverData, Flags
+from libeq import Flags, SolverData
 
 
 def _comp_info(
     data: SolverData,
     mode: Literal["titration", "distribution", "potentiometry"],
     errors: bool,
-):
+) -> pd.DataFrame:
+    """Build a component-summary DataFrame for the given calculation mode.
+
+    The returned DataFrame describes the starting concentrations (and their
+    uncertainties when *errors* is ``True``) for each component, indexed by
+    component name and charge.
+
+    Parameters
+    ----------
+    data:
+        Validated solver data object.
+    mode:
+        Calculation mode: ``"distribution"``, ``"titration"``, or
+        ``"potentiometry"``.
+    errors:
+        When ``True``, uncertainty columns are added to the DataFrame.
+
+    Returns
+    -------
+    pd.DataFrame
+        Component concentrations indexed by ``(Component, Charge)`` for
+        distribution/titration modes, or by
+        ``(Titration, E0, E Sigma, V0, V Sigma, Component, Charge)`` for
+        potentiometry mode.
+    """
     comp_info = pd.DataFrame()
 
     if mode == "distribution":
@@ -123,7 +153,27 @@ def _species_info(
     data: SolverData,
     mode: Literal["titration", "distribution", "potentiometry"],
     errors: bool,
-):
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Build species and solids summary DataFrames for the given calculation mode.
+
+    Parameters
+    ----------
+    data:
+        Validated solver data object.
+    mode:
+        Calculation mode: ``"distribution"``, ``"titration"``, or
+        ``"potentiometry"``.
+    errors:
+        When ``True``, uncertainty columns are added to the DataFrames.
+
+    Returns
+    -------
+    tuple[pd.DataFrame, pd.DataFrame]
+        ``(species_info, solids_info)`` – both indexed by species/solid name.
+        *solids_info* is an empty DataFrame when there are no solid phases.
+        When *data* uses ionic-strength dependence, additional columns for the
+        Debye–Hückel parameters are included.
+    """
     species_info = pd.DataFrame(
         {
             "logB": data.log_beta,
