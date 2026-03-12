@@ -17,7 +17,7 @@ from libeq import (
 from libeq.optimizers.potentiometry import refine_indices
 from libeq.solver.solids_solver import _compute_saturation_index
 from libeq.solver.solver_utils import _titration_background_ions_c
-from libeq.utils import species_concentration, percent_distribution
+from libeq.utils import species_concentration
 from workers_utils import _comp_info, _species_info
 
 
@@ -300,6 +300,12 @@ class optimizeWorker(QRunnable):
         ]
         _print_titration(slices, soluble, self.signals.log.emit, "soluble species")
         _print_titration(slices, solids_concentration, self.signals.log.emit, "solid species")
+
+        optimized_parameters = pd.DataFrame()
+        optimized_parameters['variable'] = fit_result['variable names']
+        optimized_parameters['value'] = fit_result['final variables']
+        optimized_parameters['stdev'] = fit_result['standard deviation']
+        fit_result['optimized_parms'] = optimized_parameters
 
         formation_constants = pd.DataFrame()
         formation_constants['species'] = solver_data.species_names[solver_data.nc:]
@@ -979,5 +985,3 @@ def _print_correlation_matrix(corr: np.ndarray, labels: list[str], emitter) -> N
     emitter(20*'-' + '\n')
     emitter(str(df.where(tfilter).fillna("")))
     emitter('\n')
-
-
