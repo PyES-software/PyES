@@ -376,11 +376,15 @@ class OptimizeWorker(QRunnable):
 
         if self.data["emode"] is True:
             conc_sigma = self._compute_potentiometry_conc_sigma(solver_data)
+            if log_beta.ndim == 1:
+                _logbeta = np.tile(log_beta, (concentrations.shape[0], 1))
+            else:
+                _logbeta = log_beta
             soluble_sigma_np, solids_sigma_np = uncertanties(
                 concentrations,
                 solver_data.stoichiometry,
                 solver_data.solid_stoichiometry,
-                log_beta,
+                _logbeta,
                 log_ks,
                 solver_data.log_beta_sigma,
                 solver_data.log_ks_sigma,
