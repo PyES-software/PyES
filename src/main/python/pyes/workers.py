@@ -587,8 +587,8 @@ class OptimizeWorker(QRunnable):
 
             retval.update(
                 {
-                    "soluble_percentages": soluble_percentages_sigma,
-                    "solids_percentages": solids_percentages_sigma,
+                    "soluble_percentages_sigma": soluble_percentages_sigma,
+                    "solids_percentages_sigma": solids_percentages_sigma,
                     "species_sigma": soluble_sigma,
                     "solid_sigma": solids_sigma,
                 }
@@ -720,7 +720,8 @@ class OptimizeWorker(QRunnable):
         """
         conc_sigma = []
         for t in solver_data.potentiometry_opts.titrations:
-            v_aux = t.v_add[~t.ignored]
+            #v_aux = t.v_add[~t.ignored]
+            v_aux = t.get_titre
             conc_sigma.append(
                 np.tile(t.c0_sigma, [v_aux.size, 1])
                 + np.tile(v_aux, [solver_data.nc, 1]).T * 1e-3 * t.ct_sigma
