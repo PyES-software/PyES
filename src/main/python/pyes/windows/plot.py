@@ -111,17 +111,18 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
             self.solids_sd = [pd.DataFrame() for _ in self.solids_result]
             self.solids_sd_perc = [pd.DataFrame() for _ in self.solids_result]
 
-        for result, perc, sd, sd_perc in zip(
-            self.solids_result,
-            self.solid_perc_result,
-            self.solids_sd,
-            self.solids_sd_perc,
-        ):
-            result.columns = [column + "_(s)" for column in result.columns]
-            perc.columns = result.columns
-            if self.with_errors:
-                sd.columns = result.columns
-                sd_perc.columns = result.columns
+        if self.with_solids:
+            for result, perc, sd, sd_perc in zip(
+                self.solids_result,
+                self.solid_perc_result,
+                self.solids_sd,
+                self.solids_sd_perc,
+            ):
+                result.columns = [column + "_(s)" for column in result.columns]
+                perc.columns = result.columns
+                if self.with_errors:
+                    sd.columns = result.columns
+                    sd_perc.columns = result.columns
 
         self.comps = parent.result["comp_info"]
         self.comp_names = list(self.comps.index.get_level_values("Component").unique())
@@ -223,17 +224,18 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
         ]
         self.soluble_values = deepcopy(self.original_soluble_values)
 
-        self.original_solids_values = [
-            {
-                name: [
-                    self.solids_result[i][name].to_numpy(dtype=float),
-                    self.solid_perc_result[i][name].to_numpy(dtype=float),
-                ]
-                for name in self.solids_result[i].columns
-            }
-            for i in range(self.number_of_results)
-        ]
-        self.solids_values = deepcopy(self.original_solids_values)
+        if self.with_solids:
+            self.original_solids_values = [
+                {
+                    name: [
+                        self.solids_result[i][name].to_numpy(dtype=float),
+                        self.solid_perc_result[i][name].to_numpy(dtype=float),
+                    ]
+                    for name in self.solids_result[i].columns
+                }
+                for i in range(self.number_of_results)
+            ]
+            self.solids_values = deepcopy(self.original_solids_values)
 
         if self.with_errors:
             self.original_soluble_errors = [
@@ -247,16 +249,17 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
             ]
             self.soluble_errors = deepcopy(self.original_soluble_errors)
 
-            self.original_solids_errors = [
-                {
-                    name: [
-                        self.solids_sd[i][name].to_numpy(dtype=float),
-                    ]
-                    for name in self.solids_sd[i].columns
-                }
-                for i in range(self.number_of_results)
-            ]
-            self.solids_errors = deepcopy(self.original_solids_errors)
+            if self.with_solids:
+                self.original_solids_errors = [
+                    {
+                        name: [
+                            self.solids_sd[i][name].to_numpy(dtype=float),
+                        ]
+                        for name in self.solids_sd[i].columns
+                    }
+                    for i in range(self.number_of_results)
+                ]
+                self.solids_errors = deepcopy(self.original_solids_errors)
         else:
             self.errors_check.setEnabled(False)
 
