@@ -209,7 +209,7 @@ def resultToCSV(data: pd.DataFrame | list[pd.DataFrame], path: str):
         data.to_csv(path + ".csv")
 
 
-def resultToDataList(data: pd.DataFrame | list[pd.DataFrame]):
+def resultToDataList(data: pd.DataFrame | list[pd.DataFrame]) -> list[pd.DataFrame]:
     if isinstance(data, list):
         return data
     else:

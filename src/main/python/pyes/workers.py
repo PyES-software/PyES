@@ -122,6 +122,7 @@ class OptimizeWorker(QRunnable):
         else:
             raise ValueError(f"mode unknown. {mode=}")
 
+        assert isinstance(retval, dict)
         retval.update(input_info)
         retval["stoichiometry"] = stoichiometry_df
         retval["solid_stoichiometry"] = solid_stoichiometry_df
@@ -402,7 +403,8 @@ class OptimizeWorker(QRunnable):
                                       concentrations, 
                                       _logbeta, 
                                       log_ks)
-            fit_result.update(aux)
+            for k, v in aux.items():
+                fit_result[k] = [v[s] for s in slices]
 
             # soluble_sigma_np, solids_sigma_np = uncertanties(
             #     concentrations,

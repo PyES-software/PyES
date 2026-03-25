@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from pandas.io.pytables import DataCol
 import pyqtgraph as pg
 import pyqtgraph.exporters
 from PySide6.QtCore import Qt
@@ -55,8 +56,8 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
         self.plot_widgets = [self.conc_graph, self.perc_graph, self.titration_graph]
         self.legends = []
 
-        self.font_size = 10
-        self.line_width = 2
+        self.font_size: int = 10
+        self.line_width: int = 2
 
         self.componentComboBox.currentTextChanged.connect(self._updateTitrationCurve)
         self.componentComboBox_perc.currentTextChanged.connect(
@@ -77,10 +78,10 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
         self.is_distribution_result = parent.dmode.currentIndex() == 1
         self.is_optimization_result = parent.dmode.currentIndex() == 2
 
-        self.soluble_result = resultToDataList(parent.result["species_concentrations"])
-        self.perc_result = resultToDataList(parent.result["soluble_percentages"])
+        self.soluble_result: list[pd.DataFrame] = resultToDataList(parent.result["species_concentrations"])
+        self.perc_result: list[pd.DataFrame] = resultToDataList(parent.result["soluble_percentages"])
 
-        self.solids_result = [
+        self.solids_result: list[pd.DataFrame] = [
             d[
                 [
                     column
@@ -90,14 +91,14 @@ class PlotWindow(QMainWindow, Ui_PlotWindow):
             ]
             for d in resultToDataList(parent.result["solids_concentrations"])
         ]
-        self.solid_perc_result = resultToDataList(parent.result["solids_percentages"])
+        self.solid_perc_result: list[pd.DataFrame] = resultToDataList(parent.result["solids_percentages"])
 
-        self.with_solids = not self.solids_result[0].empty
-        self.with_errors = parent.uncertaintyMode.isChecked()
+        self.with_solids: bool = not self.solids_result[0].empty
+        self.with_errors: bool = parent.uncertaintyMode.isChecked()
 
         if self.with_errors:
-            self.soluble_sd = resultToDataList(parent.result["species_sigma"])
-            self.soluble_sd_perc = resultToDataList(
+            self.soluble_sd: list[pd.DataFrame] = resultToDataList(parent.result["species_sigma"])
+            self.soluble_sd_perc: list[pd.DataFrame] = resultToDataList(
                 parent.result["soluble_percentages_sigma"]
             )
 
