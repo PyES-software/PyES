@@ -19,7 +19,7 @@ dependencies = [
     "hypothesis>=6.149.0",
 ]
 name = "pyes"
-version = "2.1rc1"
+version = "2.1rc2"
 description = ""
 
 [tool.uv.sources]
