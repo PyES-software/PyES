@@ -388,13 +388,17 @@ class OptimizeWorker(QRunnable):
         )
         _emit_df(self.signals.log.emit, printable_formation_constants, "Formation constants")
 
-        self._emit_titration_params(
-            fit_result["final titration parameters"],
-            fit_result["error titration parameters"],
-            fit_result["initial titration parameters"],
-            solver_data.components,
-            self.signals.log.emit,
-        )
+        if fit_result['any conc refined']:
+            self._emit_titration_params(
+                fit_result["final titration parameters"],
+                fit_result["error titration parameters"],
+                fit_result["initial titration parameters"],
+                solver_data.components,
+                self.signals.log.emit,
+            )
+        else:
+            self.signals.log.emit("\nNo refined titrations parameters to print")
+
         _emit_df(self.signals.log.emit, self.solubility_products, "Solubility products")
 
         if self.data["emode"] is True:
