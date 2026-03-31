@@ -344,6 +344,7 @@ class OptimizeWorker(QRunnable):
         #    columns=[solver_data.solids_names, ref_percentage_solids],
         #).rename_axis(columns=["Solids", r"% relative to comp."])
         # << end common
+
         self._compute_common_concentrations(solver_data,
                                             concentrations,
                                             log_beta,
@@ -382,7 +383,11 @@ class OptimizeWorker(QRunnable):
             for s in slices
         ]
 
-        _emit_df(self.signals.log.emit, self.formation_constants, "Formation constants")
+        printable_formation_constants = self._build_formation_constants_df(
+            solver_data, log_beta, initial_logbeta
+        )
+        _emit_df(self.signals.log.emit, printable_formation_constants, "Formation constants")
+
         self._emit_titration_params(
             fit_result["final titration parameters"],
             fit_result["error titration parameters"],
