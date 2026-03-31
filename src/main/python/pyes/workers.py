@@ -720,12 +720,12 @@ class OptimizeWorker(QRunnable):
                         c0, refine_indices(titr.c0_flags), labels
                     ):
                         if c0f:
-                            out(f"\tc0[{comp}] {c0v:10.4f} {next(increment):10.4f}")
+                            out(f"\tc0[{comp}] {c0v:10.6f} {next(increment):10.6f}")
                     for ctv, ctf, comp in zip(
                         ct, refine_indices(titr.ct_flags), labels
                     ):
                         if ctf:
-                            out(f"\tcT[{comp}] {ctv:10.4f} {next(increment):10.4f}")
+                            out(f"\tcT[{comp}] {ctv:10.6f} {next(increment):10.6f}")
             out(80 * "-" + "\n")
 
         return log_reporter
