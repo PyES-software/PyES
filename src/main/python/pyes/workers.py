@@ -1591,6 +1591,11 @@ class OptimizeWorker(QRunnable):
                     f"{pxmin}-{pxmax}" for pxmin, pxmax in tit.px_range
                 )
                 out(f"\tpX ranges: {ranges}")
+            eactive = solver_data.components[tit.electro_active_compoment]
+            out(f"\tactive > {eactive}")
+            out(f"\tslope = {tit.slope}")
+            out(f"\temf0 = {tit.e0} ({tit.e0_sigma})")
+            out(f"\tvol0 = {tit.v0} ({tit.v0_sigma})")
         out(f"Total experimental points: {total_points}\n")
 
     @staticmethod
