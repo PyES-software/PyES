@@ -595,7 +595,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Common tasks for importing legacy file
         """
         if not self.save_or_discard():
-            return False
+            return
 
         default_path = (
             self.settings.value("path/default")

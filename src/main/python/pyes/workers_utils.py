@@ -73,15 +73,13 @@ def _comp_info(
     elif mode == "potentiometry":
         vessel_conc = []
         titrant_conc = []
-        if errors:
-            vessel_conc_sigma = []
-            titrant_conc_sigma = []
+        vessel_conc_sigma = []
+        titrant_conc_sigma = []
         for t in data.potentiometry_opts.titrations:
             vessel_conc.append(t.c0)
             titrant_conc.append(t.ct)
-            if errors:
-                vessel_conc_sigma.append(t.c0_sigma)
-                titrant_conc_sigma.append(t.ct_sigma)
+            vessel_conc_sigma.append(t.c0_sigma)
+            titrant_conc_sigma.append(t.ct_sigma)
 
         titration_index = [
             index + 1
