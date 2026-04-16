@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pandas as pd
 from commands.fields import DoubleSpinBoxEdit
 from dialogs import loadCSVDialog
@@ -21,8 +23,8 @@ from .range_selector import MultipleRangeSelector
 class inputTitrationOpt(QWidget, Ui_inputTitrationOpt):
     def __init__(
         self,
-        parent: QWidget | None = None,
-        undo_stack: QUndoStack = None,
+        parent: Optional[QWidget] = None,
+        undo_stack: Optional[QUndoStack] = None,
         components: list[str] = ["A"],
     ) -> None:
         from viewmodels.models import ConcentrationsModel, TitrationModel

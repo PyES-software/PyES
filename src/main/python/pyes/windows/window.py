@@ -623,7 +623,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.load_project_file(parsed_data)
                 self.dmode.setCurrentIndex(2)
 
-    def load_project_file(self, jsdata, input_path=None):
+    def load_project_file(self, jsdata:dict, input_path=None) -> None:
+        """
+        Loads a json data file into the app.
+        """
         self.resetFields()
         # Resets results
         self.result = {}
@@ -782,7 +785,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         for ix, titration_data in enumerate(titrations):
             if ix == 0:
-                tab = self.titration_tabs.widget(ix)
+                tab: QWidget = self.titration_tabs.widget(ix)
+                assert tab is not None
                 tab.findChild(inputTitrationOpt).set_data(titration_data)
             else:
                 new_widget = QWidget()
